@@ -5,8 +5,9 @@ run = "pnpm dev"
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "pnpm dev"]
+run = ["sh", "-c", "pnpm start"]
 deploymentTarget = "cloudrun"
+build = ["sh", "-c", "pnpm build"]
 
 [[ports]]
 localPort = 3000
