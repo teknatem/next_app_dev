@@ -31,10 +31,15 @@ export class BaseCrudService {
     table: any,
     options: CrudOptions = {}
   ): Promise<T[]> {
-    const { limit = 50, offset = 0, orderBy = 'desc', orderColumn = 'createdAt' } = options;
-    
+    const {
+      limit = 50,
+      offset = 0,
+      orderBy = 'desc',
+      orderColumn = 'createdAt'
+    } = options;
+
     let query = db.select().from(table);
-    
+
     if (orderColumn && table[orderColumn]) {
       const column = table[orderColumn];
       if (orderBy === 'asc') {
@@ -43,7 +48,7 @@ export class BaseCrudService {
         query = query.orderBy(desc(column)) as any;
       }
     }
-    
+
     return query.limit(limit).offset(offset);
   }
 
@@ -56,20 +61,20 @@ export class BaseCrudService {
       .from(table)
       .where(eq(table.id, id))
       .limit(1);
-    
+
     return (results[0] as T) || null;
   }
 
   /**
    * Создать новую запись
    */
-  static async create<T>(table: any, data: any): Promise<T> {
-    const results = await db
-      .insert(table)
-      .values(data)
-      .returning();
-    
-    return results[0] as T;
+  static async create<T>(table: any, data: any): Promise<T | null> {
+    const results = await db.insert(table).values(data).returning();
+
+    if (Array.isArray(results) && results.length > 0) {
+      return results[0] as T;
+    }
+    return null;
   }
 
   /**
@@ -80,11 +85,11 @@ export class BaseCrudService {
       .update(table)
       .set({
         ...data,
-        updatedAt: new Date(),
+        updatedAt: new Date()
       })
       .where(eq(table.id, id))
       .returning();
-    
+
     return (results[0] as T) || null;
   }
 
@@ -92,22 +97,17 @@ export class BaseCrudService {
    * Удалить запись
    */
   static async delete(table: any, id: string): Promise<boolean> {
-    const results = await db
-      .delete(table)
-      .where(eq(table.id, id))
-      .returning();
-    
-    return results.length > 0;
+    const results = await db.delete(table).where(eq(table.id, id)).returning();
+
+    return Array.isArray(results) && results.length > 0;
   }
 
   /**
    * Подсчитать общее количество записей
    */
   static async count(table: any): Promise<number> {
-    const results = await db
-      .select({ count: count() })
-      .from(table);
-    
+    const results = await db.select({ count: count() }).from(table);
+
     return results[0].count;
   }
 
@@ -132,4 +132,4 @@ export class BaseCrudService {
       hasMore
     };
   }
-} 
+}

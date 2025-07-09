@@ -1,5 +1,8 @@
 import { db } from './connection';
-import { getDatabaseConfig, logDatabaseConnection } from './connection/database-utils';
+import {
+  getDatabaseConfig,
+  logDatabaseConnection
+} from './connection/database-utils';
 
 export async function testConnection() {
   try {
@@ -13,7 +16,9 @@ export async function testConnection() {
     const result = await db.execute('SELECT NOW() as current_time');
 
     console.log('✅ Database connection successful');
-    console.log('⏰ Server time:', result[0]?.current_time);
+    if (Array.isArray(result) && result.length > 0) {
+      console.log('⏰ Server time:', (result[0] as any)?.current_time);
+    }
 
     return true;
   } catch (error) {

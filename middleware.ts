@@ -1,19 +1,7 @@
-import { auth } from '@/shared/lib/auth';
-import { NextRequest, NextResponse } from 'next/server';
+import NextAuth from 'next-auth';
+import { authConfig } from './shared/lib/auth.config';
 
-export async function middleware(req: NextRequest) {
-  // Allow unauthenticated access to login page
-  if (req.nextUrl.pathname === '/login') {
-    return NextResponse.next();
-  }
-  const session = await auth();
-
-  if (!session?.user) {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
-
-  return NextResponse.next();
-}
+export default NextAuth(authConfig).auth;
 
 export const config = {
   matcher: [

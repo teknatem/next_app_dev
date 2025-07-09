@@ -1,9 +1,17 @@
 import 'server-only';
 import { db } from '@/shared/database/connection';
 import { productionItems } from '@/shared/database/schemas';
-import { BaseCrudService, type CrudOptions, type PaginatedResult } from '@/shared/database/services';
+import {
+  BaseCrudService,
+  type CrudOptions,
+  type PaginatedResult
+} from '@/shared/database/services';
 import { eq, ilike, or, count } from 'drizzle-orm';
-import type { ProductionItem, CreateProductionItem, UpdateProductionItem } from '../model/types';
+import type {
+  ProductionItem,
+  CreateProductionItem,
+  UpdateProductionItem
+} from '../model/types';
 
 /**
  * API для работы с Production Items
@@ -19,16 +27,24 @@ export class ProductionItemApi {
   /**
    * Получить производственные позиции с пагинацией и подсчетом
    */
-  static async findManyWithCount(options: CrudOptions = {}): Promise<PaginatedResult<ProductionItem>> {
-    return BaseCrudService.findManyWithCount<ProductionItem>(productionItems, options);
+  static async findManyWithCount(
+    options: CrudOptions = {}
+  ): Promise<PaginatedResult<ProductionItem>> {
+    return BaseCrudService.findManyWithCount<ProductionItem>(
+      productionItems,
+      options
+    );
   }
 
   /**
    * Поиск по названию, коду или артикулу
    */
-  static async search(query: string, options: CrudOptions = {}): Promise<ProductionItem[]> {
+  static async search(
+    query: string,
+    options: CrudOptions = {}
+  ): Promise<ProductionItem[]> {
     const { limit = 50, offset = 0 } = options;
-    
+
     return db
       .select()
       .from(productionItems)
@@ -59,21 +75,26 @@ export class ProductionItemApi {
       .from(productionItems)
       .where(eq(productionItems.code, code))
       .limit(1);
-    
+
     return results[0] || null;
   }
 
   /**
    * Создать новую позицию
    */
-  static async create(data: CreateProductionItem): Promise<ProductionItem> {
+  static async create(
+    data: CreateProductionItem
+  ): Promise<ProductionItem | null> {
     return BaseCrudService.create<ProductionItem>(productionItems, data);
   }
 
   /**
    * Обновить позицию
    */
-  static async update(id: string, data: UpdateProductionItem): Promise<ProductionItem | null> {
+  static async update(
+    id: string,
+    data: UpdateProductionItem
+  ): Promise<ProductionItem | null> {
     return BaseCrudService.update<ProductionItem>(productionItems, id, data);
   }
 
@@ -92,14 +113,17 @@ export class ProductionItemApi {
       .select({ count: count() })
       .from(productionItems)
       .where(eq(productionItems.type, type as any));
-    
+
     return results[0].count;
   }
 
   /**
    * Проверить существование кода (для валидации уникальности)
    */
-  static async existsByCode(code: string, excludeId?: string): Promise<boolean> {
+  static async existsByCode(
+    code: string,
+    excludeId?: string
+  ): Promise<boolean> {
     const results = await db
       .select({ count: count().as('count') })
       .from(productionItems)
@@ -107,4 +131,4 @@ export class ProductionItemApi {
 
     return results[0].count > 0;
   }
-} 
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import './globals.css';
 
+import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import Link from 'next/link';
 import {
@@ -36,6 +37,11 @@ import { SearchInput } from '@/widgets/global-interface-search';
 import { subsystems } from '@/shared/config/subsystems';
 import { UserProfileMenu } from '@/widgets/user-profile-menu/ui/user-profile-menu';
 import { ChatProvider, ChatToggleButton } from '@/widgets/llm-chat';
+
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-inter'
+});
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return <TooltipProvider>{children}</TooltipProvider>;
@@ -208,16 +214,18 @@ export const metadata = {
 };
 
 export default function RootLayout({
-  children
+  children,
+  params
 }: {
   children: React.ReactNode;
+  params: { lang: string };
 }) {
   return (
-    <html lang="en">
-      <body className="flex min-h-screen w-full flex-col">
+    <html lang={params.lang || 'ru'} className={inter.variable}>
+      <body>
         <Providers>
           <ChatProvider>
-            <div className="flex min-h-screen w-full flex-col bg-pattern-overlay">
+            <div className="flex min-h-screen w-full flex-col bg-muted/40">
               <DesktopNav />
               <div className="flex flex-col sm:pl-14">
                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">

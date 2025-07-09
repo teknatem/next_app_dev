@@ -1,17 +1,14 @@
-
-import NextAuth, { NextAuthConfig } from 'next-auth';
+import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { db } from '@/shared/database/connection';
 import { users } from '@/shared/database/schemas';
 import { eq, count } from 'drizzle-orm';
+import { authConfig } from './auth.config';
 
-// NextAuth configuration with Credentials provider and auto-provisioning of the first user
-const authConfig: NextAuthConfig = {
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV !== 'production',
-  trustHost: true,
-  session: { strategy: 'jwt' },
+// Direct NextAuth initialization
+const nextAuth = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -39,7 +36,7 @@ const authConfig: NextAuthConfig = {
               email,
               name: email.split('@')[0],
               passwordHash,
-              role: 'admin',
+              role: 'admin'
             })
             .returning();
 
@@ -47,29 +44,17 @@ const authConfig: NextAuthConfig = {
         }
 
         // 3. Normal login path
-        const user = await db.query.users.findFirst({ where: eq(users.email, email) });
+        const user = await db.query.users.findFirst({
+          where: eq(users.email, email)
+        });
         if (!user) return null;
 
         const ok = await bcrypt.compare(password, user.passwordHash);
         return ok ? { id: user.id, name: user.name, email: user.email } : null;
       }
     })
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.id = (user as any).id;
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) session.user.id = token.id as string;
-      return session;
-    }
-  },
-  pages: { signIn: '/login' }
-};
-
-// Direct NextAuth initialization
-const nextAuth = NextAuth(authConfig);
+  ]
+});
 
 export const handlers = nextAuth.handlers;
 export const auth = nextAuth.auth;
