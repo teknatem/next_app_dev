@@ -1,7 +1,11 @@
+
 import NextAuth, { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
-const AUTH_ENABLED = process.env.AUTH_ENABLED !== 'false';
+// Проверяем переменную окружения безопасно
+function isAuthEnabled(): boolean {
+  return process.env.AUTH_ENABLED !== 'false';
+}
 
 export const authConfig: NextAuthConfig = {
   debug: process.env.NODE_ENV !== 'production',
@@ -50,6 +54,7 @@ export const authConfig: NextAuthConfig = {
   }
 };
 
+// Мок функции для случая отключенной аутентификации
 const mockAuth = async (req?: any) => {
   if (req) {
     return null;
@@ -63,14 +68,41 @@ const mockAuth = async (req?: any) => {
   };
 };
 
-const realAuth = NextAuth(authConfig);
+// Ленивая инициализация NextAuth
+let authInstance: any = null;
 
-export const handlers = AUTH_ENABLED
-  ? realAuth.handlers
+function getAuthInstance() {
+  if (!authInstance && isAuthEnabled()) {
+    authInstance = NextAuth(authConfig);
+  }
+  return authInstance;
+}
+
+// Экспортируем обернутые функции
+export const handlers = isAuthEnabled() 
+  ? (() => {
+      const instance = getAuthInstance();
+      return instance ? instance.handlers : { GET: mockAuth, POST: mockAuth };
+    })()
   : { GET: mockAuth, POST: mockAuth };
 
-export const auth = AUTH_ENABLED ? realAuth.auth : mockAuth;
+export const auth = isAuthEnabled() 
+  ? (() => {
+      const instance = getAuthInstance();
+      return instance ? instance.auth : mockAuth;
+    })()
+  : mockAuth;
 
-export const signIn = AUTH_ENABLED ? realAuth.signIn : async () => {};
+export const signIn = isAuthEnabled() 
+  ? (() => {
+      const instance = getAuthInstance();
+      return instance ? instance.signIn : async () => {};
+    })()
+  : async () => {};
 
-export const signOut = AUTH_ENABLED ? realAuth.signOut : async () => {};
+export const signOut = isAuthEnabled() 
+  ? (() => {
+      const instance = getAuthInstance();
+      return instance ? instance.signOut : async () => {};
+    })()
+  : async () => {};
