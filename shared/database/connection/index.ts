@@ -1,21 +1,36 @@
 import 'server-only';
-
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from '../schemas';
 import { getDatabaseConfig, logDatabaseConnection } from './database-utils';
+import {
+  drizzle as drizzleNodePostgres,
+  type NodePgDatabase
+} from 'drizzle-orm/node-postgres';
+import {
+  drizzle as drizzlePostgresJs,
+  type PostgresJsDatabase
+} from 'drizzle-orm/postgres-js';
+import type { Pool } from '@neondatabase/serverless';
+import type { Sql } from 'postgres';
 
-// Получаем конфигурацию базы данных
 const dbConfig = getDatabaseConfig();
-
-// Логируем подключение
 logDatabaseConnection(dbConfig);
 
-// Создаем подключение к PostgreSQL
-const client = postgres(dbConfig.url);
+let client: Pool | Sql;
+let db: NodePgDatabase<typeof schema> | PostgresJsDatabase<typeof schema>;
 
-// Создаем Drizzle connection с всеми схемами
-export const db = drizzle(client, { schema });
+// process.env.NEXT_RUNTIME === 'edge' - это переменная Next.js, которая указывает на Edge-среду
+if (process.env.NEXT_RUNTIME === 'edge' || dbConfig.type === 'Replit Neon') {
+  const { Pool } = require('@neondatabase/serverless');
+  const { drizzle } = require('drizzle-orm/node-postgres');
+  const pool = new Pool({ connectionString: dbConfig.url });
+  client = pool;
+  db = drizzle(pool, { schema });
+} else {
+  const postgres = require('postgres');
+  const { drizzle } = require('drizzle-orm/postgres-js');
+  const pg_client = postgres(dbConfig.url);
+  client = pg_client;
+  db = drizzle(pg_client, { schema });
+}
 
-// Экспортируем клиент для утилит
-export { client };
+export { db, client };

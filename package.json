@@ -58,6 +58,7 @@
     "trailingComma": "none"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "drizzle-kit": "^0.31.4",
     "tsx": "^4.20.3",
     "yaml": "^2.8.0"
