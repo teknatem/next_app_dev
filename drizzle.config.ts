@@ -4,13 +4,18 @@ import { config } from 'dotenv';
 // Load environment variables from .env.local
 config({ path: '.env.local' });
 
+// Используем унифицированную утилиту для получения URL базы данных
+import { getDatabaseUrl } from './shared/database/connection/database-utils';
+
+const databaseUrl = getDatabaseUrl();
+
 export default defineConfig({
   schema: './shared/database/schemas/*',
   out: './shared/database/migrations/sql',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.POSTGRES_URL!,
+    url: databaseUrl,
   },
   verbose: true,
   strict: true,
-}); 
+});
