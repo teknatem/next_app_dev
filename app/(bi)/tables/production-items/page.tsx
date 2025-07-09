@@ -25,7 +25,7 @@ import { auth } from '@/shared/lib/auth';
 export const revalidate = 0; // Отключаем кеширование для этой страницы
 
 export default async function ProductionItemsPage() {
-  await auth(); // Принудительная проверка аутентификации
+  const session = await auth(); // Получаем сессию для проверки аутентификации
   return (
     <div className="p-6 space-y-6">
       {/* Навигация */}
