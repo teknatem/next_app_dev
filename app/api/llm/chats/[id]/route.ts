@@ -3,10 +3,11 @@ import { LlmChatService } from '@/shared/database/services';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const chatId = parseInt(params.id);
+    const { id } = await context.params;
+    const chatId = parseInt(id);
     const updates = await request.json();
     
     if (isNaN(chatId)) {
@@ -47,10 +48,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const chatId = parseInt(params.id);
+    const { id } = await context.params;
+    const chatId = parseInt(id);
     
     if (isNaN(chatId)) {
       return NextResponse.json(
