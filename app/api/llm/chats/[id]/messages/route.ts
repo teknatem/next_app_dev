@@ -3,10 +3,11 @@ import { LlmChatService } from '@/shared/database/services';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const chatId = parseInt(params.id);
+    const { id } = await context.params;
+    const chatId = parseInt(id);
     
     if (isNaN(chatId)) {
       return NextResponse.json(
