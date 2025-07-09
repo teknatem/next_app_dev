@@ -1,14 +1,17 @@
 
 import NextAuth, { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import { db } from '@/shared/database/connection';
+import { users } from '@/shared/database/schemas';
+import { eq, count } from 'drizzle-orm';
 
-// Проверяем переменную окружения
-const isAuthEnabled = () => process.env.AUTH_ENABLED !== 'false';
-
+// NextAuth configuration with Credentials provider and auto-provisioning of the first user
 const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV !== 'production',
   trustHost: true,
+  session: { strategy: 'jwt' },
   providers: [
     Credentials({
       name: 'Credentials',
@@ -17,98 +20,58 @@ const authConfig: NextAuthConfig = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        console.log('[Authorize Callback] Received credentials:', credentials);
-        if (credentials?.email && credentials?.password) {
-          const user = { id: '1', name: 'Dev User', email: 'dev@local' };
-          console.log('[Authorize Callback] Login SUCCESS. Returning user:', user);
-          return user;
+        if (!credentials?.email || !credentials?.password) return null;
+
+        const email = String(credentials.email).toLowerCase();
+        const password = String(credentials.password);
+
+        // 1. Check how many users exist
+        const [{ count: userCount }] = await db
+          .select({ count: count() })
+          .from(users);
+
+        // 2. If table is empty → create first user on the fly
+        if (Number(userCount) === 0) {
+          const passwordHash = await bcrypt.hash(password, 12);
+          const [newUser] = await db
+            .insert(users)
+            .values({
+              email,
+              name: email.split('@')[0],
+              passwordHash,
+              role: 'admin',
+            })
+            .returning();
+
+          return { id: newUser.id, name: newUser.name, email: newUser.email };
         }
-        console.log('[Authorize Callback] Login FAILED. Returning null.');
-        return null;
+
+        // 3. Normal login path
+        const user = await db.query.users.findFirst({ where: eq(users.email, email) });
+        if (!user) return null;
+
+        const ok = await bcrypt.compare(password, user.passwordHash);
+        return ok ? { id: user.id, name: user.name, email: user.email } : null;
       }
     })
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
+      if (user) token.id = (user as any).id;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
+      if (session.user) session.user.id = token.id as string;
       return session;
     }
   },
-  events: {
-    async signOut(message) {
-      console.log('[SignOut Event]', message);
-    }
-  },
-  pages: {
-    signIn: '/login'
-  }
+  pages: { signIn: '/login' }
 };
 
-// Мок-функция для отключенной аутентификации - возвращает сессию напрямую
-const mockAuth = async () => {
-  return {
-    user: {
-      name: 'Test User',
-      email: 'test@example.com',
-      image: '/placeholder-user.jpg'
-    }
-  };
-};
+// Direct NextAuth initialization
+const nextAuth = NextAuth(authConfig);
 
-// Мок-функция для middleware
-const mockAuthMiddleware = (callback: any) => {
-  return (req: any) => {
-    // Создаем объект похожий на NextAuth request
-    const mockAuthReq = {
-      ...req,
-      auth: {
-        user: {
-          name: 'Test User',
-          email: 'test@example.com',
-          image: '/placeholder-user.jpg'
-        }
-      }
-    };
-    return callback(mockAuthReq);
-  };
-};
-
-const mockHandlers = {
-  GET: async () => new Response('Auth disabled', { status: 200 }),
-  POST: async () => new Response('Auth disabled', { status: 200 })
-};
-
-// Инициализируем NextAuth только если аутентификация включена
-const nextAuthInstance = isAuthEnabled() ? NextAuth(authConfig) : null;
-
-// Экспортируем обработчики
-export const handlers = nextAuthInstance 
-  ? nextAuthInstance.handlers 
-  : mockHandlers;
-
-// Экспортируем функцию auth - для server components и middleware
-export const auth = nextAuthInstance 
-  ? nextAuthInstance.auth 
-  : mockAuth;
-
-// Экспортируем функцию для middleware
-export const authMiddleware = nextAuthInstance 
-  ? nextAuthInstance.auth 
-  : mockAuthMiddleware;
-
-// Экспортируем функции signIn и signOut
-export const signIn = nextAuthInstance 
-  ? nextAuthInstance.signIn 
-  : async () => { throw new Error('Auth is disabled'); };
-
-export const signOut = nextAuthInstance 
-  ? nextAuthInstance.signOut 
-  : async () => { throw new Error('Auth is disabled'); };
+export const handlers = nextAuth.handlers;
+export const auth = nextAuth.auth;
+export const signIn = nextAuth.signIn;
+export const signOut = nextAuth.signOut;

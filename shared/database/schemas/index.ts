@@ -46,4 +46,12 @@ export {
 export {
   llmChatsRelations,
   llmChatMessagesRelations,
-} from './llm-relations'; 
+} from './llm-relations';
+
+export {
+  users,
+  insertUserSchema,
+  selectUserSchema,
+  type User,
+  type NewUser,
+} from './users'; 
