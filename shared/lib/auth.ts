@@ -1,3 +1,4 @@
+
 import NextAuth, { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
@@ -51,14 +52,23 @@ const authConfig: NextAuthConfig = {
   }
 };
 
-// Мок-функции для отключенной аутентификации
-const mockAuth = async () => ({
-  user: {
-    name: 'Test User',
-    email: 'test@example.com',
-    image: '/placeholder-user.jpg'
-  }
-});
+// Мок-функция для отключенной аутентификации
+const mockAuth = (callback: any) => {
+  return (req: any) => {
+    // Создаем объект похожий на NextAuth request
+    const mockAuthReq = {
+      ...req,
+      auth: {
+        user: {
+          name: 'Test User',
+          email: 'test@example.com',
+          image: '/placeholder-user.jpg'
+        }
+      }
+    };
+    return callback(mockAuthReq);
+  };
+};
 
 const mockHandlers = {
   GET: async () => new Response('Auth disabled', { status: 200 }),
@@ -73,7 +83,7 @@ export const handlers = nextAuthInstance
   ? nextAuthInstance.handlers 
   : mockHandlers;
 
-// Экспортируем функцию auth
+// Экспортируем функцию auth - всегда возвращает middleware функцию
 export const auth = nextAuthInstance 
   ? nextAuthInstance.auth 
   : mockAuth;
