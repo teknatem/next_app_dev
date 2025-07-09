@@ -13,7 +13,7 @@ export function middleware(req: NextRequest) {
   }
 
   // Используем NextAuth middleware только если аутентификация включена
-  return authMiddleware((authReq) => {
+  const middleware = authMiddleware((authReq) => {
     const isLoggedIn = !!authReq.auth;
 
     if (!isLoggedIn) {
@@ -21,7 +21,14 @@ export function middleware(req: NextRequest) {
     }
 
     return NextResponse.next();
-  })(req);
+  });
+  
+  // Handle both function and Promise return types
+  if (typeof middleware === 'function') {
+    return middleware(req);
+  }
+  
+  return NextResponse.next();
 }
 
 export const config = {
