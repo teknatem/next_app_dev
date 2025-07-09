@@ -1,9 +1,7 @@
-import NextAuth from 'next-auth';
-import { authConfig } from '@/shared/lib/auth';
+import { auth } from '@/shared/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 const AUTH_ENABLED = process.env.AUTH_ENABLED !== 'false';
-const { auth } = NextAuth(authConfig);
 
 const explicitAuthMiddleware = auth((req) => {
   const isLoggedIn = !!req.auth;
