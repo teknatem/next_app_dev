@@ -1,0 +1,30 @@
+E-001:
+  path: entities/production-item
+  name: ProductionItem
+  layer: entities
+  description: CRUD API + Zod schemas for production items
+W-001:
+  path: widgets/file-to-base-import
+  name: FileToBaseImport
+  layer: widgets
+  description: Upload Excel/CSV → DB, shows import results
+S-001:
+  path: shared/database
+  name: DatabaseCore
+  layer: shared
+  description: Drizzle Postgres connection helpers
+F-001:
+  path: features/product-catalog-delete
+  name: ProductCatalogDelete
+  layer: features
+  description: Delete action for products in catalog
+W-003:
+  path: widgets/user-profile-menu
+  name: UserProfileMenu
+  layer: widgets
+  description: Dropdown with avatar and profile actions
+W-004:
+  path: widgets/llm-chat
+  name: LlmChat
+  layer: widgets
+  description: Comprehensive chat interface for AI conversations with LLM models
