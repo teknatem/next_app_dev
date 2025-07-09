@@ -7,6 +7,7 @@ const isAuthEnabled = () => process.env.AUTH_ENABLED !== 'false';
 const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV !== 'production',
+  trustHost: true,
   providers: [
     Credentials({
       name: 'Credentials',
