@@ -52,8 +52,19 @@ const authConfig: NextAuthConfig = {
   }
 };
 
-// Мок-функция для отключенной аутентификации
-const mockAuth = (callback: any) => {
+// Мок-функция для отключенной аутентификации - возвращает сессию напрямую
+const mockAuth = async () => {
+  return {
+    user: {
+      name: 'Test User',
+      email: 'test@example.com',
+      image: '/placeholder-user.jpg'
+    }
+  };
+};
+
+// Мок-функция для middleware
+const mockAuthMiddleware = (callback: any) => {
   return (req: any) => {
     // Создаем объект похожий на NextAuth request
     const mockAuthReq = {
@@ -83,10 +94,15 @@ export const handlers = nextAuthInstance
   ? nextAuthInstance.handlers 
   : mockHandlers;
 
-// Экспортируем функцию auth - всегда возвращает middleware функцию
+// Экспортируем функцию auth - для server components и middleware
 export const auth = nextAuthInstance 
   ? nextAuthInstance.auth 
   : mockAuth;
+
+// Экспортируем функцию для middleware
+export const authMiddleware = nextAuthInstance 
+  ? nextAuthInstance.auth 
+  : mockAuthMiddleware;
 
 // Экспортируем функции signIn и signOut
 export const signIn = nextAuthInstance 

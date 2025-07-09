@@ -1,5 +1,5 @@
 
-import { auth } from '@/shared/lib/auth';
+import { authMiddleware } from '@/shared/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Проверяем, включена ли аутентификация
@@ -13,7 +13,7 @@ export function middleware(req: NextRequest) {
   }
 
   // Используем NextAuth middleware только если аутентификация включена
-  return auth((authReq) => {
+  return authMiddleware((authReq) => {
     const isLoggedIn = !!authReq.auth;
 
     if (!isLoggedIn) {
