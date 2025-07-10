@@ -73,7 +73,7 @@ export function SearchInput() {
             // Не закрываем сразу, чтобы можно было кликнуть на результат
             setTimeout(() => setIsOpen(false), 200);
           }}
-          className="w-64 py-1 text-sm focus:ring-1 focus:ring-ring focus:border-ring"
+          className="w-48 py-1 text-sm focus:ring-1 focus:ring-ring focus:border-ring"
         />
         {query && (
           <Button

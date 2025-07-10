@@ -15,7 +15,7 @@ export function ChatWindow({
 
   return (
     <div
-      className="fixed inset-y-0 right-0 z-50 bg-background border-l shadow-lg flex flex-col"
+      className="fixed inset-y-0 right-0 z-50 border-l bg-background/80 shadow-lg flex flex-col"
       style={{ width: `${width}%` }}
     >
       {/* Header */}

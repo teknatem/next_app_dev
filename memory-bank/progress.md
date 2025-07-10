@@ -1,5 +1,15 @@
 # Progress Tracking
 
+## 🔧 Recent Fixes (July 2024)
+
+### ✅ Build Fix: `next-themes` Import (2024-07-26)
+
+- **Problem**: The application failed to build due to an incorrect import path in `app/theme-provider.tsx`.
+- **Solution**: Corrected the import for `ThemeProviderProps` from `next-themes/dist/types` to `next-themes`.
+- **Status**: ✅ **Build successful.**
+
+---
+
 ## 🎯 LLM Chat MVP: ЗАВЕРШЕН ✅
 
 ### ✅ ЗАВЕРШЕНО: LLM Chat MVP (27.01.2025)

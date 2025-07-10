@@ -7,6 +7,7 @@
 - **Next.js 15** (App Router) - Server-side rendering and modern React patterns
 - **TypeScript** - Type safety and better development experience
 - **Tailwind CSS + Shadcn UI** - Modern, consistent styling and components
+- **next-themes** - For theme management (light/dark mode).
 - **Vercel Analytics** - Performance monitoring and user analytics
 
 ### Database & ORM
@@ -71,6 +72,10 @@ widgets/
 - **Node.js 18+** - Runtime environment
 - **PostgreSQL 14+** - Database server
 - **pnpm 8+** - Package manager
+
+### Recent Fixes
+
+- **`next-themes` import issue (2024-07-26)**: Fixed a build error by updating the import path for `ThemeProviderProps` in `app/theme-provider.tsx` from `next-themes/dist/types` to `next-themes`. This was necessary after an update to the `next-themes` package.
 
 ### Local Environment
 

@@ -37,6 +37,10 @@ import { SearchInput } from '@/widgets/global-interface-search';
 import { subsystems } from '@/shared/config/subsystems';
 import { UserProfileMenu } from '@/widgets/user-profile-menu/ui/user-profile-menu';
 import { ChatProvider, ChatToggleButton } from '@/widgets/llm-chat';
+import { MainContent } from './main-content';
+import { AppBreadcrumb } from './breadcrumb';
+import { ThemeProvider } from './theme-provider';
+import { ThemeToggleButton } from '@/shared/ui/theme-toggle-button';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -99,7 +103,7 @@ function DesktopNav() {
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-14 flex-col border-r bg-background flex">
+    <aside className="fixed inset-y-0 left-0 z-50 flex w-14 flex-col border-r bg-background/80">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <Link
           href="/"
@@ -193,17 +197,12 @@ function MobileNav() {
   );
 }
 
-function DashboardBreadcrumb() {
+function SidebarToggle() {
   return (
-    <Breadcrumb className="hidden md:flex">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/">BI System</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
+    <Button size="icon" variant="outline">
+      <PanelLeft className="h-5 w-5" />
+      <span className="sr-only">Toggle Menu</span>
+    </Button>
   );
 }
 
@@ -221,27 +220,44 @@ export default function RootLayout({
   params: { lang: string };
 }) {
   return (
-    <html lang={params.lang || 'ru'} className={inter.variable}>
+    <html
+      lang={params.lang || 'ru'}
+      className={inter.variable}
+      suppressHydrationWarning
+    >
       <body>
-        <Providers>
-          <ChatProvider>
-            <div className="flex min-h-screen w-full flex-col bg-muted/40">
-              <DesktopNav />
-              <div className="flex flex-col sm:pl-14">
-                <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-                  <MobileNav />
-                  <DashboardBreadcrumb />
-                  <SearchInput />
-                  <ChatToggleButton />
-                  <UserProfileMenu />
-                </header>
-                <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-                  {children}
-                </main>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>
+            <ChatProvider>
+              <div className="flex min-h-screen w-full flex-col bg-pattern">
+                <DesktopNav />
+                <MainContent>
+                  <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b bg-background/80 px-6 backdrop-blur-sm">
+                    <div className="flex items-center gap-4">
+                      <SidebarToggle />
+                      <AppBreadcrumb />
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <SearchInput />
+                      <ChatToggleButton />
+                      <ThemeToggleButton />
+                      <UserProfileMenu />
+                    </div>
+                  </header>
+                  <main className="flex-1 gap-4 p-4 sm:px-6 py-4 md:gap-8">
+                    {children}
+                  </main>
+                </MainContent>
               </div>
-            </div>
-          </ChatProvider>
-        </Providers>
+            </ChatProvider>
+          </Providers>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>
