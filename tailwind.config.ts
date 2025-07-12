@@ -23,7 +23,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', ...fontFamily.sans]
+        sans: ['Inter', ...fontFamily.sans],
+        inter: ['Inter', ...fontFamily.sans]
       },
       colors: {
         border: 'hsl(var(--border))',

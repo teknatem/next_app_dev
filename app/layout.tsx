@@ -1,7 +1,6 @@
 import React from 'react';
 import './globals.css';
 
-import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import Link from 'next/link';
 import {
@@ -42,10 +41,7 @@ import { AppBreadcrumb } from './breadcrumb';
 import { ThemeProvider } from './theme-provider';
 import { ThemeToggleButton } from '@/shared/ui/theme-toggle-button';
 
-const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
-  variable: '--font-inter'
-});
+// Font is now loaded via CSS instead of next/font/google
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return <TooltipProvider>{children}</TooltipProvider>;
@@ -222,7 +218,7 @@ export default function RootLayout({
   return (
     <html
       lang={params.lang || 'ru'}
-      className={inter.variable}
+      className="font-inter"
       suppressHydrationWarning
     >
       <body>

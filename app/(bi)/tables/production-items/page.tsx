@@ -20,12 +20,10 @@ import {
 import Link from 'next/link';
 import { ProductionItemsTable } from '@/widgets/production-items-table/ui/production-items-table';
 import { ProductionItemApi } from '@/entities/production-item/api/production-item.api';
-import { auth } from '@/shared/lib/auth';
 
 export const revalidate = 0; // Отключаем кеширование для этой страницы
 
 export default async function ProductionItemsPage() {
-  const session = await auth(); // Получаем сессию для проверки аутентификации
   return (
     <div className="p-6 space-y-6">
       {/* Навигация */}

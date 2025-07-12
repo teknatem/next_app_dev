@@ -16,8 +16,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/lib/*": ["lib/*"],
       "@/widgets/*": ["widgets/*"],
+      "@/domains/*": ["domains/*"],
       "@/shared/*": ["shared/*"],
       "@/entities/*": ["entities/*"]
     },

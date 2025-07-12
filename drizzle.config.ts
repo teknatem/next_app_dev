@@ -10,12 +10,12 @@ import { getDatabaseUrl } from './shared/database/connection/database-utils';
 const databaseUrl = getDatabaseUrl();
 
 export default defineConfig({
-  schema: './shared/database/schemas/*',
+  schema: ['./shared/database/schemas/*', './domains/**/model/*.schema.ts'],
   out: './shared/database/migrations/sql',
   dialect: 'postgresql',
   dbCredentials: {
-    url: databaseUrl,
+    url: databaseUrl
   },
   verbose: true,
-  strict: true,
+  strict: true
 });

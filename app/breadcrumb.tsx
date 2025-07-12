@@ -10,13 +10,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/shared/ui/breadcrumb';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { subsystems } from '@/shared/config/subsystems';
 
 // A helper function to find a readable name for a path segment
 function getPathName(segment: string, allPages: any[]) {
   const page = allPages.find(
-    (p) => p.path.split('/').pop() === segment || p.slug === segment
+    (p) => p.path?.split('/').pop() === segment || p.slug === segment
   );
   if (page) {
     return page.name;
@@ -26,6 +26,27 @@ function getPathName(segment: string, allPages: any[]) {
 
 export function AppBreadcrumb() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render on server or until hydrated
+  if (!mounted) {
+    return (
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/">BI System</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
+  }
+
   const pathSegments = pathname.split('/').filter(Boolean);
   const allPages = subsystems.flatMap((s) => [
     ...s.pages,

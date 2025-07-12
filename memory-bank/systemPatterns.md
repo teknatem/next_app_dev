@@ -12,9 +12,9 @@ src/
 ├─ domains/
 │   └─ <domain>/                 # vertical slice of a business entity
 │       model/                   # types, enums, zod schemas  ── entity
-│       data-access/             # DB / external IO (server‑only)
+│       data/                    # DB / external IO (server‑only)
 │       actions/                 # Next.js server actions
-│       ui/                      # React UI<br>
+│       widgets/                 # React UI<br>
 │       │   └─ …Widget.tsx       #   ➜ **Server Component** by default;<br>
 │       │                         #     add `'use client'` on interactivity
 │       hooks/                   # client‑side helpers
@@ -26,12 +26,14 @@ src/
 └─ app/                          # Next.js routes that render widgets
 ```
 
+> **Note on `features` and `widgets` layers:** Both the root and domain levels have `features/` and `widgets/` folders. They are distinguished by their path and role. Root layers (`src/features/`, `src/widgets/`) orchestrate multiple domains, while domain layers (`src/domains/user/features/`) are specific to one domain.
+
 ---
 
 ## 1 . Dependency flow _inside_ a domain
 
 ```text
-ui (client) → ui (server) → actions → data-access → model → shared
+widgets (client) → widgets (server) → actions → data → model → shared
 ```
 
 _Strictly downward; cycles are forbidden._
@@ -41,36 +43,36 @@ _Strictly downward; cycles are forbidden._
 ## 2 . Accessing a domain from outside
 
 - Import **only** from `domains/&lt;domain&gt;/index.ts`.
-- External code may call domain **actions** or render domain **widgets**, but **never** touches `data-access/`.
+- External code may call domain **actions** or render domain **widgets**, but **never** touches `data/`.
 
 ---
 
 ## 3 . Outward dependencies of a domain
 
-| Allowed                         | Forbidden                                               |
-| ------------------------------- | ------------------------------------------------------- |
-| `shared/*`, external libs       | imports from `app/`, `widgets/`, root‑level `features/` |
-| public barrels of other domains | direct imports of other domains’ internal folders       |
+| Allowed                         | Forbidden                                         |
+| ------------------------------- | ------------------------------------------------- |
+| `shared/*`, external libs       | imports from `app/`, `widgets/`, `features/`      |
+| public barrels of other domains | direct imports of other domains’ internal folders |
 
 ---
 
-## 4 . Root‑level `features/`
+## 4 . Root-level `features/`
 
 - Orchestrate several domains.
 - May import any domain barrels and `shared/*`.
-- Must **not** import `widgets/` or reach inside a domain.
+- Must **not** import from root-level `widgets/` or reach inside a domain.
 
 ---
 
-## 5 . Root‑level `widgets/`
+## 5 . Root-level `widgets/`
 
-- Compose UI from features and/or domain widgets.
-- Do **not** import other widgets.
-- Never access `data‑access/` directly.
+- Compose UI from `features/` and/or domain `widgets/`.
+- Do **not** import other root-level `widgets/`.
+- Never access `data/` directly.
 
 ---
 
-## 6 . `data‑access/` restrictions
+## 6 . `data/` restrictions
 
 - Used **only** within its own domain – from `actions/` or server‑side components.
 - Client code and external layers cannot import it (lint‑checked).
