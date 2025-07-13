@@ -1,18 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/shared/ui/table';
-import { Button } from '@/shared/ui/button';
-import { Badge } from '@/shared/ui/badge';
-import { Input } from '@/shared/ui/input';
 import { MoreHorizontal, Edit, Trash2, Search } from 'lucide-react';
+import { useState } from 'react';
+
+import {
+  getProductionItemTypeLabel,
+  getProductionItemTypeColor,
+  type ProductionItem
+} from '@/entities/production-item';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,11 +18,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
+import { Input } from '@/shared/ui/input';
 import {
-  getProductionItemTypeLabel,
-  getProductionItemTypeColor,
-  type ProductionItem
-} from '@/entities/production-item';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/shared/ui/table';
 
 // Данные теперь получаем через entities API
 

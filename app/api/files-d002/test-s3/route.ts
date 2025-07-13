@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, HeadBucketCommand } from '@aws-sdk/client-s3';
+import { NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    // Check environment variables
     const {
       S3_ENDPOINT,
       S3_REGION,
@@ -12,43 +11,44 @@ export async function GET(req: NextRequest) {
       S3_SECRET_ACCESS_KEY
     } = process.env;
 
-    const envStatus = {
-      S3_ENDPOINT: !!S3_ENDPOINT,
-      S3_REGION: !!S3_REGION,
-      S3_BUCKET_NAME: !!S3_BUCKET_NAME,
-      S3_ACCESS_KEY_ID: !!S3_ACCESS_KEY_ID,
-      S3_SECRET_ACCESS_KEY: !!S3_SECRET_ACCESS_KEY
-    };
+    if (
+      !S3_ENDPOINT ||
+      !S3_REGION ||
+      !S3_BUCKET_NAME ||
+      !S3_ACCESS_KEY_ID ||
+      !S3_SECRET_ACCESS_KEY
+    ) {
+      const missingVars = Object.entries({
+        S3_ENDPOINT,
+        S3_REGION,
+        S3_BUCKET_NAME,
+        S3_ACCESS_KEY_ID,
+        S3_SECRET_ACCESS_KEY
+      })
+        .filter(([, value]) => !value)
+        .map(([key]) => key);
 
-    const missingVars = Object.entries(envStatus)
-      .filter(([_, exists]) => !exists)
-      .map(([name]) => name);
-
-    if (missingVars.length > 0) {
       return NextResponse.json(
         {
           status: 'error',
           message: 'Missing S3 environment variables',
-          missingVariables: missingVars,
-          envStatus
+          missingVariables: missingVars
         },
         { status: 500 }
       );
     }
 
-    // Test S3 connection
     const s3Client = new S3Client({
-      endpoint: S3_ENDPOINT!,
-      region: S3_REGION!,
+      endpoint: S3_ENDPOINT,
+      region: S3_REGION,
       credentials: {
-        accessKeyId: S3_ACCESS_KEY_ID!,
-        secretAccessKey: S3_SECRET_ACCESS_KEY!
+        accessKeyId: S3_ACCESS_KEY_ID,
+        secretAccessKey: S3_SECRET_ACCESS_KEY
       }
     });
 
-    // Try to access the bucket
     const command = new HeadBucketCommand({
-      Bucket: S3_BUCKET_NAME!
+      Bucket: S3_BUCKET_NAME
     });
 
     await s3Client.send(command);

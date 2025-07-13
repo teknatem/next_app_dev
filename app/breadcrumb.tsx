@@ -1,7 +1,10 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+
+import { subsystems } from '@/shared/config/subsystems';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,8 +13,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/shared/ui/breadcrumb';
-import React, { useEffect, useState } from 'react';
-import { subsystems } from '@/shared/config/subsystems';
 
 // A helper function to find a readable name for a path segment
 function getPathName(segment: string, allPages: any[]) {

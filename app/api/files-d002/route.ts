@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fileRepository } from '@/domains/catalog-files-d002/data/file.repo';
-import { insertFileSchema } from '@/domains/catalog-files-d002/model/files.schema';
 import { z } from 'zod';
+
+import {
+  fileRepository,
+  insertFileSchema
+} from '@/domains/catalog-files-d002/index.server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,11 +47,8 @@ export async function GET(req: NextRequest) {
     .optional()
     .default(0)
     .parse(searchParams.get('offset'));
-  const includeDeleted = z.coerce
-    .boolean()
-    .optional()
-    .default(false)
-    .parse(searchParams.get('includeDeleted'));
+  const includeDeletedParam = searchParams.get('includeDeleted');
+  const includeDeleted = includeDeletedParam === 'true';
 
   try {
     const files = await fileRepository.getFiles({

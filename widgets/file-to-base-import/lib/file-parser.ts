@@ -1,5 +1,6 @@
-import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
+
 import type { ParsedRecord } from '../types';
 
 export class FileParser {

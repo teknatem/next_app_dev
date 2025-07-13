@@ -1,5 +1,6 @@
 import { pgTable, uuid, text, timestamp, numeric, date } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+
 import { productionItems } from './production-items';
 
 export const productionItemsConsumption = pgTable('production_items_consumption', {

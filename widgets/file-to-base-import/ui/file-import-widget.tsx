@@ -1,14 +1,17 @@
 'use client';
 
+import { Upload } from 'lucide-react';
 import { useState } from 'react';
+
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+
+import type { ImportFormat, ImportResult } from '../types';
+import { SUPPORTED_FORMATS } from '../types';
 import { FileUploader } from './file-uploader';
 import { FormatSelector } from './format-selector';
 import { ImportResults } from './import-results';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { Upload } from 'lucide-react';
-import type { ImportFormat, ImportResult } from '../types';
-import { SUPPORTED_FORMATS } from '../types';
+
 
 export function FileImportWidget() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

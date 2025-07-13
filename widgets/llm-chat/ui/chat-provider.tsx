@@ -1,7 +1,8 @@
 'use client';
 
-import { ChatWindow } from './chat-window';
+
 import { ChatSidebar } from './chat-sidebar';
+import { ChatWindow } from './chat-window';
 import { useChatStore } from '../lib/chat-store';
 
 interface ChatProviderProps {

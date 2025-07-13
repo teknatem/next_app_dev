@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { LlmChatService } from '@/shared/database/services';
 
 export async function GET(

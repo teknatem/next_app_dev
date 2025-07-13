@@ -1,18 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { File } from '@/domains/catalog-files-d002/model/files.schema';
-import { FileUploader } from '@/domains/catalog-files-d002/ui/file-uploader';
-import { FileList } from '@/domains/catalog-files-d002/ui/file-list';
-import { FileDetails } from '@/domains/catalog-files-d002/ui/file-details';
-import { FilePicker } from '@/domains/catalog-files-d002/ui/file-picker';
+
+import {
+  File,
+  FileUploader,
+  FileList,
+  FileDetails,
+  FilePicker
+} from '@/domains/catalog-files-d002';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle
 } from '@/shared/ui/dialog';
-import { Button } from '@/shared/ui/button';
 
 export default function FileManagerPage() {
   // State to force re-render of FileList after upload

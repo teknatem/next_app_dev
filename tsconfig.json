@@ -16,6 +16,7 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./*"],
       "@/widgets/*": ["widgets/*"],
       "@/domains/*": ["domains/*"],
       "@/shared/*": ["shared/*"],

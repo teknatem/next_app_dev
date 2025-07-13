@@ -1,8 +1,9 @@
+import { config as loadEnv } from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
+
 import { MIGRATION_CONFIG } from '../connection/config';
-import { config as loadEnv } from 'dotenv';
 
 // Load environment variables (.env.local takes precedence if exists)
 loadEnv({ path: '.env.local' });

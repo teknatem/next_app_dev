@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, ChangeEvent } from 'react';
-import { Input } from '@/shared/ui/input';
-import { Button } from '@/shared/ui/button';
-import { Progress } from '@/shared/ui/progress';
 import { z } from 'zod';
+
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Progress } from '@/shared/ui/progress';
 
 const presignedUrlResponseSchema = z.object({
   url: z.string().url(),
@@ -14,7 +15,7 @@ const presignedUrlResponseSchema = z.object({
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
 interface FileUploaderProps {
-  onUploadSuccess: (file: any) => void;
+  onUploadSuccess: (_file: unknown) => void;
   folder?: string;
   debug?: boolean;
 }
@@ -188,9 +189,14 @@ export function FileUploader({
       setStatus('success');
       onUploadSuccess(newFile);
       setSelectedFile(null); // Reset after success
-    } catch (err: any) {
-      log(`Error occurred: ${err.message}`);
-      setError(err.message || 'An unexpected error occurred.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        log(`Error occurred: ${err.message}`);
+        setError(err.message || 'An unexpected error occurred.');
+      } else {
+        log('Error occurred: unknown error');
+        setError('An unexpected error occurred.');
+      }
       setStatus('error');
     }
   };

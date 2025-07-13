@@ -1,14 +1,5 @@
 'use client';
 
-import { Button } from '@/shared/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/shared/ui/card';
-import { Badge } from '@/shared/ui/badge';
 import {
   Download,
   Upload,
@@ -31,6 +22,16 @@ import {
   Pause,
   RefreshCw
 } from 'lucide-react';
+
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/shared/ui/card';
 
 export default function TestButtonsPage() {
   return (

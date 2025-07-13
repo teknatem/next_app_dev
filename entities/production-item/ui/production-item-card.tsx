@@ -1,9 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { MoreHorizontal, Edit, Trash2, Copy, Eye } from 'lucide-react';
+
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { MoreHorizontal, Edit, Trash2, Copy, Eye } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
+
 import type { ProductionItem } from '../model/types';
 import {
   getProductionItemTypeLabel,

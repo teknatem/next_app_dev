@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+
 import { subsystems } from '@/shared/config/subsystems';
 import { SubsystemPage } from '@/widgets/subsystem-page';
 

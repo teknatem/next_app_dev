@@ -1,8 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Badge } from '@/shared/ui/badge';
 import { CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
+
+import { Badge } from '@/shared/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+
 import type { ImportResult } from '../types';
 
 interface ImportResultsProps {

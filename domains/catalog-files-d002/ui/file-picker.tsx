@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { File } from '../model/files.schema';
-import { FileList } from './file-list';
+
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,10 +10,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/dialog';
-import { Button } from '@/shared/ui/button';
+
+import { FileList } from './file-list';
+import { File } from '../model/files.schema';
+
 
 interface FilePickerProps {
-  onFileSelect: (file: File) => void;
+  onFileSelect: (_file: File) => void;
   triggerButtonText?: string;
 }
 
@@ -23,8 +26,9 @@ export function FilePicker({
 }: FilePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleFileSelect = (file: File) => {
-    onFileSelect(file);
+   
+  const handleFileSelect = (_file: File) => {
+    onFileSelect(_file);
     setIsOpen(false); // Close dialog after selection
   };
 

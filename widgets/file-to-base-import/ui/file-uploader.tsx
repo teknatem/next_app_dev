@@ -1,9 +1,10 @@
 'use client';
 
+import { FileText, X } from 'lucide-react';
 import { useRef } from 'react';
+
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { FileText, X } from 'lucide-react';
 
 interface FileUploaderProps {
   onFileChange: (file: File | null) => void;

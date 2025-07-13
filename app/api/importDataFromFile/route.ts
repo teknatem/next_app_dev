@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FileParser, DataMapper } from '@/widgets/file-to-base-import/lib';
+
 import { ImportService } from '@/widgets/file-to-base-import/api/import';
+import { FileParser, DataMapper } from '@/widgets/file-to-base-import/lib';
 import { SUPPORTED_FORMATS, type ImportFormat } from '@/widgets/file-to-base-import/types';
 
 export async function POST(request: NextRequest) {

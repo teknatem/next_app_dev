@@ -1,5 +1,8 @@
 {
+  "name": "next-app-dev",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +12,11 @@
     "db:push": "pnpm drizzle-kit push",
     "db:studio": "pnpm drizzle-kit studio",
     "create:slice": "tsx scripts/create-slice.ts",
-    "test:cors": "node scripts/test-cors.js"
+    "test:cors": "node scripts/test-cors.js",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:domains": "eslint app/ domains/ widgets/ features/ entities/ shared/ --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "lint:domains:fix": "eslint app/ domains/ widgets/ features/ entities/ shared/ --ext .ts,.tsx --fix"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.844.0",
@@ -65,9 +72,21 @@
     "trailingComma": "none"
   },
   "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@next/eslint-plugin-next": "^15.3.5",
     "@types/bcryptjs": "^2.4.6",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
     "drizzle-kit": "^0.31.4",
+    "eslint": "^9.31.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-boundaries": "^5.0.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.3.0",
     "tsx": "^4.20.3",
+    "typescript-eslint": "^8.36.0",
     "yaml": "^2.8.0"
   }
 }

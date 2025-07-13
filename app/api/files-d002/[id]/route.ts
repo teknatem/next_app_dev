@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fileRepository } from '@/domains/catalog-files-d002/data/file.repo';
 import { z } from 'zod';
+
+import { fileRepository } from '@/domains/catalog-files-d002/index.server';
 
 const updateSchema = z.object({
   title: z.string().min(1).optional(),

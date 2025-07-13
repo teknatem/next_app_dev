@@ -1,8 +1,10 @@
 'use client';
 
 import { MessageSquare, X, Settings } from 'lucide-react';
+
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+
 import type { ChatWindowProps } from '../types';
 
 export function ChatWindow({

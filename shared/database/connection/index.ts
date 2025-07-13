@@ -1,6 +1,5 @@
 import 'server-only';
-import * as schema from '../schemas';
-import { getDatabaseConfig, logDatabaseConnection } from './database-utils';
+import type { Pool } from '@neondatabase/serverless';
 import {
   drizzle as drizzleNodePostgres,
   type NodePgDatabase
@@ -9,8 +8,10 @@ import {
   drizzle as drizzlePostgresJs,
   type PostgresJsDatabase
 } from 'drizzle-orm/postgres-js';
-import type { Pool } from '@neondatabase/serverless';
 import type { Sql } from 'postgres';
+
+import * as schema from '../schemas';
+import { getDatabaseConfig, logDatabaseConnection } from './database-utils';
 
 const dbConfig = getDatabaseConfig();
 logDatabaseConnection(dbConfig);

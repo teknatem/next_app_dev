@@ -16,6 +16,12 @@
 - **Drizzle ORM** - Type-safe database operations and schema management
 - **Database Extensions** - Support for vector data (future LLM embeddings)
 
+### Object Storage
+
+- **Yandex Cloud S3** - AWS S3-compatible object storage
+- **Presigned URLs** - Secure file upload/download
+- **File Management** - Metadata tracking and lifecycle management
+
 ### LLM & AI Integration
 
 - **OpenAI API** - GPT models for data processing and analysis
@@ -34,19 +40,26 @@
 
 ## 🏗️ Architecture Patterns
 
-### Feature-Sliced Design (FSD)
+### Feature-Sliced Design (FSD) with Server/Client Separation
 
 ```
+domains/
+├── catalog-files-d002/      # File management domain
+│   ├── model/               # ✅ SHARED - Zod schemas, TypeScript types
+│   ├── data/                # ⚠️ SERVER-ONLY - Database repositories
+│   ├── api/                 # ✅ CLIENT-ONLY - HTTP API calls
+│   ├── lib/                 # 🔄 MIXED - Utilities and services
+│   ├── ui/                  # ✅ CLIENT-ONLY - React components
+│   ├── index.ts             # ✅ CLIENT-SAFE - Public API
+│   ├── index.server.ts      # ⚠️ SERVER-ONLY - Server API
+│   └── README.md            # Documentation
+├── catalog-llm-bot-d001/    # LLM chat domain (planned)
+└── production-items/        # Production items domain (planned)
+
 widgets/
 ├── file-to-base-import/     # File import widget
-│   ├── ui/                  # React components
-│   ├── lib/                 # Business logic
-│   ├── api/                 # Data access
-│   ├── types/               # Type definitions
-│   └── index.ts             # Public API
-├── data-visualization/      # Charts and graphs (planned)
-├── report-builder/          # Report creation (planned)
-└── llm-chat/               # AI assistant (planned)
+├── llm-chat/               # AI assistant
+└── production-items-table/ # Data tables
 ```
 
 ### Data Flow Architecture
@@ -54,7 +67,14 @@ widgets/
 - **API Routes** (`/app/api/`) - Server-side data processing
 - **Server Components** - Optimized data fetching
 - **Client Components** - Interactive widgets and forms
-- **Shared Libraries** (`/lib/`) - Common utilities and configurations
+- **Shared Libraries** (`/shared/`) - Common utilities and configurations
+
+### Server/Client Separation
+
+- **Explicit Boundaries** - `.server.ts` and `.client.ts` suffixes
+- **Runtime Directives** - `'server-only'` and `'use client'`
+- **Double Export System** - `index.ts` (client) + `index.server.ts` (server)
+- **Type Safety** - Prevents server code in client bundles
 
 ### LLM Integration Points
 
@@ -95,9 +115,11 @@ pnpm dev
 ```json
 {
   "paths": {
-    "@/components/*": ["components/*"],
-    "@/lib/*": ["lib/*"],
-    "@/widgets/*": ["widgets/*"]
+    "@/shared/*": ["shared/*"],
+    "@/domains/*": ["domains/*"],
+    "@/widgets/*": ["widgets/*"],
+    "@/features/*": ["features/*"],
+    "@/entities/*": ["entities/*"]
   }
 }
 ```
@@ -122,4 +144,7 @@ pnpm dev
 
 - **TypeScript Strict Mode** - Maximum type safety
 - **FSD Architecture** - Consistent, scalable code organization
+- **Server/Client Separation** - Explicit boundaries and runtime safety
+- **Double Export System** - Clear public APIs for each environment
+- **File Naming Convention** - Explicit `.server.ts` and `.client.ts` suffixes
 - **Performance Monitoring** - Built-in analytics and optimization

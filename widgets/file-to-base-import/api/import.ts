@@ -1,8 +1,9 @@
 import 'server-only';
+import { ProductionItemApi } from '@/entities/production-item/api/production-item.api';
+
 import { db } from '../../../shared/database/connection';
 import { productionItemsConsumption } from '../../../shared/database/schemas';
 import type { ImportResult, ParsedRecord, ImportFormat } from '../types';
-import { ProductionItemApi } from '@/entities/production-item/api/production-item.api';
 
 export class ImportService {
   static async importProducts(records: ParsedRecord[]): Promise<ImportResult> {

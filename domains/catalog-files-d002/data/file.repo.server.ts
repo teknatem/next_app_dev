@@ -1,6 +1,9 @@
-import { db } from '@/shared/database/connection';
-import { files, NewFile } from '../model/files.schema';
+import 'server-only';
 import { eq, desc } from 'drizzle-orm';
+
+import { db } from '@/shared/database/connection';
+
+import { files, NewFile } from '../model/files.schema';
 
 export const fileRepository = {
   /**
@@ -40,9 +43,8 @@ export const fileRepository = {
   }) {
     const { limit = 20, offset = 0, includeDeleted = false } = options;
 
-    const whereCondition = includeDeleted
-      ? undefined
-      : eq(files.isDeleted, false);
+    const whereCondition =
+      includeDeleted === true ? undefined : eq(files.isDeleted, false);
 
     return db
       .select()

@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { File } from '../model/files.schema';
+
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { ClientFormattedDate } from '@/shared/ui/client-formatted-date';
+import { Label } from '@/shared/ui/label';
 import {
   Table,
   TableBody,
@@ -10,12 +15,9 @@ import {
   TableHeader,
   TableRow
 } from '@/shared/ui/table';
-import { Button } from '@/shared/ui/button';
-import { Badge } from '@/shared/ui/badge';
-import { Checkbox } from '@/shared/ui/checkbox';
-import { Label } from '@/shared/ui/label';
-import { ClientFormattedDate } from '@/shared/ui/client-formatted-date';
+
 import { toISOString } from '../lib/date-utils';
+import { File } from '../model/files.schema';
 
 async function fetchFiles(
   limit: number,
@@ -35,8 +37,8 @@ async function fetchFiles(
 }
 
 interface FileListProps {
-  onFileSelect?: (file: File) => void;
-  onFileEdit?: (file: File) => void;
+  onFileSelect?: (_file: File) => void;
+  onFileEdit?: (_file: File) => void;
 }
 
 export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
@@ -55,8 +57,10 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
         const offset = (page - 1) * limit;
         const fetchedFiles = await fetchFiles(limit, offset, includeDeleted);
         setFiles(fetchedFiles);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(
+          err instanceof Error ? err.message : 'An unknown error occurred'
+        );
       } finally {
         setIsLoading(false);
       }
@@ -114,7 +118,7 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
               <TableCell>{file.mimeType}</TableCell>
               <TableCell>{(file.fileSize / 1024).toFixed(2)}</TableCell>
               <TableCell>
-                {file.isDeleted ? (
+                {file.isDeleted === true ? (
                   <Badge variant="destructive">Deleted</Badge>
                 ) : (
                   <Badge variant="secondary">Active</Badge>
@@ -142,7 +146,7 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
                     Edit
                   </Button>
                 )}
-                {!file.isDeleted && (
+                {file.isDeleted === false && (
                   <Button
                     variant="destructive"
                     size="sm"

@@ -1,6 +1,9 @@
 'use client';
 
-import { File } from '../model/files.schema';
+import Image from 'next/image';
+
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
 import {
   Card,
   CardContent,
@@ -9,9 +12,9 @@ import {
   CardDescription
 } from '@/shared/ui/card';
 import { ClientFormattedDate } from '@/shared/ui/client-formatted-date';
-import { Badge } from '@/shared/ui/badge';
-import { Button } from '@/shared/ui/button';
+
 import { toISOString } from '../lib/date-utils';
+import { File } from '../model/files.schema';
 
 interface FileDetailsProps {
   file: File;
@@ -37,9 +40,11 @@ export function FileDetails({ file, onClose }: FileDetailsProps) {
       <CardContent className="space-y-4">
         {isImage && (
           <div className="flex justify-center">
-            <img
+            <Image
               src={file.url}
               alt={file.title}
+              width={800}
+              height={600}
               className="max-w-full max-h-96 rounded-lg object-contain"
             />
           </div>

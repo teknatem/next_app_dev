@@ -2,7 +2,6 @@ import React from 'react';
 import './globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
-import Link from 'next/link';
 import {
   BarChart3,
   Database,
@@ -16,6 +15,9 @@ import {
   Users2,
   MessageSquare
 } from 'lucide-react';
+import Link from 'next/link';
+
+import { subsystems } from '@/shared/config/subsystems';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -26,6 +28,7 @@ import {
 } from '@/shared/ui/breadcrumb';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/shared/ui/sheet';
+import { ThemeToggleButton } from '@/shared/ui/theme-toggle-button';
 import {
   Tooltip,
   TooltipContent,
@@ -33,13 +36,13 @@ import {
   TooltipProvider
 } from '@/shared/ui/tooltip';
 import { SearchInput } from '@/widgets/global-interface-search';
-import { subsystems } from '@/shared/config/subsystems';
-import { UserProfileMenu } from '@/widgets/user-profile-menu/ui/user-profile-menu';
 import { ChatProvider, ChatToggleButton } from '@/widgets/llm-chat';
-import { MainContent } from './main-content';
+import { UserProfileMenu } from '@/widgets/user-profile-menu/ui/user-profile-menu';
+
 import { AppBreadcrumb } from './breadcrumb';
+import { MainContent } from './main-content';
 import { ThemeProvider } from './theme-provider';
-import { ThemeToggleButton } from '@/shared/ui/theme-toggle-button';
+
 
 // Font is now loaded via CSS instead of next/font/google
 

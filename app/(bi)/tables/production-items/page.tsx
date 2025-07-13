@@ -1,13 +1,5 @@
-import { Suspense } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { Badge } from '@/shared/ui/badge';
+'use client';
+
 import {
   ArrowLeft,
   Plus,
@@ -18,12 +10,19 @@ import {
   Settings
 } from 'lucide-react';
 import Link from 'next/link';
+import { Suspense } from 'react';
+
+import { Button } from '@/shared/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/shared/ui/card';
 import { ProductionItemsTable } from '@/widgets/production-items-table/ui/production-items-table';
-import { ProductionItemApi } from '@/entities/production-item/api/production-item.api';
 
-export const revalidate = 0; // Отключаем кеширование для этой страницы
-
-export default async function ProductionItemsPage() {
+const ProductionItemsPage = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Навигация */}
@@ -151,4 +150,6 @@ export default async function ProductionItemsPage() {
       </Card>
     </div>
   );
-}
+};
+
+export default ProductionItemsPage;

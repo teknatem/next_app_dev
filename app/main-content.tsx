@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { useChatStore } from '@/widgets/llm-chat/lib/chat-store';
 
 interface MainContentProps {

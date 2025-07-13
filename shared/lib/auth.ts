@@ -1,9 +1,12 @@
+import bcrypt from 'bcryptjs';
+import { eq, count } from 'drizzle-orm';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
+
 import { db } from '@/shared/database/connection';
 import { users } from '@/shared/database/schemas';
-import { eq, count } from 'drizzle-orm';
+
+
 import { authConfig } from './auth.config';
 
 // Direct NextAuth initialization

@@ -100,7 +100,16 @@ export const subsystems: Subsystem[] = [
         description: 'Управление клиентами',
         subsystem: 'data',
         tags: ['клиенты', 'customers', 'пользователи']
+      },
+      {
+        id: 'files',
+        name: 'Файлы',
+        path: '/files',
+        icon: 'File',
+        description: 'Управление файлами',
+        subsystem: 'data',
+        tags: ['файлы', 'files', 'документы']
       }
     ]
   }
-]; 
+];

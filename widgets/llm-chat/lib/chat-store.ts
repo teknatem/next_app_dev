@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 import type { ChatMessage, ChatSession, ChatSettings } from '../types';
 
 interface ChatState {

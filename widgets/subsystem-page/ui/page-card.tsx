@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import { Page } from '../types';
 import {
   Home,
   Database,
@@ -10,6 +8,9 @@ import {
   BarChart3,
   LineChart
 } from 'lucide-react';
+import Link from 'next/link';
+
+import { Page } from '../types';
 
 interface PageCardProps {
   page: Page;

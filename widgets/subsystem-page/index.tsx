@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
+
 import { useUIStore } from '@/shared/store/ui-store';
+
 import { Subsystem } from './types';
 import { PagesGrid } from './ui';
 

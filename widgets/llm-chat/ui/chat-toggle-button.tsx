@@ -1,8 +1,10 @@
 'use client';
 
 import { MessageSquare } from 'lucide-react';
+
 import { Button } from '@/shared/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+
 import { useChatStore } from '../lib/chat-store';
 
 export function ChatToggleButton() {

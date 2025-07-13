@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { Subsystem } from '@/shared/config/subsystems';
 
 interface UIState {

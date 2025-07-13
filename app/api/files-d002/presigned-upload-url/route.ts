@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPresignedUploadUrl } from '@/domains/catalog-files-d002/lib/s3.service';
 import { z } from 'zod';
+
+import { getPresignedUploadUrl } from '@/domains/catalog-files-d002/index.server';
 
 const uploadSchema = z.object({
   mimeType: z.string().min(1, 'MIME type is required'),

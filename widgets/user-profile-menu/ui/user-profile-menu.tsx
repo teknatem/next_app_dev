@@ -4,9 +4,12 @@
  * @summary Dropdown with avatar and profile actions
  */
 
-import { Button } from '@/shared/ui/button';
-import { auth, signOut } from '@/shared/lib/auth';
+import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import { auth, signOut } from '@/shared/lib/auth';
+import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
-import Link from 'next/link';
-import { revalidatePath } from 'next/cache';
+
 
 /**
  * User Profile Menu Component

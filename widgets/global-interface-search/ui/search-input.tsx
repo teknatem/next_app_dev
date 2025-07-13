@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import Link from 'next/link';
-import { Input } from '@/shared/ui/input';
-import { Button } from '@/shared/ui/button';
-import { searchPages } from '../lib';
+import { useState, useRef, useEffect } from 'react';
+
 import { subsystems } from '@/shared/config/subsystems';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+
+import { searchPages } from '../lib';
+
 
 export function SearchInput() {
   const [query, setQuery] = useState('');
