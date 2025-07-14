@@ -1,6 +1,118 @@
 # Active Context
 
-## 🎯 Current Focus: LLM Chat MVP - ЗАВЕРШЕН ✅
+## 🎯 Current Focus: Отображение комментариев файлов на вкладке "Файлы" - ЗАВЕРШЕН ✅
+
+### ✅ ЗАВЕРШЕНО: Отображение комментариев файлов в деталях встречи (27.01.2025)
+
+**Проблема:** На вкладке "Файлы" в деталях встречи не отображались комментарии из таблицы файлов.
+
+**Решение:**
+
+- ✅ **Новый тип MeetingAssetWithFileInfo** - Расширенный тип для assets с информацией о файле
+- ✅ **Обновлен getAssetsByMeetingId** - Добавлен JOIN с таблицей files для получения комментариев
+- ✅ **Обновлен UI** - Расширенное отображение с комментарием, размером файла и метаинформацией
+- ✅ **Обновлены типы** - Корректные типы для передачи данных между компонентами
+
+**Техническая реализация:**
+
+```typescript
+// Новый тип для asset с информацией о файле
+export type MeetingAssetWithFileInfo = {
+  id: string;
+  meetingId: string;
+  fileId: string | null;
+  kind: string;
+  originalName: string;
+  mimeType: string;
+  storageUrl: string;
+  // Информация о файле из таблицы files
+  fileTitle: string;
+  fileDescription: string | null;
+  fileSize: number;
+};
+
+// Обновленный запрос с JOIN
+return await db
+  .select({
+    // ... поля из meetingAssets
+    fileTitle: files.title,
+    fileDescription: files.description,
+    fileSize: files.fileSize
+  })
+  .from(meetingAssets)
+  .innerJoin(files, eq(meetingAssets.fileId, files.id))
+  .where(eq(meetingAssets.meetingId, meetingId))
+  .orderBy(asc(meetingAssets.originalName));
+```
+
+**UI улучшения:**
+
+- Отображение названия файла (fileTitle) вместо originalName
+- Показ комментария файла (fileDescription) если он есть
+- Размер файла в мегабайтах
+- Дополнительная метаинформация (MIME type, исходное имя)
+
+---
+
+## 🎯 Previous Focus: Статистика встреч - ЗАВЕРШЕН ✅
+
+### ✅ ЗАВЕРШЕНО: Отображение статистики файлов и артефактов в списке встреч (27.01.2025)
+
+**Результат:**
+
+- ✅ **Тип MeetingWithStats** - Новый тип для встреч с счетчиками
+- ✅ **Обновлен getMeetingsAction** - Использует getMeetingsWithStats для получения статистики
+- ✅ **Обновлен searchMeetingsAction** - Добавлена статистика к результатам поиска
+- ✅ **Обновлен MeetingList компонент** - Отображает количество файлов и артефактов
+- ✅ **Иконки и UI** - Добавлены иконки File и Brain для визуализации
+- ✅ **Компиляция успешна** - Все изменения работают без ошибок
+
+### 🎯 Техническая реализация:
+
+```typescript
+// Новый тип для встреч с статистикой
+export type MeetingWithStats = {
+  id: string;
+  title: string;
+  startedAt: Date;
+  endedAt: Date | null;
+  location: string;
+  isOnline: boolean;
+  organiserId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  assetCount: number;
+  artefactCount: number;
+};
+
+// Обновленный action для получения встреч со статистикой
+export async function getMeetingsAction(): Promise<ActionResult<any[]>> {
+  const meetings = await meetingRepositoryServer.getMeetingsWithStats();
+  return { success: true, data: meetings };
+}
+
+// UI отображение статистики
+<div className="flex items-center gap-4 text-sm text-gray-500">
+  <div className="flex items-center gap-1">
+    <File className="h-4 w-4" />
+    <span>{meeting.assetCount} файлов</span>
+  </div>
+  <div className="flex items-center gap-1">
+    <Brain className="h-4 w-4" />
+    <span>{meeting.artefactCount} артефактов</span>
+  </div>
+</div>
+```
+
+### 📋 Измененные файлы:
+
+- `domains/document-meetings-d004/model/meetings.schema.ts` - Добавлен тип MeetingWithStats
+- `domains/document-meetings-d004/actions/crud.actions.server.ts` - Обновлены actions
+- `domains/document-meetings-d004/ui/meeting.list.client.tsx` - Добавлено отображение статистики
+
+---
+
+## 🎯 Previous Focus: LLM Chat MVP - ЗАВЕРШЕН ✅
 
 ### ✅ ЗАВЕРШЕНО: LLM Chat MVP (27.01.2025)
 

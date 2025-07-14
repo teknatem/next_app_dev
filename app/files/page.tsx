@@ -37,6 +37,13 @@ export default function FileManagerPage() {
     setEditingFile(null);
   };
 
+  const handleFileUpdated = (updatedFile: File) => {
+    // Update the editing file state with the new data
+    setEditingFile(updatedFile);
+    // Force re-render of FileList to show updated data
+    setUploadVersion((v) => v + 1);
+  };
+
   const testS3Configuration = async () => {
     setTestingS3(true);
     try {
@@ -141,7 +148,11 @@ export default function FileManagerPage() {
             </DialogTitle>
           </DialogHeader>
           {editingFile && (
-            <FileDetails file={editingFile} onClose={handleCloseDetails} />
+            <FileDetails
+              file={editingFile}
+              onClose={handleCloseDetails}
+              onFileUpdated={handleFileUpdated}
+            />
           )}
         </DialogContent>
       </Dialog>

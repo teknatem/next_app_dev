@@ -45,9 +45,12 @@ function logDatabaseConnection(dbConfig: { url: string; type: string }) {
 export async function runMigrations() {
   // Используем унифицированную утилиту для получения конфигурации базы данных
   const dbConfig = getDatabaseConfig();
+  console.log('[DB] Config:', dbConfig);
 
   const client = postgres(dbConfig.url);
+  console.log('[DB] Client created');
   const db = drizzle(client);
+  console.log('[DB] Drizzle instance created');
 
   try {
     console.log('🔄 Applying database migrations...');
@@ -68,5 +71,6 @@ export async function runMigrations() {
 
 // Запуск миграций если файл вызван напрямую
 if (import.meta.url === `file://${process.argv[1]}`) {
+  console.log('🚀 Running migrations directly');
   runMigrations().catch(console.error);
 }

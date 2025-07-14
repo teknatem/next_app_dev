@@ -1,5 +1,5 @@
 import 'server-only';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 
 import { db } from '@/shared/database/connection';
 
@@ -25,7 +25,7 @@ export const fileRepository = {
     const result = await db
       .select()
       .from(files)
-      .where(eq(files.id, id))
+      .where(and(eq(files.id, id), eq(files.isDeleted, false)))
       .limit(1);
     return result[0];
   },

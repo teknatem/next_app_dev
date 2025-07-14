@@ -72,6 +72,15 @@ export const subsystems: Subsystem[] = [
         description: 'Генерация и просмотр отчетов',
         subsystem: 'analytics',
         tags: ['отчеты', 'генерация', 'просмотр']
+      },
+      {
+        id: 'meetings',
+        name: 'Встречи',
+        path: '/meetings',
+        icon: 'Calendar',
+        description: 'Управление встречами и их анализ',
+        subsystem: 'analytics',
+        tags: ['встречи', 'meetings', 'календарь', 'анализ']
       }
     ]
   },
