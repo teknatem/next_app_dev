@@ -109,6 +109,15 @@ export const subsystems: Subsystem[] = [
         description: 'Управление файлами',
         subsystem: 'data',
         tags: ['файлы', 'files', 'документы']
+      },
+      {
+        id: 'employees',
+        name: 'Сотрудники',
+        path: '/employees',
+        icon: 'Users2',
+        description: 'Управление сотрудниками',
+        subsystem: 'data',
+        tags: ['сотрудники', 'employees', 'персонал']
       }
     ]
   }

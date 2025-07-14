@@ -14,17 +14,20 @@ loadEnv();
  * @returns {{url: string, type: string}}
  */
 function getDatabaseConfig() {
-  const url = process.env.REPLITDATABASE_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  const url =
+    process.env.REPLITDATABASE_URL ||
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL;
 
   if (!url) {
     throw new Error(
-      'Database URL not found. Please set REPLITDATABASE_URL, DATABASE_URL or POSTGRES_URL environment variable.',
+      'Database URL not found. Please set REPLITDATABASE_URL, DATABASE_URL or POSTGRES_URL environment variable.'
     );
   }
 
   return {
     url,
-    type: url.includes('neon.tech') ? 'Replit Neon' : 'Local PostgreSQL',
+    type: url.includes('neon.tech') ? 'Replit Neon' : 'Local PostgreSQL'
   };
 }
 
@@ -51,7 +54,7 @@ export async function runMigrations() {
     logDatabaseConnection(dbConfig);
 
     await migrate(db, {
-      migrationsFolder: MIGRATION_CONFIG.migrationsFolder,
+      migrationsFolder: MIGRATION_CONFIG.migrationsFolder
     });
 
     console.log('✅ Migrations applied successfully');
@@ -64,6 +67,6 @@ export async function runMigrations() {
 }
 
 // Запуск миграций если файл вызван напрямую
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   runMigrations().catch(console.error);
 }

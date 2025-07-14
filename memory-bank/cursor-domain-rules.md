@@ -22,12 +22,71 @@ domains/
     │   ├── *.shared.ts           # ✅ SHARED - Pure functions, no side effects
     │   ├── *.server.ts           # ⚠️ SERVER-ONLY - S3, external APIs
     │   └── *.client.ts           # ✅ CLIENT-ONLY - Browser-specific logic
-    ├── ui/                        # ✅ CLIENT-ONLY - React components
-    │   └── *.tsx                 # All UI components with 'use client'
+    ├── ui/                        # 🔄 MIXED - React components
+    │   ├── *.server.tsx          # ⚠️ SERVER-ONLY - Server Components
+    │   └── *.client.tsx          # ✅ CLIENT-ONLY - Client Components
     ├── index.ts                   # ✅ CLIENT-SAFE - Public API for client
     ├── index.server.ts            # ⚠️ SERVER-ONLY - Public API for server
     └── README.md                  # Documentation
 ```
+
+---
+
+## 🎯 Double Export System
+
+### **Client Index (index.ts)**
+
+```typescript
+// ✅ CLIENT-SAFE exports only
+export * from './model/files.schema'; // Shared types & schemas
+export { toISOString } from './lib/date-utils'; // Shared utilities
+export { fileApiClient } from './api/file.api.client'; // Client API
+export { FileList } from './ui/file-list.client'; // UI components
+export { FilePicker } from './ui/file-picker.client'; // Picker for client use
+```
+
+### **Server Index (index.server.ts)**
+
+```typescript
+import 'server-only';
+
+// ⚠️ SERVER-ONLY exports
+export * from './model/files.schema'; // Shared types & schemas
+export { toISOString } from './lib/date-utils'; // Shared utilities
+export { fileRepositoryServer } from './data/file.repo.server'; // Server data
+export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server services
+```
+
+---
+
+## 💎 UI Widget Conventions
+
+### **1. Разделение на серверные и клиентские компоненты (Server/Client Component Separation):**
+
+- Все UI-компоненты, расположенные в `domains/<domain>/ui/`, по умолчанию являются серверными компонентами и должны иметь суффикс `.server.tsx`.
+- Компоненты, требующие клиентской интерактивности (хуки React, обработчики событий), должны быть в файлах с суффиксом `.client.tsx` и содержать директиву `'use client'`.
+
+### **2. Обязательные виджеты для доменов типа `catalog` и `document` (Mandatory Widgets for `catalog` and `document` domains):**
+
+Для обеспечения консистентности, каждый домен типа `catalog` или `document` должен предоставлять следующий набор обязательных UI-виджетов. Именование должно следовать шаблону `<entity>.<widget_type>.client.tsx`, где `<entity>` — это основная сущность домена (например, `employee`, `file`).
+
+- **Виджет списка элементов (List Widget):**
+
+  - **Назначение:** Отображение списка сущностей с возможностью фильтрации, поиска и пагинации.
+  - **Именование:** `<entity>.list.client.tsx`
+  - **Пример:** `employees.list.client.tsx`
+
+- **Виджет детальной информации (Details Widget):**
+
+  - **Назначение:** Отображение полной информации об одной сущности. Может включать режимы просмотра и редактирования.
+  - **Именование:** `<entity>.details.client.tsx`
+  - **Пример:** `employees.details.client.tsx`
+
+- **Виджет выбора элемента (Picker Widget):**
+  - **Назначение:** Предоставление интерфейса для выбора одной или нескольких сущностей из списка. Используется для связывания сущностей между разными доменами.
+  - **Именование:** `<entity>.picker.client.tsx`
+  - **Экспорт:** Этот компонент **должен** экспортироваться из корневого `index.ts` домена, чтобы быть доступным для других доменов в клиентском коде.
+  - **Пример:** `employees.picker.client.tsx`
 
 ---
 
@@ -50,32 +109,6 @@ domains/
 - **ALWAYS** use `.shared.ts` suffix OR no suffix
 - **NEVER** add environment directives
 - **Examples:** `date-utils.ts`, `types.shared.ts`
-
----
-
-## 🎯 Double Export System
-
-### **Client Index (index.ts)**
-
-```typescript
-// ✅ CLIENT-SAFE exports only
-export * from './model/files.schema'; // Shared types & schemas
-export { toISOString } from './lib/date-utils'; // Shared utilities
-export { fileApiClient } from './api/file.api.client'; // Client API
-export { FileList } from './ui/file-list'; // UI components
-```
-
-### **Server Index (index.server.ts)**
-
-```typescript
-import 'server-only';
-
-// ⚠️ SERVER-ONLY exports
-export * from './model/files.schema'; // Shared types & schemas
-export { toISOString } from './lib/date-utils'; // Shared utilities
-export { fileRepositoryServer } from './data/file.repo.server'; // Server data
-export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server services
-```
 
 ---
 

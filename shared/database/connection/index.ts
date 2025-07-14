@@ -1,4 +1,5 @@
 import 'server-only';
+import { config as loadEnv } from 'dotenv';
 import type { Pool } from '@neondatabase/serverless';
 import {
   drizzle as drizzleNodePostgres,
@@ -12,6 +13,10 @@ import type { Sql } from 'postgres';
 
 import * as schema from '../schemas';
 import { getDatabaseConfig, logDatabaseConnection } from './database-utils';
+
+// Load environment variables (.env.local takes precedence if exists)
+loadEnv({ path: '.env.local' });
+loadEnv();
 
 const dbConfig = getDatabaseConfig();
 logDatabaseConnection(dbConfig);
