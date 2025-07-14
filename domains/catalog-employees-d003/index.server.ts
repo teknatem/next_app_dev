@@ -12,8 +12,5 @@ export {
   searchEmployeesAction,
   getDepartmentsAction,
   getPositionsAction
-} from './actions/employee-actions.server';
-export {
-  saveEmployee,
-  deleteEmployee
-} from './features/manage-employees.server';
+} from './actions/crud.actions.server';
+export { saveEmployee, deleteEmployee } from './features/crud.server';

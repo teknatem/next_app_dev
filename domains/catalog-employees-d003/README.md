@@ -13,11 +13,11 @@ domains/catalog-employees-d003/
 ├── data/                     # Server-only DB operations
 │   └── employee.repo.server.ts
 ├── actions/                  # Server-only Server Actions
-│   └── employee-actions.server.ts
+│   └── crud.actions.server.ts
 ├── ui/                       # React components (Server + Client)
-│   ├── employee-form.tsx     # Server Component
-│   ├── employee-list-client.tsx # Client Component
-│   └── deactivate-employee-button.tsx # Server Component
+│   ├── employees.list.client.tsx
+│   ├── employees.details.client.tsx
+│   └── employees.picker.client.tsx
 ├── index.ts                  # Client-safe barrel
 ├── index.server.ts           # Server-only barrel
 └── README.md                 # Документация
@@ -33,7 +33,10 @@ domains/catalog-employees-d003/
 ### В React-компоненте (client)
 
 ```ts
-import { EmployeeList, EmployeeForm } from '@/domains/catalog-employees-d003';
+import {
+  EmployeeList,
+  EmployeeDetails
+} from '@/domains/catalog-employees-d003';
 ```
 
 ### В Server Component или API route (server)

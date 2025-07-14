@@ -18,16 +18,49 @@ domains/
     │   └── *.repo.server.ts      # Repository with 'server-only' directive
     ├── api/                       # ✅ CLIENT-ONLY - HTTP API calls
     │   └── *.api.client.ts       # Client API with 'use client' directive
-    ├── lib/                       # 🔄 MIXED - Utilities and services
+    ├── lib/                       # 🔄 MIXED - Utilities and services (OPTIONAL)
     │   ├── *.shared.ts           # ✅ SHARED - Pure functions, no side effects
-    │   ├── *.server.ts           # ⚠️ SERVER-ONLY - S3, external APIs
-    │   └── *.client.ts           # ✅ CLIENT-ONLY - Browser-specific logic
+    │   ├── *.server.ts           # ⚠️ SERVER-ONLY - S3, external APIs, email services
+    │   └── *.client.ts           # ✅ CLIENT-ONLY - Browser-specific logic, validation
     ├── ui/                        # 🔄 MIXED - React components
     │   ├── *.server.tsx          # ⚠️ SERVER-ONLY - Server Components
     │   └── *.client.tsx          # ✅ CLIENT-ONLY - Client Components
     ├── index.ts                   # ✅ CLIENT-SAFE - Public API for client
     ├── index.server.ts            # ⚠️ SERVER-ONLY - Public API for server
     └── README.md                  # Documentation
+```
+
+---
+
+## 📦 Папка `lib/` (Необязательная)
+
+### **Назначение:**
+
+Папка `lib/` содержит утилиты, сервисы и вспомогательные функции, которые не относятся к основным слоям домена (data, ui, actions, features).
+
+### **Когда использовать:**
+
+- **Утилиты**: функции форматирования, валидации, преобразования данных
+- **Сервисы**: интеграции с внешними API, S3, email-сервисы
+- **Константы**: перечисления, конфигурационные значения
+- **Хелперы**: вспомогательные функции для бизнес-логики
+
+### **Когда НЕ использовать:**
+
+- Для простых доменов без дополнительной логики
+- Если утилиты можно разместить в других слоях
+- Если функциональность минимальна
+
+### **Примеры файлов:**
+
+```
+lib/
+├── date-utils.ts              # Форматирование дат
+├── validation.utils.ts        # Валидация форм
+├── email.service.server.ts    # Email-сервис
+├── s3.service.server.ts       # S3 интеграция
+├── constants.ts               # Константы домена
+└── enums.ts                   # Перечисления
 ```
 
 ---
@@ -246,6 +279,97 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 
 ## 📚 References
 
-- [domains/catalog-files-d002/README.md](../domains/catalog-files-d002/README.md) - Reference implementation
+### **Эталонная реализация:**
+
+- [domains/catalog-employees-d003/README.md](../domains/catalog-employees-d003/README.md) - **Эталонная реализация домена**
+  - Полная CRUD функциональность
+  - Правильная структура слоев
+  - Server/Client разделение
+  - Обязательные UI виджеты
+  - Реализация Server actions
+
+### **Дополнительные примеры:**
+
 - [Feature-Sliced Design](https://feature-sliced.design/) - Official documentation
 - [Next.js App Router](https://nextjs.org/docs/app) - Server/Client patterns
+
+## 🚀 Server Actions Best Practices (NEW)
+
+### Purpose
+
+Standardize how domains expose Server Actions to client components while keeping business logic organized and reusable.
+
+### Folder Roles
+
+1. `actions/` – **Pure business logic**
+   - Functions performing CRUD / validation.
+   - **No** `'use server'` directive – not passed directly to Client.
+   - **No** `revalidatePath` or UI-oriented side effects.
+2. `features/` – **Orchestrators (Server Actions)**
+   - Export functions with `'use server'` directive.
+   - Compose one or more functions from `actions/` & other services.
+   - Handle cross-cutting concerns: `revalidatePath`, logging, auth checks, etc.
+   - Only these orchestrator functions are passed to Client components (e.g., via props).
+3. `ui/` – **Client Components**
+   - Accept orchestrator action via props.
+   - Wrap action with `useTransition` / `useActionState` for non-blocking UX.
+
+### Naming Conventions
+
+- Internal logic: `<verb><Entity>Action` e.g., `createEmployeeAction`.
+- Orchestrator (exposed): `<verb><Entity>` e.g., `saveEmployee`.
+
+### Example Flow (Employees Domain)
+
+```
+Form -> EmployeeDetails.client.tsx
+      -> saveEmployee (server action, 'features/')
+          ├─ createEmployeeAction / updateEmployeeAction (actions/)
+          └─ revalidatePath('/employees')
+```
+
+### Guidelines
+
+- **Single Responsibility**: `actions/` functions never trigger cache revalidation; keep side-effects in orchestrators.
+- **Revalidation Once**: Call `revalidatePath` exactly in one place to avoid duplicates.
+- **Typed Input**: Parse `FormData` with Zod or similar in `actions/`.
+- **Explicit Exports**: Re-export orchestrators via `index.server.ts` only.
+- **Client Safety**: Never export server code from `index.ts`.
+
+### Checklist
+
+- [ ] `actions/*.server.ts` without `'use server'` & without UI concerns.
+- [ ] `features/*.server.ts` with `'use server'`, orchestrates call & revalidate.
+- [ ] Client components use `useTransition` or `useActionState` for UX.
+- [ ] No duplicate revalidations.
+
+---
+
+### 🗂️ Имя файла оркестратора
+
+> **Правило:** _`<use-case>[.<entity>].server.ts`_  
+> • Если файл лежит внутри домена, сущность (`employee`, `file`, …) **можно опустить**, если контекст ясен.  
+> • Добавляем сущность только когда название становится двусмысленным при поиске/открытии без полного пути.
+
+Примеры:
+| Хорошо | Пояснение |
+|--------|-----------|
+| `create.server.ts` | Находится в `features/employee/` — контекст ясен. |
+| `deactivate-employee.server.ts` | Находится в `features/`, но рядом много других use-case — добавляем сущность. |
+| `syncWithS3.server.ts` | Специфическая операция, сущность не нужна. |
+| `crud.server.ts` | Один файл инкапсулирует все CRUD операции сущности (current pattern). |
+
+Антипаттерны:
+| Плохо | Почему |
+|-------|--------|
+| `manage-employees.server.ts` | «manage» размыто, `employees` повторяет имя домена; unclear use-case. |
+| `actions.server.ts` | Не отражает смысла, путает со слоем `actions/`. |
+
+---
+
+### ⚙️ Имя файлов в `actions/`
+
+> **Правило:** Когда в одном файле собираются низкоуровневые CRUD-функции сущности, используйте `crud.actions.server.ts`.  
+> Если функции становятся крупными или требуют разных зависимостей — разделяйте на `<verb>.action.server.ts` (например, `create.action.server.ts`).
+
+---

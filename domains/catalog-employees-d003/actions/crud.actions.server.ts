@@ -1,5 +1,4 @@
 import 'server-only';
-import { revalidatePath } from 'next/cache';
 import { employeeRepositoryServer } from '../data/employee.repo.server';
 import {
   insertEmployeeSchema,
@@ -19,7 +18,6 @@ export async function createEmployeeAction(formData: FormData) {
     const validatedData = insertEmployeeSchema.parse(rawData);
     const employee = await employeeRepositoryServer.create(validatedData);
 
-    revalidatePath('/employees');
     return { success: true, data: employee };
   } catch (error) {
     console.error('Error creating employee:', error);
@@ -44,7 +42,6 @@ export async function updateEmployeeAction(id: string, formData: FormData) {
       return { success: false, error: 'Employee not found' };
     }
 
-    revalidatePath('/employees');
     return { success: true, data: employee };
   } catch (error) {
     console.error('Error updating employee:', error);
@@ -60,7 +57,6 @@ export async function deactivateEmployeeAction(id: string) {
       return { success: false, error: 'Employee not found' };
     }
 
-    revalidatePath('/employees');
     return { success: true };
   } catch (error) {
     console.error('Error deactivating employee:', error);

@@ -179,6 +179,14 @@ Lint-check: ESLint rules enforce different depth limits for different aliases.
 
 ---
 
+## 11 . Database Migrations Location
+
+- Store **all** database migration files exclusively in `shared/database/migrations/`.
+- Do **not** place migration scripts inside `domains/` or any other layer. Keeping them centralised avoids duplication and maintains clear history.
+- **Naming convention:** Follow Drizzle/default incremental naming (e.g., `0006_add_is_deleted_to_employees.sql`).
+
+---
+
 > **Follow these rules to keep every domain fully owning its data and UI while maintaining explicit server/client boundaries.**
 
 ---

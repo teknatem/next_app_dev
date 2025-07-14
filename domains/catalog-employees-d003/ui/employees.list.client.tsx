@@ -32,6 +32,7 @@ interface EmployeeListProps {
   positions: string[];
   saveAction: (formData: FormData) => void;
   deleteAction: (formData: FormData) => void;
+  striped?: boolean; // Добавлен проп для зебры
 }
 
 export function EmployeeList({
@@ -39,7 +40,8 @@ export function EmployeeList({
   departments,
   positions,
   saveAction,
-  deleteAction
+  deleteAction,
+  striped = true // По умолчанию зебра включена
 }: EmployeeListProps) {
   const [filteredEmployees, setFilteredEmployees] =
     useState<Employee[]>(employees);
@@ -49,6 +51,33 @@ export function EmployeeList({
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [sortKey, setSortKey] = useState<keyof Employee | null>(null);
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // Функция сортировки
+  const sortEmployees = (emps: Employee[]) => {
+    if (!sortKey) return emps;
+    return [...emps].sort((a, b) => {
+      const aValue = a[sortKey];
+      const bValue = b[sortKey];
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDir === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDir === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+      if (aValue instanceof Date && bValue instanceof Date) {
+        return sortDir === 'asc'
+          ? aValue.getTime() - bValue.getTime()
+          : bValue.getTime() - aValue.getTime();
+      }
+      return 0;
+    });
+  };
 
   // Фильтрация сотрудников
   useEffect(() => {
@@ -70,8 +99,15 @@ export function EmployeeList({
       filtered = filtered.filter((emp) => emp.isActive);
     }
 
-    setFilteredEmployees(filtered);
-  }, [employees, searchQuery, selectedDepartment, showActiveOnly]);
+    setFilteredEmployees(sortEmployees(filtered));
+  }, [
+    employees,
+    searchQuery,
+    selectedDepartment,
+    showActiveOnly,
+    sortKey,
+    sortDir
+  ]);
 
   const handleSuccess = () => {
     setIsCreateDialogOpen(false);
@@ -91,6 +127,16 @@ export function EmployeeList({
   const formAction = (formData: FormData) => {
     saveAction(formData);
     handleSuccess();
+  };
+
+  // Обработчик клика по заголовку
+  const handleSort = (key: keyof Employee) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
   };
 
   return (
@@ -172,74 +218,112 @@ export function EmployeeList({
           <CardTitle>Сотрудники ({filteredEmployees.length})</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ФИО</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Должность</TableHead>
-                <TableHead>Отдел</TableHead>
-                <TableHead>Статус</TableHead>
-                <TableHead>Дата создания</TableHead>
-                <TableHead>Действия</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredEmployees.map((employee) => (
-                <TableRow key={employee.id}>
-                  <TableCell className="font-medium">
-                    {employee.fullName}
-                  </TableCell>
-                  <TableCell>{employee.email || '-'}</TableCell>
-                  <TableCell>{employee.position}</TableCell>
-                  <TableCell>{employee.department}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={employee.isActive ? 'default' : 'secondary'}
-                    >
-                      {employee.isActive ? 'Активный' : 'Неактивный'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatDate(employee.createdAt)}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditDialog(employee)}
-                      >
-                        Редактировать
-                      </Button>
-                      <form action={deleteAction}>
-                        <input
-                          type="hidden"
-                          name="employeeId"
-                          value={employee.id}
-                        />
-                        <Button
-                          type="submit"
-                          variant="destructive"
-                          size="sm"
-                          onClick={(e) => {
-                            if (
-                              !confirm(
-                                `Вы уверены, что хотите деактивировать сотрудника "${employee.fullName}"?`
-                              )
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
-                          Деактивировать
-                        </Button>
-                      </form>
-                    </div>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table className={`table-1c${striped ? ' table-1c-striped' : ''}`}>
+              <TableHeader>
+                <TableRow>
+                  <TableHead
+                    onClick={() => handleSort('fullName')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    ФИО{' '}
+                    {sortKey === 'fullName' && (sortDir === 'asc' ? '▲' : '▼')}
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort('email')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Email{' '}
+                    {sortKey === 'email' && (sortDir === 'asc' ? '▲' : '▼')}
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort('position')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Должность{' '}
+                    {sortKey === 'position' && (sortDir === 'asc' ? '▲' : '▼')}
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort('department')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Отдел{' '}
+                    {sortKey === 'department' &&
+                      (sortDir === 'asc' ? '▲' : '▼')}
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort('isActive')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Статус{' '}
+                    {sortKey === 'isActive' && (sortDir === 'asc' ? '▲' : '▼')}
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort('createdAt')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Дата создания{' '}
+                    {sortKey === 'createdAt' && (sortDir === 'asc' ? '▲' : '▼')}
+                  </TableHead>
+                  <TableHead>Действия</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
+              </TableHeader>
+              <TableBody>
+                {filteredEmployees.map((employee) => (
+                  <TableRow key={employee.id}>
+                    <TableCell className="font-medium">
+                      {employee.fullName}
+                    </TableCell>
+                    <TableCell>{employee.email || '-'}</TableCell>
+                    <TableCell>{employee.position}</TableCell>
+                    <TableCell>{employee.department}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={employee.isActive ? 'default' : 'secondary'}
+                      >
+                        {employee.isActive ? 'Активный' : 'Неактивный'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(employee.createdAt)}</TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditDialog(employee)}
+                        >
+                          Редактировать
+                        </Button>
+                        <form action={deleteAction}>
+                          <input
+                            type="hidden"
+                            name="employeeId"
+                            value={employee.id}
+                          />
+                          <Button
+                            type="submit"
+                            variant="destructive"
+                            size="sm"
+                            onClick={(e) => {
+                              if (
+                                !confirm(
+                                  `Вы уверены, что хотите деактивировать сотрудника "${employee.fullName}"?`
+                                )
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            Деактивировать
+                          </Button>
+                        </form>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           {filteredEmployees.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               Сотрудники не найдены

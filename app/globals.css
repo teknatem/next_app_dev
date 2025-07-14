@@ -140,3 +140,46 @@ input[type='search']::-ms-clear {
 .bg-gradient-business {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
+
+/* === Компактная таблица в стиле 1С === */
+.table-1c {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  background: #fff;
+  color: #222;
+}
+.table-1c th,
+.table-1c td {
+  border: 1px solid #d4d4d4;
+  padding: 4px 8px;
+  height: 28px;
+  vertical-align: middle;
+  background: #fff;
+}
+.table-1c th {
+  background: #f3f3f3;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  user-select: none;
+}
+.table-1c tr {
+  transition: background 0.1s;
+}
+.table-1c tr:hover {
+  background: #e6f2ff;
+}
+/* Чередование строк (зебра) — опционально через .table-1c-striped */
+.table-1c-striped tbody tr:nth-child(even) td {
+  background: #f7f7fa;
+}
+.table-1c-striped tbody tr:nth-child(odd) td {
+  background: #fff;
+}
+/* Убрать лишние рамки у последней строки */
+.table-1c tbody tr:last-child td {
+  border-bottom: 1px solid #d4d4d4;
+}

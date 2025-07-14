@@ -5,11 +5,11 @@ import {
   createEmployeeAction,
   deactivateEmployeeAction,
   updateEmployeeAction
-} from '../actions/employee-actions.server';
+} from '../actions/crud.actions.server';
 
 /**
- * Orchestrates saving (creating or updating) an employee.
- * This is a server action that can be passed to client components.
+ * Saves (creates or updates) an employee.
+ * Public server action used by client-side forms.
  */
 export async function saveEmployee(formData: FormData) {
   'use server';
@@ -24,8 +24,8 @@ export async function saveEmployee(formData: FormData) {
 }
 
 /**
- * Orchestrates deactivating an employee.
- * This is a server action that can be passed to client components.
+ * Soft-deletes (deactivates) an employee.
+ * Public server action used by client-side forms.
  */
 export async function deleteEmployee(formData: FormData) {
   'use server';
