@@ -1,3 +1,4 @@
+export * from './catalog-bots';
 export * from './llm-chats';
 export * from './llm-chat-messages';
 export * from './llm-relations';

@@ -1,5 +1,5 @@
 import 'server-only';
-import { eq, desc, and, sql, asc, ilike, or } from 'drizzle-orm';
+import { eq, desc, and, sql, asc, ilike, or, like } from 'drizzle-orm';
 
 import { db } from '@/shared/database/connection';
 
@@ -43,6 +43,7 @@ export const fileRepository = {
     search?: string;
     sortBy?: 'title' | 'description' | 'mimeType' | 'fileSize' | 'createdAt';
     sortOrder?: 'asc' | 'desc';
+    mimeType?: string;
   }) {
     const {
       limit = 20,
@@ -50,7 +51,8 @@ export const fileRepository = {
       includeDeleted = false,
       search,
       sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
+      mimeType
     } = options;
 
     // Build where conditions
@@ -69,6 +71,10 @@ export const fileRepository = {
           ilike(d002Files.description || '', searchTerm)
         )
       );
+    }
+
+    if (mimeType) {
+      whereConditions.push(like(d002Files.mimeType, `${mimeType}%`));
     }
 
     const whereCondition =

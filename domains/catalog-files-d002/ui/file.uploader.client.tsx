@@ -8,7 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Progress } from '@/shared/ui/progress';
 
-import { File as FileEntity } from '../model/files.schema';
+import { type File as D002File } from '../model/files.schema';
 import { createFile, getPresignedUploadUrl } from '../features/crud.server';
 
 const presignedUrlResponseSchema = z.object({
@@ -19,17 +19,19 @@ const presignedUrlResponseSchema = z.object({
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 
 interface FileUploaderProps {
-  onUploadSuccess: (_file: FileEntity) => void;
+  onUploadSuccess?: (file: D002File) => void;
   folder?: string;
   debug?: boolean;
+  compact?: boolean;
 }
 
 export function FileUploader({
   onUploadSuccess,
-  folder = 'other',
-  debug = false
+  folder = 'general',
+  debug = false,
+  compact = false
 }: FileUploaderProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [file, setFile] = useState<globalThis.File | null>(null);
   const [status, setStatus] = useState<UploadStatus>('idle');
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export function FileUploader({
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
+      setFile(file);
       setStatus('idle');
       setError(null);
       setProgress(0);
@@ -60,7 +62,7 @@ export function FileUploader({
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!file) return;
 
     setStatus('uploading');
     setError(null);
@@ -71,8 +73,8 @@ export function FileUploader({
         // 1. Get pre-signed URL using Server Action
         log('Step 1: Requesting pre-signed URL...');
         const presignedUrlResult = await getPresignedUploadUrl(
-          selectedFile.type,
-          selectedFile.size,
+          file.type,
+          file.size,
           folder
         );
 
@@ -99,7 +101,7 @@ export function FileUploader({
           log(`Uploading to endpoint: ${urlObj.origin}`);
 
           xhr.open('PUT', url, true);
-          xhr.setRequestHeader('Content-Type', selectedFile.type);
+          xhr.setRequestHeader('Content-Type', file.type);
 
           xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
@@ -158,7 +160,7 @@ export function FileUploader({
           xhr.timeout = 60000; // 60 seconds
 
           log('Sending file to S3...');
-          xhr.send(selectedFile);
+          xhr.send(file);
         });
 
         // 3. Register file in our database using Server Action
@@ -166,23 +168,22 @@ export function FileUploader({
         const formData = new FormData();
         formData.append('s3Key', key);
         formData.append('url', url.split('?')[0]); // Store the base URL without query params
-        formData.append('title', selectedFile.name);
-        formData.append('mimeType', selectedFile.type);
-        formData.append('fileSize', selectedFile.size.toString());
+        formData.append('title', file.name);
+        formData.append('mimeType', file.type);
+        formData.append('fileSize', file.size.toString());
 
         const createFileResult = await createFile(formData);
 
-        if (!createFileResult.success || !createFileResult.data) {
-          log(`Database registration failed: ${createFileResult.error}`);
+        if (createFileResult.success && createFileResult.data) {
+          const newFile = createFileResult.data;
+          log('Step 4: File created in database');
+
+          setStatus('success');
+          onUploadSuccess?.(newFile);
+          setFile(null); // Reset after success
+        } else {
           throw new Error(createFileResult.error || 'Failed to register file');
         }
-
-        const newFile = createFileResult.data as FileEntity;
-        log('File registered successfully in database');
-
-        setStatus('success');
-        onUploadSuccess(newFile);
-        setSelectedFile(null); // Reset after success
       } catch (err: unknown) {
         if (err instanceof Error) {
           log(`Error occurred: ${err.message}`);
@@ -196,62 +197,29 @@ export function FileUploader({
     });
   };
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-3">
-        <div className="flex-1">
-          <input
-            type="file"
-            onChange={handleFileChange}
-            disabled={status === 'uploading' || isPending}
-            className="hidden"
-            id="file-input"
-          />
-          <label
-            htmlFor="file-input"
-            className="inline-flex items-center justify-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Choose File
-          </label>
-          {selectedFile && (
-            <span className="ml-3 text-sm text-muted-foreground">
-              {selectedFile.name}
-            </span>
-          )}
-        </div>
-        {selectedFile && (
-          <Button
-            onClick={handleUpload}
-            disabled={status === 'uploading' || isPending}
-            size="sm"
-          >
-            {status === 'uploading' ? `${progress.toFixed(0)}%` : 'Upload'}
-          </Button>
-        )}
+  const uploading = status === 'uploading' || isPending;
+
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2">
+        <Input type="file" onChange={handleFileChange} className="text-sm" />
+        <Button onClick={handleUpload} disabled={uploading || !file}>
+          {uploading ? 'Uploading...' : 'Upload'}
+        </Button>
       </div>
+    );
+  }
 
-      {status === 'uploading' && (
-        <Progress value={progress} className="w-full h-2" />
-      )}
-
-      {status === 'success' && (
-        <p className="text-green-600 text-sm">✓ Upload successful!</p>
-      )}
-      {status === 'error' && (
-        <div className="space-y-2">
-          <p className="text-red-600 text-sm">Error: {error}</p>
-          {debug && debugInfo && (
-            <details className="text-xs">
-              <summary className="cursor-pointer text-muted-foreground">
-                Debug Information
-              </summary>
-              <pre className="whitespace-pre-wrap bg-muted p-2 rounded text-xs overflow-auto max-h-32">
-                {debugInfo}
-              </pre>
-            </details>
-          )}
-        </div>
-      )}
+  return (
+    <div className="p-4 border-2 border-dashed rounded-lg text-center">
+      <Input type="file" onChange={handleFileChange} className="mb-4" />
+      <Button
+        onClick={handleUpload}
+        disabled={status === 'uploading' || isPending}
+        size="sm"
+      >
+        {status === 'uploading' ? `${progress.toFixed(0)}%` : 'Upload'}
+      </Button>
     </div>
   );
 }

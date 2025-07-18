@@ -1,7 +1,5 @@
 import 'server-only';
 
-import { revalidatePath } from 'next/cache';
-
 import { fileRepository } from '../data/file.repo.server';
 import {
   getPresignedUploadUrl,
@@ -120,6 +118,7 @@ export const fileActions = {
     search?: string;
     sortBy?: 'title' | 'description' | 'mimeType' | 'fileSize' | 'createdAt';
     sortOrder?: 'asc' | 'desc';
+    mimeType?: string;
   }): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
       const files = await fileRepository.getFiles(options);

@@ -62,6 +62,7 @@ export async function getFiles(options: {
   search?: string;
   sortBy?: 'title' | 'description' | 'mimeType' | 'fileSize' | 'createdAt';
   sortOrder?: 'asc' | 'desc';
+  mimeType?: string;
 }) {
   return await fileActions.getFilesAction(options);
 }

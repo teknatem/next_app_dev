@@ -127,6 +127,15 @@ export const subsystems: Subsystem[] = [
         description: 'Управление сотрудниками',
         subsystem: 'data',
         tags: ['сотрудники', 'employees', 'персонал']
+      },
+      {
+        id: 'bots',
+        name: 'AI Боты',
+        path: '/bots',
+        icon: 'Bot',
+        description: 'Управление AI ботами-сотрудниками',
+        subsystem: 'data',
+        tags: ['боты', 'bots', 'ai', 'искусственный интеллект']
       }
     ]
   }
