@@ -4,7 +4,11 @@ import {
   getAssetsByMeetingIdAction,
   saveMeetingAction,
   createMeetingAssetAction,
-  deleteMeetingAssetAction
+  deleteMeetingAssetAction,
+  getArtefactsByAssetIdAction,
+  createTranscriptionAction,
+  getArtefactsByMeetingIdAction,
+  deleteArtefactAction
 } from '@/domains/document-meetings-d004/index.server';
 import {
   MeetingDetails,
@@ -29,7 +33,7 @@ export default async function MeetingDetailsPage({
 
   let meeting: Meeting;
   let assets: MeetingAssetWithFileInfo[] = [];
-  const artefacts: MeetingArtefact[] = []; // Placeholder for now
+  let artefacts: MeetingArtefact[] = [];
 
   if (isNew) {
     meeting = {
@@ -53,8 +57,16 @@ export default async function MeetingDetailsPage({
     const assetsResult = await getAssetsByMeetingIdAction(id);
     if (assetsResult.success) {
       assets = assetsResult.data;
+
+      // Load artefacts for all assets
+      const artefactsPromises = assets.map(async (asset) => {
+        const artefactsResult = await getArtefactsByAssetIdAction(asset.id);
+        return artefactsResult.success ? artefactsResult.data : [];
+      });
+
+      const artefactsArrays = await Promise.all(artefactsPromises);
+      artefacts = artefactsArrays.flat();
     }
-    // artefacts would be fetched here
   }
 
   return (
@@ -72,6 +84,9 @@ export default async function MeetingDetailsPage({
         saveAction={saveMeetingAction}
         createAssetAction={createMeetingAssetAction}
         deleteAssetAction={deleteMeetingAssetAction}
+        createTranscriptionAction={createTranscriptionAction}
+        getArtefactsByMeetingIdAction={getArtefactsByMeetingIdAction}
+        deleteArtefactAction={deleteArtefactAction}
         startInEditMode={isEditMode}
       />
     </div>

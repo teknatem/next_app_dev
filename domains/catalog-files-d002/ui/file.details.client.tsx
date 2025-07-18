@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTransition } from 'react';
 import { useState } from 'react';
 
 import { Badge } from '@/shared/ui/badge';
@@ -25,6 +26,7 @@ import {
 
 import { toISOString } from '../lib/date-utils';
 import { File } from '../model/files.schema';
+import { updateFile } from '../features/crud.server';
 
 interface FileDetailsProps {
   file: File;
@@ -42,45 +44,38 @@ export function FileDetails({
     title: file.title,
     description: file.description || ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const isImage = file.mimeType.startsWith('image/');
 
   const handleSave = async () => {
-    setIsLoading(true);
     setError(null);
 
-    try {
-      const response = await fetch(`/api/files-d002/${file.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title: editData.title,
-          description: editData.description || null
-        })
-      });
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.append('title', editData.title);
+        formData.append('description', editData.description || '');
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update file');
+        const result = await updateFile(file.id, formData);
+
+        if (result.success && result.data) {
+          const updatedFile = result.data as File;
+
+          // Update the file data with the response
+          if (onFileUpdated) {
+            onFileUpdated(updatedFile);
+          }
+
+          setIsEditing(false);
+        } else {
+          setError(result.error || 'Failed to update file');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to save changes');
       }
-
-      const updatedFile = await response.json();
-
-      // Update the file data with the response
-      if (onFileUpdated) {
-        onFileUpdated(updatedFile);
-      }
-
-      setIsEditing(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save changes');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   const handleCancel = () => {
@@ -152,16 +147,16 @@ export function FileDetails({
                   variant="outline"
                   size="sm"
                   onClick={handleCancel}
-                  disabled={isLoading}
+                  disabled={isPending}
                 >
                   Cancel
                 </Button>
                 <Button
                   size="sm"
                   onClick={handleSave}
-                  disabled={isLoading || !editData.title.trim()}
+                  disabled={isPending || !editData.title.trim()}
                 >
-                  {isLoading ? 'Saving...' : 'Save'}
+                  {isPending ? 'Saving...' : 'Save'}
                 </Button>
               </>
             ) : (

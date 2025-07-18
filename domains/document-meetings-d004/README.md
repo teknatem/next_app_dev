@@ -1,87 +1,234 @@
-# Document Meetings Domain (document-meetings-d004)
+# Document Meetings Domain (d004)
 
-## Overview
+Домен для работы с совещаниями и их документацией.
 
-This domain manages corporate meetings, including both online and offline meetings, with support for file attachments and AI-powered processing of meeting content.
+## Возможности
 
-## Domain Structure
+- **Управление совещаниями**: создание, редактирование, удаление совещаний
+- **Управление файлами**: загрузка и управление файлами совещаний
+- **AI транскрибация**: автоматическая транскрибация аудио файлов с помощью AssemblyAI
+- **Редактирование транскрибации**: интерактивное редактирование результатов транскрибации
+- **Поиск совещаний**: поиск по различным параметрам
+- **Статистика**: отслеживание количества файлов и артефактов
+
+## Новая функциональность: Транскрибация с AssemblyAI
+
+### Настройка
+
+1. Добавьте ваш API ключ AssemblyAI в `.env.local`:
+
+```
+ASSEMBLYAI_API_KEY=ваш_ключ_здесь
+```
+
+2. Убедитесь, что у вас есть действующий API ключ от [AssemblyAI](https://www.assemblyai.com/)
+
+### Использование
+
+#### В интерфейсе:
+
+1. Откройте детали совещания
+2. Перейдите на вкладку "Файлы"
+3. Для аудио файлов увидите кнопку "Транскрибировать"
+4. Нажмите кнопку для запуска транскрибации
+5. Дождитесь завершения (статус изменится на "Транскрибирован")
+6. Нажмите "Скачать JSON" для получения результата
+
+#### Статусы транскрибации:
+
+- **В очереди**: транскрибация добавлена в очередь
+- **Обработка...**: AssemblyAI обрабатывает файл
+- **Транскрибирован**: готов результат (можно скачать JSON)
+- **Ошибка**: произошла ошибка (можно повторить)
+
+### Структура результата
+
+Результат транскрибации сохраняется в JSON формате и включает:
+
+```json
+{
+  "text": "Полный текст транскрипции",
+  "confidence": 0.95,
+  "words": [
+    {
+      "text": "слово",
+      "start": 0,
+      "end": 1.5,
+      "confidence": 0.98
+    }
+  ],
+  "paragraphs": [
+    {
+      "text": "Абзац текста",
+      "start": 0,
+      "end": 10,
+      "confidence": 0.95,
+      "words": [...]
+    }
+  ],
+  "metadata": {
+    "provider": "AssemblyAI",
+    "language": "ru",
+    "transcriptId": "id_транскрипции"
+  }
+}
+```
+
+### Технические детали
+
+#### Архитектура
+
+- `assemblyai.service.server.ts`: сервис для работы с AssemblyAI API
+- `crud.actions.server.ts`: server actions для управления транскрипцией
+- `meeting.details.client.tsx`: UI компонент для запуска и отображения результатов
+
+#### Поток обработки
+
+1. Пользователь нажимает "Транскрибировать"
+2. Создается артефакт со статусом "queued"
+3. Асинхронно запускается обработка:
+   - Файл загружается в AssemblyAI
+   - Запускается транскрибация
+   - Ожидание завершения
+   - Результат сохраняется в базу данных
+4. UI автоматически обновляется при изменении статуса
+
+#### Поддерживаемые языки
+
+- Русский (ru) - по умолчанию
+- Английский (en)
+- Другие языки поддерживаемые AssemblyAI
+
+### Редактирование транскрибации
+
+После завершения транскрибации доступно интерактивное редактирование результатов:
+
+1. В детальной странице совещания нажмите "Редактировать транскрибацию"
+2. Редактируйте сегменты транскрибации в таблице:
+   - Время начала и окончания
+   - Спикер
+   - Текст
+3. Добавляйте и удаляйте сегменты
+4. Редактируйте резюме транскрибации
+5. Просматривайте исходные данные (payload) в режиме только для чтения
+
+#### Функции редактора:
+
+- **Автоматическое создание сегментов**: из исходных данных AssemblyAI
+- **Валидация временных меток**: проверка корректности времени
+- **Экспорт данных**: скачивание результатов в JSON формате
+- **Интерактивное редактирование**: изменение каждого сегмента отдельно
+
+### Расширение функциональности
+
+Для добавления новых AI провайдеров:
+
+1. Создайте новый сервис в `lib/`
+2. Обновите `processTranscriptionAsync` в `crud.actions.server.ts`
+3. Добавьте нового провайдера в UI
+
+## Структура файлов
 
 ```
 domains/document-meetings-d004/
-├── model/                     # ✅ SHARED - Types, schemas, enums
-│   └── meetings.schema.ts     # Zod schemas + TypeScript types
-├── data/                      # ⚠️ SERVER-ONLY - Database operations
-│   └── meeting.repo.server.ts # Repository with 'server-only' directive
-├── api/                       # ✅ CLIENT-ONLY - HTTP API calls
-│   └── meeting.api.client.ts  # Client API with 'use client' directive
-├── lib/                       # 🔄 MIXED - Utilities and services
-│   ├── date-utils.ts          # ✅ SHARED - Date formatting utilities
-│   └── ai-processing.server.ts # ⚠️ SERVER-ONLY - AI processing services
-├── ui/                        # ✅ CLIENT-ONLY - React components
-│   ├── meeting.list.client.tsx    # List widget
-│   ├── meeting.details.client.tsx # Details widget
-│   └── meeting.picker.client.tsx  # Picker widget
-├── index.ts                   # ✅ CLIENT-SAFE - Public API for client
-├── index.server.ts            # ⚠️ SERVER-ONLY - Public API for server
-└── README.md                  # This documentation
+├── actions/
+│   └── crud.actions.server.ts      # Server actions
+├── data/
+│   └── meeting.repo.server.ts      # Database repository
+├── lib/
+│   ├── ai-processing.server.ts     # AI processing service
+│   ├── assemblyai.service.server.ts # AssemblyAI integration
+│   ├── transcription-parser.ts     # Transcription data parser
+│   └── date-utils.ts              # Date utilities
+├── model/
+│   └── meetings.schema.ts          # Database schemas
+├── ui/
+│   ├── meeting.details.client.tsx  # Main details component
+│   ├── meeting.list.client.tsx     # List component
+│   ├── meeting-asset-manager.client.tsx # Asset management
+│   └── transcription-editor.client.tsx # Transcription editor
+├── index.ts                        # Client exports
+├── index.server.ts                 # Server exports
+└── README.md                       # This file
 ```
 
-## Database Schema
+## Использование в коде
 
-### Main Tables
-
-1. **meetings** - Core meeting information
-
-   - Basic meeting details (title, time, location, organizer)
-   - Online/offline meeting support
-   - Status tracking (started, ended)
-
-2. **meeting_assets** - File attachments and media
-
-   - Documents, audio, video files
-   - S3 storage integration
-   - Metadata support
-
-3. **meeting_artefacts** - AI processing results
-   - Transcripts and diarisation
-   - Multiple versions and providers
-   - Processing status tracking
-
-## Key Features
-
-- **Meeting Management**: Create, update, and track meetings
-- **File Attachments**: Support for documents, audio, and video files
-- **AI Processing**: Automatic transcript generation and speaker diarisation
-- **Search & Filter**: Advanced search capabilities
-- **Integration**: Links to employee catalog and file management
-
-## Usage
-
-### Client Context (React components)
+### Server Actions
 
 ```typescript
 import {
-  meetingApiClient,
-  MeetingList
-} from '@/domains/document-meetings-d004';
+  createTranscriptionAction,
+  getTranscriptionDataAction,
+  saveTranscriptionAction
+} from '@/domains/document-meetings-d004/index.server';
+
+// Запуск транскрибации
+const result = await createTranscriptionAction({
+  assetId: 'uuid-asset-id',
+  language: 'ru',
+  provider: 'AssemblyAI'
+});
+
+// Получение данных транскрибации для редактирования
+const transcriptionData = await getTranscriptionDataAction(artefactId);
+
+// Сохранение отредактированной транскрибации
+const saveResult = await saveTranscriptionAction({
+  artefactId,
+  result: editedResult,
+  summary: editedSummary
+});
 ```
 
-### Server Context (API routes)
+### Repository
 
 ```typescript
 import { meetingRepositoryServer } from '@/domains/document-meetings-d004/index.server';
+
+// Получение артефактов
+const artefacts = await meetingRepositoryServer.getArtefactsByAssetId(assetId);
 ```
 
-## Dependencies
+### Components
 
-- **Internal**: `catalog-employees-d003` (for organizer references)
-- **External**: S3 for file storage, AI services for processing
-- **Shared**: Database connection, UI components
+```typescript
+import { MeetingDetails, TranscriptionEditor } from '@/domains/document-meetings-d004';
 
-## Business Rules
+// Использование в React компоненте
+<MeetingDetails
+  meeting={meeting}
+  assets={assets}
+  artefacts={artefacts}
+  createTranscriptionAction={createTranscriptionAction}
+  // ... другие props
+/>
 
-1. Meetings can be online or offline
-2. File attachments are stored in S3, not in database
-3. AI processing is asynchronous and versioned
-4. All timestamps are in UTC
-5. Cascade deletion for related records
+// Редактор транскрибации
+<TranscriptionEditor
+  artefactId={artefactId}
+  initialData={transcriptionData}
+  onSave={async (data) => {
+    await saveTranscriptionAction({
+      artefactId,
+      result: data.result,
+      summary: data.summary
+    });
+  }}
+/>
+```
+
+## Тестирование
+
+Для тестирования интеграции с AssemblyAI:
+
+```bash
+npx tsx scripts/test-assemblyai-simple.ts
+```
+
+## Требования
+
+- Node.js 18+
+- ASSEMBLYAI_API_KEY в переменных окружения
+- Подключение к интернету для AssemblyAI API
+- База данных с таблицами meetings, meeting_assets, meeting_artefacts

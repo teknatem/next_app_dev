@@ -10,7 +10,7 @@ import {
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { employees } from '../../../domains/catalog-employees-d003/model/employees.schema';
 import { relations } from 'drizzle-orm';
-import { files } from '@/domains/catalog-files-d002/model/files.schema';
+import { d002Files } from '@/domains/catalog-files-d002/model/files.schema';
 
 // Main meetings table
 export const meetings = pgTable('meetings', {
@@ -42,7 +42,7 @@ export const meetingAssets = pgTable('meeting_assets', {
   mimeType: text('mime_type').notNull(),
   storageUrl: text('storage_url').notNull(),
   metadata: jsonb('metadata'),
-  fileId: uuid('file_id').references(() => files.id)
+  fileId: uuid('file_id').references(() => d002Files.id)
 });
 
 // AI artefacts (transcripts & diarisation)
@@ -62,7 +62,9 @@ export const meetingArtefacts = pgTable('meeting_artefacts', {
   })
     .notNull()
     .default('queued'),
-  payload: jsonb('payload'),
+  payload: jsonb('payload').$type<any>(),
+  result: jsonb('result').$type<any>(),
+  summary: jsonb('summary').$type<any>(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -85,9 +87,9 @@ export const meetingAssetsRelations = relations(
       fields: [meetingAssets.meetingId],
       references: [meetings.id]
     }),
-    file: one(files, {
+    file: one(d002Files, {
       fields: [meetingAssets.fileId],
-      references: [files.id]
+      references: [d002Files.id]
     }),
     artefacts: many(meetingArtefacts)
   })
@@ -114,7 +116,15 @@ export const selectMeetingSchema = createSelectSchema(meetings);
 export const insertMeetingAssetSchema = createInsertSchema(meetingAssets);
 export const selectMeetingAssetSchema = createSelectSchema(meetingAssets);
 
-export const insertMeetingArtefactSchema = createInsertSchema(meetingArtefacts);
+// Custom schema for artefacts to handle JSON payload properly
+export const insertMeetingArtefactSchema = createInsertSchema(
+  meetingArtefacts,
+  {
+    payload: z.any().optional(), // Allow any JSON object
+    result: z.any().optional(), // Allow any JSON object
+    summary: z.any().optional() // Allow any JSON object
+  }
+);
 export const selectMeetingArtefactSchema = createSelectSchema(meetingArtefacts);
 
 // TypeScript types

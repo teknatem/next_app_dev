@@ -187,21 +187,41 @@ Lint-check: ESLint rules enforce different depth limits for different aliases.
 
 ---
 
+## 12 . Правило: Использование Zustand
+
+Принцип: Используй Zustand исключительно для клиентского состояния UI и временного состояния сессии в клиентских компонентах.
+✅ Когда использовать:
+Для управления интерактивностью UI: видимость модальных окон, состояние табов, локальные настройки пользователя в текущей сессии.
+Для состояния, которое не является основным источником истины с сервера (например, данные формы до сохранения, временные индикаторы загрузки).
+Для избежания "prop-drilling" между клиентскими компонентами.
+📁 Размещение:
+widgets/<widget-name>/lib/: Для состояния, специфичного для конкретного виджета (например, chat-store.ts для LLM-чата).
+domains/<domain-name>/lib/: Для клиентского UI-состояния, тесно связанного с UI конкретного домена.
+shared/store/: Для действительно глобального, клиентского UI-состояния (например, тема приложения, общие уведомления).
+❌ Когда НЕ использовать:
+Как основной источник истины для данных, хранящихся в базе данных (используй Server Components, Server Actions и Drizzle ORM для этого).
+Для сложного кэширования серверных данных, дедупликации запросов или фонового обновления (предпочтительнее специализированные библиотеки типа React Query / SWR).
+💡 Важно: Всегда используй Zustand-сторы и хуки только в файлах с директивой 'use client'. Server Components не имеют доступа к Zustand.
+
+---
+
 > **Follow these rules to keep every domain fully owning its data and UI while maintaining explicit server/client boundaries.**
 
 ---
 
 ### Дополнительные паттерны
 
-Полные примеры и практические детали вынесены в отдельные файлы `memory-bank/*Patterns.md`, чтобы не перегружать стратегический документ:
+Полные примеры и практические детали вынесены в отдельные файлы `memory-bank/*patterns.md`, чтобы не перегружать стратегический документ:
 
 - **cursor-domain-rules.md** — Cursor Domain Rules (NEW)
+- **domain-client-data-patterns.md** — Паттерн работы с данными доменов на клиенте
 - llmIntegrationPatterns.md — LLM Integration Patterns
 - databaseDesignPatterns.md — Database Design Patterns
 - apiDesignPatterns.md — API Design Patterns
 - performancePatterns.md — Performance Patterns
 - codeQualityPrinciples.md — Code Quality Principles
 - automatedProcedures.md — Automated Procedures
+- [domain-registry.ts](./domain-registry.ts) — Domain Registry (центральный список бизнес-доменов)
 
 ## 📚 Reference Implementation
 
@@ -212,3 +232,5 @@ See `domains/catalog-files-d002/` for a complete example of the new domain struc
 > This document gives a **project-wide architectural overview**.  
 > **Detailed, authoritative rules for Domain structure, naming, double-export barrels, server/client file suffixes, etc. live in [`memory-bank/cursor-domain-rules.md`](./cursor-domain-rules.md).**  
 > If the two documents diverge, treat `cursor-domain-rules.md` as source of truth for Domain-level conventions.
+> **Detailed, authoritative rules for DB structure, naming, etc. live in [`memory-bank/db rules.md`]**  
+> Treat `memory-bank/db rules.md` as source of truth for DB structure.

@@ -18,7 +18,7 @@ import {
   type MeetingSearch,
   type MeetingAssetWithFileInfo
 } from '../model/meetings.schema';
-import { files } from '../../catalog-files-d002/model/files.schema';
+import { d002Files } from '../../catalog-files-d002/model/files.schema';
 
 export const meetingRepositoryServer = {
   // Meeting operations
@@ -108,12 +108,12 @@ export const meetingRepositoryServer = {
         originalName: meetingAssets.originalName,
         mimeType: meetingAssets.mimeType,
         storageUrl: meetingAssets.storageUrl,
-        fileTitle: files.title,
-        fileDescription: files.description,
-        fileSize: files.fileSize
+        fileTitle: d002Files.title,
+        fileDescription: d002Files.description,
+        fileSize: d002Files.fileSize
       })
       .from(meetingAssets)
-      .innerJoin(files, eq(meetingAssets.fileId, files.id))
+      .innerJoin(d002Files, eq(meetingAssets.fileId, d002Files.id))
       .where(eq(meetingAssets.meetingId, meetingId))
       .orderBy(asc(meetingAssets.originalName));
   },

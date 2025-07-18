@@ -11,9 +11,8 @@ import {
   DialogTrigger
 } from '@/shared/ui/dialog';
 
-import { FileList } from './file-list';
+import { FileList } from './file.list.client';
 import { File } from '../model/files.schema';
-
 
 interface FilePickerProps {
   onFileSelect: (_file: File) => void;
@@ -26,7 +25,6 @@ export function FilePicker({
 }: FilePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-   
   const handleFileSelect = (_file: File) => {
     onFileSelect(_file);
     setIsOpen(false); // Close dialog after selection

@@ -1,6 +1,10 @@
 import { randomUUID } from 'crypto';
 
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const {
@@ -66,5 +70,30 @@ export async function getPresignedUploadUrl(
   } catch (error) {
     console.error('Error generating pre-signed URL:', error);
     throw new Error('Could not generate a pre-signed URL for upload.');
+  }
+}
+
+/**
+ * Generates a pre-signed URL for reading a file from the S3 bucket.
+ *
+ * @param {string} s3Key - The S3 key of the file to read.
+ * @returns {Promise<string>} - The pre-signed URL for reading the file.
+ */
+export async function getPresignedReadUrl(s3Key: string): Promise<string> {
+  if (!s3Key) {
+    throw new Error('S3 key is required.');
+  }
+
+  const command = new GetObjectCommand({
+    Bucket: S3_BUCKET_NAME,
+    Key: s3Key
+  });
+
+  try {
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL expires in 1 hour
+    return url;
+  } catch (error) {
+    console.error('Error generating pre-signed read URL:', error);
+    throw new Error('Could not generate a pre-signed URL for reading.');
   }
 }

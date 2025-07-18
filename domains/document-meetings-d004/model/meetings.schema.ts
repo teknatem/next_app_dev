@@ -147,3 +147,85 @@ export const aiProcessingRequestSchema = z.object({
 });
 
 export type AIProcessingRequest = z.infer<typeof aiProcessingRequestSchema>;
+
+// Types for transcription editor widget
+export interface TranscriptionSegment {
+  id: string;
+  start: number;
+  end: number;
+  duration: number;
+  speaker: string;
+  text: string;
+}
+
+export interface TranscriptionResult {
+  segments: TranscriptionSegment[];
+  metadata?: {
+    totalDuration?: number;
+    speakerCount?: number;
+    provider?: string;
+    language?: string;
+  };
+}
+
+export interface TranscriptionPayload {
+  text?: string;
+  confidence?: number;
+  words?: Array<{
+    text: string;
+    start: number;
+    end: number;
+    confidence: number;
+  }>;
+  paragraphs?: Array<{
+    text: string;
+    start: number;
+    end: number;
+    confidence: number;
+    words: Array<{
+      text: string;
+      start: number;
+      end: number;
+      confidence: number;
+    }>;
+  }>;
+  metadata?: {
+    provider?: string;
+    language?: string;
+    transcriptId?: string;
+  };
+}
+
+export interface TranscriptionEditorData {
+  payload: TranscriptionPayload;
+  result: TranscriptionResult | null;
+  summary: string;
+}
+
+// Schema for saving transcription data
+export const saveTranscriptionSchema = z.object({
+  artefactId: z.string().uuid(),
+  result: z.object({
+    segments: z.array(
+      z.object({
+        id: z.string(),
+        start: z.number(),
+        end: z.number(),
+        duration: z.number(),
+        speaker: z.string(),
+        text: z.string()
+      })
+    ),
+    metadata: z
+      .object({
+        totalDuration: z.number().optional(),
+        speakerCount: z.number().optional(),
+        provider: z.string().optional(),
+        language: z.string().optional()
+      })
+      .optional()
+  }),
+  summary: z.string()
+});
+
+export type SaveTranscriptionData = z.infer<typeof saveTranscriptionSchema>;

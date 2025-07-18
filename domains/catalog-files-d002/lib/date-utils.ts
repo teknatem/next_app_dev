@@ -47,3 +47,15 @@ export function formatDateTime(
   const dateObj = toDate(date);
   return dateObj.toLocaleString(locale);
 }
+
+/**
+ * Formats a date in DD.MM.YYYY format
+ * Handles both Date objects and string values
+ */
+export function formatDateDDMMYYYY(date: Date | string): string {
+  const dateObj = toDate(date);
+  const day = dateObj.getDate().toString().padStart(2, '0');
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${day}.${month}.${year}`;
+}

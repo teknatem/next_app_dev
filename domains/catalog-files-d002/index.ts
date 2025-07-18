@@ -6,8 +6,12 @@ export {
   formatDate,
   formatDateTime
 } from './lib/date-utils';
-export { FileList } from './ui/file-list';
-export { FileUploader } from './ui/file-uploader';
-export { FileDetails } from './ui/file-details';
-export { FilePicker } from './ui/file-picker';
-// (добавить client API, если появится)
+
+// UI Components (renamed to follow FSDDD conventions)
+export { FileList } from './ui/file.list.client';
+export { FileUploader } from './ui/file.uploader.client';
+export { FileDetails } from './ui/file.details.client';
+export { FilePicker } from './ui/file.picker.client';
+
+// Server Actions (can be called from client components)
+export { testS3Configuration } from './features/crud.server';

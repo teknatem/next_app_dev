@@ -23,5 +23,12 @@ export {
   getMeetingByIdAction,
   getAssetsByMeetingIdAction,
   createMeetingAssetAction,
-  deleteMeetingAssetAction
+  deleteMeetingAssetAction,
+  getArtefactsByAssetIdAction,
+  createTranscriptionAction,
+  getArtefactByIdAction,
+  getArtefactsByMeetingIdAction,
+  deleteArtefactAction,
+  getTranscriptionDataAction,
+  saveTranscriptionAction
 } from './actions/crud.actions.server';

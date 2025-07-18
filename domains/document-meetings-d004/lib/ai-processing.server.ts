@@ -73,6 +73,8 @@ export class AIProcessingService {
       ...artefactData,
       status: ArtefactStatus.DONE,
       payload,
+      result: payload, // Use payload as result for now
+      summary: null, // No summary for now
       completedAt: new Date(),
       language: artefactData.language || 'en',
       version: artefactData.version || 1,
@@ -198,7 +200,9 @@ export class AIProcessingService {
       version: mockArtefact.version || 1,
       createdAt: mockArtefact.createdAt || new Date(),
       completedAt: mockArtefact.completedAt || new Date(),
-      payload: mockArtefact.payload || null
+      payload: mockArtefact.payload || null,
+      result: mockArtefact.payload || null, // Use payload as result
+      summary: null // No summary for now
     };
   }
 }
