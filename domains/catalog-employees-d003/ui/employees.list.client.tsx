@@ -33,7 +33,8 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/dialog';
-import { type Employee } from '../model/employees.schema';
+import { type Employee } from '../orm.server';
+import { formatDate } from '../lib/date-utils';
 import { EmployeeDetails } from './employees.details.client';
 import { useCurrentDomainContext } from '@/shared/store/current-domain-context';
 import { Pencil } from 'lucide-react';
@@ -83,10 +84,6 @@ export function EmployeeList({
     }
     return employees;
   }, [employees, showActiveOnly]);
-
-  const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString('ru-RU');
-  };
 
   const handleSuccess = () => {
     setIsCreateDialogOpen(false);

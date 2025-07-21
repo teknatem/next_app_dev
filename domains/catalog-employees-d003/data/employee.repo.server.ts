@@ -1,11 +1,15 @@
 import 'server-only';
 import { eq, like, and, desc } from 'drizzle-orm';
 import { db } from '@/shared/database/connection';
-import {
-  employees,
-  type Employee,
-  type NewEmployee
-} from '../model/employees.schema';
+import { employees, type Employee, type NewEmployee } from '../orm.server';
+
+// Error type for optimistic locking conflicts
+export class OptimisticLockError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'OptimisticLockError';
+  }
+}
 
 export const employeeRepositoryServer = {
   // Получить всех сотрудников (не удаленных)
@@ -56,31 +60,94 @@ export const employeeRepositoryServer = {
   },
 
   // Создать нового сотрудника
-  async create(data: NewEmployee): Promise<Employee> {
-    const result = await db.insert(employees).values(data).returning();
+  async create(data: NewEmployee, userId?: string): Promise<Employee> {
+    const result = await db
+      .insert(employees)
+      .values({
+        ...data,
+        version: 0,
+        createdBy: userId,
+        updatedBy: userId,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
     return result[0];
   },
 
-  // Обновить сотрудника
+  // Обновить сотрудника с оптимистичной блокировкой
   async update(
     id: string,
-    data: Partial<NewEmployee>
+    data: Partial<NewEmployee>,
+    currentVersion: number,
+    userId?: string
   ): Promise<Employee | null> {
     const result = await db
       .update(employees)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(employees.id, id))
+      .set({
+        ...data,
+        version: currentVersion + 1,
+        updatedBy: userId,
+        updatedAt: new Date()
+      })
+      .where(
+        and(
+          eq(employees.id, id),
+          eq(employees.version, currentVersion),
+          eq(employees.isDeleted, false)
+        )
+      )
       .returning();
-    return result[0] || null;
+
+    if (result.length === 0) {
+      // Check if record exists or version conflict
+      const existing = await this.getById(id);
+      if (!existing) {
+        throw new Error('Employee not found');
+      }
+      throw new OptimisticLockError(
+        'Employee was updated by another user. Please refresh and try again.'
+      );
+    }
+
+    return result[0];
   },
 
-  // Мягкое удаление сотрудника (установка флага isDeleted)
-  async softDelete(id: string): Promise<boolean> {
+  // Мягкое удаление сотрудника с оптимистичной блокировкой
+  async softDelete(
+    id: string,
+    currentVersion: number,
+    userId?: string
+  ): Promise<boolean> {
     const result = await db
       .update(employees)
-      .set({ isDeleted: true, updatedAt: new Date() })
-      .where(eq(employees.id, id))
+      .set({
+        isDeleted: true,
+        version: currentVersion + 1,
+        deletedAt: new Date(),
+        deletedBy: userId,
+        updatedAt: new Date()
+      })
+      .where(
+        and(
+          eq(employees.id, id),
+          eq(employees.version, currentVersion),
+          eq(employees.isDeleted, false)
+        )
+      )
       .returning();
+
+    if (result.length === 0) {
+      // Check if record exists or version conflict
+      const existing = await this.getById(id);
+      if (!existing) {
+        throw new Error('Employee not found');
+      }
+      throw new OptimisticLockError(
+        'Employee was updated by another user. Please refresh and try again.'
+      );
+    }
+
     return result.length > 0;
   },
 

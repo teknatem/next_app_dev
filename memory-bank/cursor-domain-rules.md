@@ -11,23 +11,22 @@
 ```
 domains/
 └── <domain-name>/
-    ├── model/                     # ✅ SHARED - Types, schemas, enums
-    │   ├── *.schema.ts           # Zod schemas + TypeScript types
-    │   └── *.types.ts            # Pure TypeScript types
-    ├── data/                      # ⚠️ SERVER-ONLY - Database operations
+    ├── orm.server.ts        # ⚠️ SERVER-ONLY - ORM/Drizzle-схемы, только для сервера (с директивой 'server-only')
+    ├── types.shared.ts      # ✅ SHARED - Типы и Zod-схемы, используются и на клиенте, и на сервере
+    ├── data/               # ⚠️ SERVER-ONLY - Database operations
     │   └── *.repo.server.ts      # Repository with 'server-only' directive
-    ├── api/                       # ✅ CLIENT-ONLY - HTTP API calls
+    ├── api/                # ✅ CLIENT-ONLY - HTTP API calls
     │   └── *.api.client.ts       # Client API with 'use client' directive
-    ├── lib/                       # 🔄 MIXED - Utilities and services (OPTIONAL)
+    ├── lib/                # 🔄 MIXED - Utilities and services (OPTIONAL)
     │   ├── *.shared.ts           # ✅ SHARED - Pure functions, no side effects
     │   ├── *.server.ts           # ⚠️ SERVER-ONLY - S3, external APIs, email services
     │   └── *.client.ts           # ✅ CLIENT-ONLY - Browser-specific logic, validation
-    ├── ui/                        # 🔄 MIXED - React components
+    ├── ui/                 # 🔄 MIXED - React components
     │   ├── *.server.tsx          # ⚠️ SERVER-ONLY - Server Components
     │   └── *.client.tsx          # ✅ CLIENT-ONLY - Client Components
-    ├── index.ts                   # ✅ CLIENT-SAFE - Public API for client
-    ├── index.server.ts            # ⚠️ SERVER-ONLY - Public API for server
-    └── README.md                  # Documentation
+    ├── index.ts            # ✅ CLIENT-SAFE - Public API for client
+    ├── index.server.ts     # ⚠️ SERVER-ONLY - Public API for server
+    └── README.md           # Documentation
 ```
 
 ---
@@ -371,5 +370,15 @@ Form -> EmployeeDetails.client.tsx
 
 > **Правило:** Когда в одном файле собираются низкоуровневые CRUD-функции сущности, используйте `crud.actions.server.ts`.  
 > Если функции становятся крупными или требуют разных зависимостей — разделяйте на `<verb>.action.server.ts` (например, `create.action.server.ts`).
+
+---
+
+## catalog-employees-d003: правила структуры файлов
+
+- В корне домена должны быть два файла:
+  - `orm.server.ts` — только серверный файл, содержит ORM/Drizzle-схемы и связан только с сервером (использует 'server-only' директиву).
+  - `types.shared.ts` — файл с типами и Zod-схемами, которые могут использоваться как на сервере, так и на клиенте (без серверных зависимостей).
+- Эти файлы обеспечивают явное разделение между серверной логикой (ORM) и универсальными типами/валидацией.
+- Импортировать ORM-схемы только из `orm.server.ts`, а типы/Zod-схемы — только из `types.shared.ts`.
 
 ---

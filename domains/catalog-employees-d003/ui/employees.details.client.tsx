@@ -6,7 +6,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { type Employee } from '../model/employees.schema';
+import { type Employee } from '../orm.server';
 
 interface EmployeeDetailsProps {
   employee?: Employee;

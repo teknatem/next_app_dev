@@ -17,7 +17,7 @@ import {
   type MeetingAssetWithFileInfo,
   type MeetingArtefact
 } from '@/domains/document-meetings-d004';
-import { BackButton } from '../../../shared/ui/back-button';
+import { BackButton } from '@/shared/ui/back-button';
 
 export default async function MeetingDetailsPage({
   params,

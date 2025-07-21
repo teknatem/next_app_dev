@@ -16,7 +16,7 @@ export async function saveEmployee(formData: FormData) {
   const employeeId = formData.get('employeeId') as string;
 
   if (employeeId) {
-    await updateEmployeeAction(employeeId, formData);
+    await updateEmployeeAction(formData);
   } else {
     await createEmployeeAction(formData);
   }
@@ -31,7 +31,7 @@ export async function deleteEmployee(formData: FormData) {
   'use server';
   const employeeId = formData.get('employeeId') as string;
   if (employeeId) {
-    await deactivateEmployeeAction(employeeId);
+    await deactivateEmployeeAction(formData);
     revalidatePath('/employees');
   }
 }

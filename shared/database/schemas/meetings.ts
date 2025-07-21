@@ -8,7 +8,7 @@ import {
   integer
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { employees } from '../../../domains/catalog-employees-d003/model/employees.schema';
+import { employees } from './d003_employees';
 import { relations } from 'drizzle-orm';
 import { d002Files } from '@/domains/catalog-files-d002/model/files.schema';
 

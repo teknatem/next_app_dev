@@ -6,7 +6,7 @@
 
 Our codebase follows **FSDDD**: a modified Feature-Sliced Design that incorporates key principles of Domain-Driven Design.
 
-- **Domains as bounded contexts.** Each directory in `domains/` encapsulates its own model, data layer, services and UI.
+- **Domains as bounded contexts.** Each directory in `domains/` encapsulates its own (optionally) model, data layer, services and UI.
 - **Explicit ownership & rules.** Every domain has clear server/client boundaries, naming conventions and double-export barrels (see `cursor-domain-rules.md`).
 - **Alignment with ubiquitous language.** Directory names and code terms mirror business terminology, reducing translation overhead.
 
@@ -19,7 +19,7 @@ project/
 ├─ shared/                       # tech‑agnostic atoms, utils, UI primitives
 ├─ domains/
 │   └─ <domain>/                 # vertical slice of a business entity
-│       ├─ model/                # ✅ SHARED - types, enums, zod schemas
+│       ├─ model/ (optional)     # SHARED - types, enums, zod schemas (create only if needed)
 │       │   └─ *.schema.ts       # Zod schemas + TypeScript types
 │       ├─ data/                 # ⚠️ SERVER-ONLY - DB operations
 │       │   └─ *.repo.server.ts  # Repository with 'server-only'
@@ -34,10 +34,6 @@ project/
 │       ├─ index.ts              # ✅ CLIENT-SAFE - public API
 │       ├─ index.server.ts       # ⚠️ SERVER-ONLY - server API
 │       └─ README.md             # Documentation
-├─ features/                     # cross‑/multi‑domain mechanisms
-├─ widgets/                      # large UI sections composed from features
-├─ entities/                     # small reusable business objects
-└─ app/                          # Next.js routes (outside FSD structure)
 ```
 
 > **Note:** This project uses explicit server/client separation with Next.js App Router. All domains follow the double export system (index.ts + index.server.ts).
@@ -234,3 +230,13 @@ See `domains/catalog-files-d002/` for a complete example of the new domain struc
 > If the two documents diverge, treat `cursor-domain-rules.md` as source of truth for Domain-level conventions.
 > **Detailed, authoritative rules for DB structure, naming, etc. live in [`memory-bank/db rules.md`]**  
 > Treat `memory-bank/db rules.md` as source of truth for DB structure.
+
+---
+
+## Разделение ORM и типов в доменах
+
+- Если домен содержит сложную серверную ORM/Drizzle-схему и типы, рекомендуется:
+  - Хранить ORM/Drizzle-схемы в файле `orm.server.ts` (только сервер, с директивой 'server-only').
+  - Хранить типы и Zod-схемы в файле `types.shared.ts` (универсальный, без серверных зависимостей).
+- Оба файла располагаются в корне домена.
+- Это обеспечивает чистое разделение серверной логики и универсальных типов/валидации.
