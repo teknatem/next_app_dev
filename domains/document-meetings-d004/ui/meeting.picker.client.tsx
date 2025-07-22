@@ -12,7 +12,7 @@ import {
   type Meeting,
   type MeetingSearch,
   MeetingStatus
-} from '../model/meetings.schema';
+} from '../types.shared';
 import {
   formatMeetingDate,
   formatMeetingTime,

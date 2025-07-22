@@ -28,11 +28,8 @@ import {
   type MeetingAsset,
   type MeetingAssetWithFileInfo,
   type MeetingArtefact,
-  MeetingStatus,
-  AssetKind,
-  ArtefactType,
-  ArtefactStatus
-} from '../model/meetings.schema';
+  MeetingStatus
+} from '../types.shared';
 import {
   formatMeetingDate,
   formatMeetingTime,
@@ -219,11 +216,11 @@ export function MeetingDetails({
 
   const getAssetIcon = (kind: string) => {
     switch (kind) {
-      case AssetKind.DOCUMENT:
+      case 'document':
         return <FileText className="h-4 w-4" />;
-      case AssetKind.AUDIO:
+      case 'audio':
         return <Play className="h-4 w-4" />;
-      case AssetKind.VIDEO:
+      case 'video':
         return <Video className="h-4 w-4" />;
       default:
         return <FileText className="h-4 w-4" />;

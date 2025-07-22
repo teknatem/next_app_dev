@@ -1,7 +1,10 @@
 // ✅ CLIENT-SAFE exports only
 
 // Re-export shared types and schemas
-export * from './model/meetings.schema';
+export * from './types.shared';
+
+// Re-export enums and types
+export * from './model/enums';
 
 // Export shared utilities
 export * from './lib/date-utils';

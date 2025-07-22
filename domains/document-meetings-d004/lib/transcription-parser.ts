@@ -2,7 +2,7 @@ import type {
   TranscriptionPayload,
   TranscriptionResult,
   TranscriptionSegment
-} from '../model/meetings.schema';
+} from '../types.shared';
 
 /**
  * Генерирует уникальный ID

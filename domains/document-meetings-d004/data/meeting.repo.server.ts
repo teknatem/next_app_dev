@@ -2,10 +2,8 @@ import 'server-only';
 
 import { eq, and, like, desc, asc, count, sql } from 'drizzle-orm';
 import { db } from '../../../shared/database/connection';
+import { meetings, meetingAssets, meetingArtefacts } from '../orm.server';
 import {
-  meetings,
-  meetingAssets,
-  meetingArtefacts,
   insertMeetingSchema,
   insertMeetingAssetSchema,
   insertMeetingArtefactSchema,
@@ -17,7 +15,7 @@ import {
   type NewMeetingArtefact,
   type MeetingSearch,
   type MeetingAssetWithFileInfo
-} from '../model/meetings.schema';
+} from '../types.shared';
 import { d002Files } from '../../catalog-files-d002/model/files.schema';
 
 export const meetingRepositoryServer = {

@@ -3,10 +3,13 @@ import 'server-only';
 import {
   type MeetingArtefact,
   type NewMeetingArtefact,
-  type AIProcessingRequest,
-  ArtefactType,
-  ArtefactStatus
-} from '../model/meetings.schema';
+  type AIProcessingRequest
+} from '../types.shared';
+import {
+  MEETING_ARTEFACT_TYPES,
+  MEETING_ARTEFACT_STATUSES,
+  type MeetingArtefactStatus
+} from '../model/enums';
 
 /**
  * AI Processing Service for meeting content analysis
@@ -27,7 +30,11 @@ export class AIProcessingService {
     const { assetId, artefactType, provider, language, options } = request;
 
     // Validate provider for artefact type
-    if (!this.providers[artefactType].includes(provider)) {
+    if (
+      !this.providers[artefactType as keyof typeof this.providers].includes(
+        provider
+      )
+    ) {
       throw new Error(`Provider ${provider} not supported for ${artefactType}`);
     }
 
@@ -38,7 +45,7 @@ export class AIProcessingService {
       provider,
       language,
       version: 1, // Will be incremented if needed
-      status: ArtefactStatus.QUEUED,
+      status: 'queued',
       payload: null,
       createdAt: new Date(),
       completedAt: null
@@ -71,7 +78,7 @@ export class AIProcessingService {
     return {
       id: crypto.randomUUID(),
       ...artefactData,
-      status: ArtefactStatus.DONE,
+      status: 'done',
       payload,
       result: payload, // Use payload as result for now
       summary: null, // No summary for now
@@ -86,7 +93,7 @@ export class AIProcessingService {
    * Generate mock payload for different artefact types
    */
   private generateMockPayload(artefactType: string, provider: string): any {
-    if (artefactType === ArtefactType.TRANSCRIPT) {
+    if (artefactType === 'transcript') {
       return {
         text: 'Это пример транскрипта совещания. Здесь будет текст, полученный от AI сервиса.',
         confidence: 0.95,
@@ -115,7 +122,7 @@ export class AIProcessingService {
       };
     }
 
-    if (artefactType === ArtefactType.DIARISATION) {
+    if (artefactType === 'diarisation') {
       return {
         speakers: [
           {
@@ -159,10 +166,12 @@ export class AIProcessingService {
   /**
    * Check processing status
    */
-  async checkProcessingStatus(artefactId: string): Promise<ArtefactStatus> {
+  async checkProcessingStatus(
+    artefactId: string
+  ): Promise<MeetingArtefactStatus> {
     // In real implementation, this would check the actual processing status
     // For now, return a mock status
-    return ArtefactStatus.DONE;
+    return 'done';
   }
 
   /**
@@ -182,12 +191,12 @@ export class AIProcessingService {
     // For now, simulate success
     const mockArtefact: NewMeetingArtefact = {
       assetId: 'mock-asset-id',
-      artefactType: ArtefactType.TRANSCRIPT,
+      artefactType: 'transcript',
       provider: 'Whisper',
       language: 'en',
       version: 2,
-      status: ArtefactStatus.DONE,
-      payload: this.generateMockPayload(ArtefactType.TRANSCRIPT, 'Whisper'),
+      status: 'done',
+      payload: this.generateMockPayload('transcript', 'Whisper'),
       createdAt: new Date(),
       completedAt: new Date()
     };
@@ -195,7 +204,7 @@ export class AIProcessingService {
     return {
       id: artefactId,
       ...mockArtefact,
-      status: ArtefactStatus.DONE,
+      status: 'done',
       language: mockArtefact.language || 'en',
       version: mockArtefact.version || 1,
       createdAt: mockArtefact.createdAt || new Date(),

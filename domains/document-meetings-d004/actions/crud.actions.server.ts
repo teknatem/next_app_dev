@@ -1,6 +1,4 @@
-'use server';
-
-import { revalidatePath } from 'next/cache';
+import 'server-only';
 import { z } from 'zod';
 import { meetingRepositoryServer } from '../data/meeting.repo.server';
 import {
@@ -10,9 +8,9 @@ import {
   insertMeetingAssetSchema,
   type MeetingAssetWithFileInfo,
   saveTranscriptionSchema
-} from '../model/meetings.schema';
+} from '../types.shared';
 import { fileRepository } from '@/domains/catalog-files-d002/index.server';
-import { type MeetingArtefact } from '../model/meetings.schema';
+import { type MeetingArtefact } from '../types.shared';
 import { assemblyAIService } from '../lib/assemblyai.service.server';
 
 // Helper function to determine asset kind from MIME type
@@ -118,7 +116,6 @@ export async function saveMeetingAction(
       );
     }
 
-    revalidatePath('/meetings');
     return { success: true, data: savedMeeting };
   } catch (error) {
     console.error('Error saving meeting:', error);
@@ -131,7 +128,6 @@ export async function deleteMeetingAction(
 ): Promise<ActionResult<void>> {
   try {
     await meetingRepositoryServer.delete(id);
-    revalidatePath('/meetings');
     return { success: true, data: undefined };
   } catch (error) {
     console.error('Error deleting meeting:', error);
@@ -196,7 +192,6 @@ export async function createMeetingAssetAction(data: {
       storageUrl: file.url
     });
 
-    revalidatePath(`/meetings/${data.meetingId}`);
     return { success: true, data: asset };
   } catch (error) {
     console.error('Error creating meeting asset:', error);
@@ -209,7 +204,7 @@ export async function deleteMeetingAssetAction(
 ): Promise<ActionResult<void>> {
   try {
     await meetingRepositoryServer.deleteAsset(id);
-    revalidatePath(`/meetings/`); // Revalidate the general path
+
     return { success: true, data: undefined };
   } catch (error) {
     console.error('Error deleting meeting asset:', error);
@@ -264,7 +259,6 @@ export async function createTranscriptionAction(data: {
     // Start transcription process asynchronously
     processTranscriptionAsync(artefact.id, asset, { language });
 
-    revalidatePath(`/meetings/${asset.meetingId}`);
     return { success: true, data: artefact };
   } catch (error) {
     console.error('Error creating transcription:', error);
@@ -406,7 +400,6 @@ export async function deleteArtefactAction(
     const result = await meetingRepositoryServer.deleteArtefact(id);
 
     if (result) {
-      revalidatePath('/meetings');
       return { success: true, data: true };
     } else {
       return { success: false, error: 'Artefact not found' };
@@ -470,9 +463,6 @@ export async function saveTranscriptionAction(data: {
 
     // Получаем asset для revalidation
     const asset = await meetingRepositoryServer.getAssetById(artefact.assetId);
-    if (asset) {
-      revalidatePath(`/meetings/${asset.meetingId}`);
-    }
 
     return { success: true, data: true };
   } catch (error) {

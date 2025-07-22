@@ -30,7 +30,7 @@ import type {
   TranscriptionResult,
   TranscriptionSegment,
   TranscriptionEditorData
-} from '../model/meetings.schema';
+} from '../types.shared';
 
 import {
   parsePayloadToResult,
