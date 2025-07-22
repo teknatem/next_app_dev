@@ -4,7 +4,7 @@
 //
 
 // Shared types & schemas
-//export * from './model/employees.schema';
+export type { Employee, EmployeeSearch, EmployeeUpdate } from './types.shared';
 
 // Date utilities (shared)
 export {
@@ -17,11 +17,10 @@ export {
 
 // Client-accessible server actions
 export {
-  getActiveEmployeesAction,
-  searchEmployeesAction as searchEmployeesClientAction,
+  searchEmployeesAction,
   getDepartmentsAction,
   getPositionsAction
-} from './actions/client-server.actions';
+} from './actions/client.actions';
 
 // UI Components
 export { EmployeeList } from './ui/employees.list.client';

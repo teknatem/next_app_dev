@@ -21,12 +21,12 @@ import {
 } from '@/shared/ui/table';
 import { Search, User } from 'lucide-react';
 
-import { Employee } from '../orm.server';
+import { type Employee } from '../types.shared';
 import { formatDate } from '../lib/date-utils';
 import {
-  getActiveEmployeesAction,
-  searchEmployeesAction
-} from '../actions/client-server.actions';
+  searchEmployeesAction,
+  getDepartmentsAction
+} from '../index';
 
 interface EmployeePickerProps {
   onEmployeeSelect: (employee: Employee) => void;
@@ -49,12 +49,10 @@ export function EmployeePicker({
     setLoading(true);
     setError(null);
     try {
-      const result = searchQuery
-        ? await searchEmployeesAction({
-            query: searchQuery,
-            isActive: true // только активные сотрудники
-          })
-        : await getActiveEmployeesAction();
+      const result = await searchEmployeesAction({
+        query: searchQuery,
+        isActive: true // только активные сотрудники
+      });
 
       if (result.success && result.data) {
         setEmployees(result.data);

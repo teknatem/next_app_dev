@@ -34,19 +34,6 @@ CREATE TABLE "meetings" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "employees" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"full_name" text NOT NULL,
-	"email" text,
-	"position" text NOT NULL,
-	"department" text NOT NULL,
-	"is_active" boolean DEFAULT true NOT NULL,
-	"is_deleted" boolean DEFAULT false NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "employees_email_unique" UNIQUE("email")
-);
---> statement-breakpoint
 ALTER TABLE "meeting_artefacts" ADD CONSTRAINT "meeting_artefacts_asset_id_meeting_assets_id_fk" FOREIGN KEY ("asset_id") REFERENCES "public"."meeting_assets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "meeting_assets" ADD CONSTRAINT "meeting_assets_meeting_id_meetings_id_fk" FOREIGN KEY ("meeting_id") REFERENCES "public"."meetings"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "meeting_assets" ADD CONSTRAINT "meeting_assets_file_id_files_id_fk" FOREIGN KEY ("file_id") REFERENCES "public"."files"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

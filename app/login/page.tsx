@@ -9,6 +9,8 @@ import {
 } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   async function signInAction(formData: FormData) {
     'use server';

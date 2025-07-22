@@ -33,7 +33,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/dialog';
-import { type Employee } from '../orm.server';
+import { type Employee } from '../types.shared';
 import { formatDate } from '../lib/date-utils';
 import { EmployeeDetails } from './employees.details.client';
 import { useCurrentDomainContext } from '@/shared/store/current-domain-context';

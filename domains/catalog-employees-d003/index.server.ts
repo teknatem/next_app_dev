@@ -1,8 +1,8 @@
 import 'server-only';
 
 // Shared types & schemas
-export * from './orm.server';
-export * from './types.shared';
+export { employees } from './orm.server';
+export type { Employee, NewEmployee } from './types.shared';
 
 // Date utilities (shared)
 export {
@@ -14,7 +14,10 @@ export {
 } from './lib/date-utils';
 
 // Server-only data layer
-export { employeeRepositoryServer } from './data/employee.repo.server';
+export {
+  employeeRepositoryServer,
+  OptimisticLockError
+} from './data/employee.repo.server';
 
 // Server Actions (raw business logic)
 export {
@@ -30,3 +33,6 @@ export {
 
 // Server Actions (orchestrators)
 export { saveEmployee, deleteEmployee } from './features/crud.server';
+
+// Re-exporting enums
+export { employeeStatusEnum } from './model/employees.schema';

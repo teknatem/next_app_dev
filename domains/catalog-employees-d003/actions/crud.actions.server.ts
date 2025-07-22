@@ -3,7 +3,11 @@ import {
   employeeRepositoryServer,
   OptimisticLockError
 } from '../data/employee.repo.server';
-import { insertEmployeeSchema, updateEmployeeSchema } from '../types.shared';
+import {
+  createEmployeeSchema,
+  updateEmployeeSchema,
+  type Employee
+} from '../types.shared';
 import { type NewEmployee } from '../orm.server';
 import { auth } from '@/shared/lib/auth';
 
@@ -24,9 +28,9 @@ export async function createEmployeeAction(formData: FormData) {
         : null
     };
 
-    const validatedData = insertEmployeeSchema.parse(rawData);
+    const validatedData = createEmployeeSchema.parse(rawData);
     const employee = await employeeRepositoryServer.create(
-      validatedData,
+      validatedData as NewEmployee,
       userId
     );
 
@@ -145,21 +149,25 @@ export async function getEmployeeByIdAction(id: string) {
   }
 }
 
-export async function searchEmployeesAction(
-  query?: string,
-  department?: string,
-  isActive?: boolean
-) {
+export async function searchEmployeesAction(options: {
+  query?: string;
+  department?: string;
+  isActive?: boolean;
+}): Promise<{ success: boolean; data?: Employee[]; error?: string }> {
   try {
     const employees = await employeeRepositoryServer.search(
-      query,
-      department,
-      isActive
+      options.query,
+      options.department,
+      options.isActive
     );
     return { success: true, data: employees };
   } catch (error) {
     console.error('Error searching employees:', error);
-    return { success: false, error: 'Failed to search employees' };
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : 'Failed to search employees'
+    };
   }
 }
 

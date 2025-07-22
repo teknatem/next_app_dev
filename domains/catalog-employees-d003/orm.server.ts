@@ -11,6 +11,7 @@ import {
   varchar
 } from 'drizzle-orm/pg-core';
 import { users } from '@/shared/database/schemas/users';
+import { employeeStatusEnum } from './model/employees.schema';
 
 export const d003Employees = pgTable('d003_employees', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -35,8 +36,8 @@ export const d003Employees = pgTable('d003_employees', {
   department: text('department').notNull(),
   isActive: boolean('is_active').notNull().default(true),
 
-  metadata: jsonb('metadata'),
-  status: varchar('status', { length: 20 }).default('active')
+  metadata: jsonb('metadata').$type<Record<string, any>>(),
+  status: employeeStatusEnum('status')
 });
 
 export type D003Employee = typeof d003Employees.$inferSelect;
