@@ -7,8 +7,10 @@
 import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
 
-import { auth, signOut } from '@/shared/lib/auth';
+import { authOptions } from '@/shared/lib/auth';
+import { signOutAction } from '../actions';
 import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
@@ -18,7 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
-
 
 /**
  * User Profile Menu Component
@@ -55,7 +56,7 @@ import {
  * @see {@link https://nextjs.org/docs/app/api-reference/functions/revalidate-path revalidatePath Documentation}
  */
 export async function UserProfileMenu() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   return (
@@ -83,13 +84,7 @@ export async function UserProfileMenu() {
         <DropdownMenuSeparator />
         {user ? (
           <DropdownMenuItem>
-            <form
-              action={async () => {
-                'use server';
-                await signOut({ redirectTo: '/login' });
-                revalidatePath('/');
-              }}
-            >
+            <form action={signOutAction}>
               <button type="submit">Sign Out</button>
             </form>
           </DropdownMenuItem>

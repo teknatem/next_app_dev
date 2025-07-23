@@ -1,8 +1,4 @@
-import NextAuth from 'next-auth';
-
-import { authConfig } from './shared/lib/auth.config';
-
-export default NextAuth(authConfig).auth;
+export { default } from 'next-auth/middleware';
 
 export const config = {
   matcher: [
@@ -12,7 +8,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - login (login page)
+     * - images, public assets (e.g. /images/background.jpg, /placeholder.svg)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)'
+    '/((?!api|_next/static|_next/image|favicon.ico|login|images|.*\\.svg$|.*\\.jpg$).*)'
   ]
 };

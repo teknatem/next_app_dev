@@ -1,4 +1,9 @@
-import { signIn } from '@/shared/lib/auth';
+'use client';
+
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import { Button } from '@/shared/ui/button';
 import {
   Card,
@@ -9,14 +14,40 @@ import {
 } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 
-export const dynamic = 'force-dynamic';
-
 export default function LoginPage() {
-  async function signInAction(formData: FormData) {
-    'use server';
-    formData.append('redirectTo', '/');
-    await signIn('credentials', formData);
-  }
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!email || !password) {
+      setError('Email и пароль обязательны');
+      setIsLoading(false);
+      return;
+    }
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password
+    });
+
+    if (result?.error) {
+      setError('Неверные учетные данные. Пожалуйста, попробуйте еще раз.');
+      setIsLoading(false);
+    } else {
+      router.push('/');
+      router.refresh();
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -28,7 +59,12 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={signInAction} className="grid gap-4">
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            {error && (
+              <div className="text-red-500 text-sm bg-red-100 p-3 rounded-md">
+                {error}
+              </div>
+            )}
             <div className="grid gap-2">
               <label
                 htmlFor="email"
@@ -42,6 +78,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="email@example.com"
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="grid gap-2">
@@ -51,10 +88,16 @@ export default function LoginPage() {
               >
                 Пароль
               </label>
-              <Input id="password" name="password" type="password" required />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                disabled={isLoading}
+              />
             </div>
-            <Button type="submit" className="w-full">
-              Войти
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Вход...' : 'Войти'}
             </Button>
           </form>
         </CardContent>

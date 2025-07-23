@@ -1,19 +1,19 @@
 import bcrypt from 'bcryptjs';
 import { eq, count } from 'drizzle-orm';
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
+import NextAuth, {
+  type DefaultSession,
+  type User,
+  type Session
+} from 'next-auth';
+import { type JWT } from 'next-auth/jwt';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { db } from '@/shared/database/connection';
 import { users } from '@/shared/database/schemas';
 
-
-import { authConfig } from './auth.config';
-
-// Direct NextAuth initialization
-const nextAuth = NextAuth({
-  ...authConfig,
+export const authOptions = {
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -56,10 +56,37 @@ const nextAuth = NextAuth({
         return ok ? { id: user.id, name: user.name, email: user.email } : null;
       }
     })
-  ]
-});
+  ],
+  pages: {
+    signIn: '/login'
+  },
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user && token.id) {
+        session.user.id = token.id;
+      }
+      return session;
+    }
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax' as const,
+        path: '/',
+        secure: false
+      }
+    }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true
+};
 
-export const handlers = nextAuth.handlers;
-export const auth = nextAuth.auth;
-export const signIn = nextAuth.signIn;
-export const signOut = nextAuth.signOut;
+export default NextAuth(authOptions);

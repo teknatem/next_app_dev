@@ -43,7 +43,6 @@ import { AppBreadcrumb } from './breadcrumb';
 import { MainContent } from './main-content';
 import { ThemeProvider } from './theme-provider';
 
-
 // Font is now loaded via CSS instead of next/font/google
 
 const Providers = ({ children }: { children: React.ReactNode }) => {

@@ -9,11 +9,12 @@ import {
   type Employee
 } from '../types.shared';
 import { type NewEmployee } from '../orm.server';
-import { auth } from '@/shared/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/shared/lib/auth';
 
 export async function createEmployeeAction(formData: FormData) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
     const rawData = {
@@ -43,7 +44,7 @@ export async function createEmployeeAction(formData: FormData) {
 
 export async function updateEmployeeAction(formData: FormData) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
     const rawData = {
@@ -92,7 +93,7 @@ export async function updateEmployeeAction(formData: FormData) {
 
 export async function deactivateEmployeeAction(formData: FormData) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 
     const id = formData.get('id') as string;
