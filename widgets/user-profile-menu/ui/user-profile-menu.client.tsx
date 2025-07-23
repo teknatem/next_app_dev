@@ -1,15 +1,9 @@
-/**
- * @id W-003 UserProfileMenu
- * @layer widgets
- * @summary Dropdown with avatar and profile actions
- */
+'use client';
 
-import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getServerSession } from 'next-auth';
+import { useSession } from 'next-auth/react';
 
-import { authOptions } from '@/shared/lib/auth';
 import { signOutAction } from '../actions';
 import { Button } from '@/shared/ui/button';
 import {
@@ -21,42 +15,8 @@ import {
   DropdownMenuTrigger
 } from '@/shared/ui/dropdown-menu';
 
-/**
- * User Profile Menu Component
- *
- * A server component that renders a dropdown menu for user profile management.
- * Displays user avatar, account options, and authentication controls.
- *
- * @async
- * @function UserProfileMenu
- * @returns {Promise<JSX.Element>} The rendered user profile menu component
- *
- * @example
- * ```tsx
- * import { UserProfileMenu } from '@/widgets/user-profile-menu/ui/user-profile-menu';
- *
- * export default function Header() {
- *   return (
- *     <header>
- *       <UserProfileMenu />
- *     </header>
- *   );
- * }
- * ```
- *
- * @description
- * This component:
- * - Fetches the current user session using NextAuth
- * - Displays user avatar with fallback to placeholder image
- * - Provides dropdown menu with account options
- * - Handles sign out with server action and page revalidation
- * - Shows sign in link for unauthenticated users
- *
- * @see {@link https://next-auth.js.org/configuration/nextjs#middleware NextAuth.js Documentation}
- * @see {@link https://nextjs.org/docs/app/api-reference/functions/revalidate-path revalidatePath Documentation}
- */
-export async function UserProfileMenu() {
-  const session = await getServerSession(authOptions);
+export function UserProfileMenu() {
+  const { data: session } = useSession();
   const user = session?.user;
 
   return (

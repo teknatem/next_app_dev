@@ -10,7 +10,7 @@ import {
 } from '../types.shared';
 import { type NewEmployee } from '../orm.server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/shared/lib/auth';
+import { authOptions } from '@/shared/lib/auth.server';
 
 export async function createEmployeeAction(formData: FormData) {
   try {

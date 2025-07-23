@@ -1,4 +1,4 @@
-import NextAuth from '@/shared/lib/auth';
+import NextAuth from '@/shared/lib/auth.server';
 
 const handler = NextAuth;
 

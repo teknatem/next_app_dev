@@ -1,8 +1,3 @@
-import type { LlmChat, LlmChatMessage, LlmChatMessageRole } from '@/shared/database/schemas';
-
-// Re-export database types
-export type { LlmChat, LlmChatMessage, LlmChatMessageRole };
-
 // UI specific types
 export interface ChatWindowProps {
   isOpen: boolean;
@@ -13,7 +8,7 @@ export interface ChatWindowProps {
 
 export interface ChatMessage {
   id: number;
-  role: LlmChatMessageRole;
+  role: 'user' | 'assistant' | 'system' | 'function';
   content: string;
   model?: string;
   createdAt: Date;
@@ -65,8 +60,16 @@ export interface ChatSettings {
 // Available models
 export const OPENAI_MODELS = [
   { id: 'gpt-4', name: 'GPT-4', description: 'Most capable model' },
-  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', description: 'Faster and more affordable' },
-  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Fast and cost-effective' },
+  {
+    id: 'gpt-4-turbo',
+    name: 'GPT-4 Turbo',
+    description: 'Faster and more affordable'
+  },
+  {
+    id: 'gpt-3.5-turbo',
+    name: 'GPT-3.5 Turbo',
+    description: 'Fast and cost-effective'
+  }
 ] as const;
 
-export type OpenAIModel = typeof OPENAI_MODELS[number]['id']; 
+export type OpenAIModel = (typeof OPENAI_MODELS)[number]['id'];

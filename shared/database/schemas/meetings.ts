@@ -1,5 +1,5 @@
 // Re-export meetings domain ORM schemas and types (server-only)
-export {
+/*export {
   meetings,
   meetingAssets,
   meetingArtefacts,
@@ -7,6 +7,7 @@ export {
   meetingAssetsRelations,
   meetingArtefactsRelations
 } from '@/domains/document-meetings-d004/orm.server';
+*/
 
 // Re-export types from types.shared (client-safe)
 export type {
