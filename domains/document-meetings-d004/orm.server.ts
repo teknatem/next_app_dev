@@ -10,7 +10,7 @@ import {
   integer
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { d003Employees } from '@/shared/database/schemas/d003_employees';
+import { d003Employees } from '@/domains/catalog-employees-d003/orm.server';
 import { d002Files } from '@/domains/catalog-files-d002/orm.server';
 import {
   MEETING_ASSET_KINDS,

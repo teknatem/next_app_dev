@@ -52,8 +52,3 @@ export const d003Employees = pgTable('d003_employees', {
 
 export type D003Employee = typeof d003Employees.$inferSelect;
 export type NewD003Employee = typeof d003Employees.$inferInsert;
-
-// Back-compat aliases
-export const employees = d003Employees;
-export type Employee = D003Employee;
-export type NewEmployee = NewD003Employee;

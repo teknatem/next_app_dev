@@ -1,7 +1,7 @@
 import 'server-only';
 
 // Shared types & schemas
-export { employees } from './orm.server';
+export { d003Employees } from './orm.server';
 export type { Employee, NewEmployee } from './types.shared';
 
 // Date utilities (shared)

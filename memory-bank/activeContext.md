@@ -311,9 +311,35 @@ POST /api/seed-db → insertedCount: 4 ✅
 ```
 shared/database/
 ├── connection/      # Подключение к БД
-├── schemas/         # Схемы таблиц
+├── schemas/         # Системные таблицы (users, etc.)
 ├── services/        # CRUD сервисы
 └── migrations/      # Миграции
+
+domains/<domain>/
+├── orm.server.ts    # Доменные ORM схемы
+├── types.shared.ts  # Доменные типы и Zod схемы
+└── model/enums.ts   # Доменные перечисления
+```
+
+### ORM Organization Rules ✅
+
+**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domains/**/orm.server.ts'`
+
+- **Доменные ORM схемы**: Каждый домен содержит свой файл `orm.server.ts` с Drizzle-схемами
+- **Системные таблицы**: Таблицы без доменов (например, `users`) размещаются в `'./shared/database/schemas/*'`
+- **Запрещено**: Импорты из доменов в `shared/database/schemas` - это правило отменяется
+
+**Конфигурация Drizzle:**
+
+```typescript
+// drizzle.config.ts
+export default defineConfig({
+  schema: [
+    './shared/database/schemas/*', // Системные таблицы
+    './domains/**/orm.server.ts' // Доменные ORM схемы
+  ]
+  // ...
+});
 ```
 
 ### UI Architecture ✅
