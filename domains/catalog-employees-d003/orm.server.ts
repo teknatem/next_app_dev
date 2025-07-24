@@ -1,4 +1,4 @@
-'use server-only';
+import 'server-only';
 
 import {
   pgTable,
@@ -8,10 +8,20 @@ import {
   timestamp,
   integer,
   jsonb,
-  varchar
+  varchar,
+  pgEnum
 } from 'drizzle-orm/pg-core';
 import { users } from '@/shared/database/schemas/users';
-import { employeeStatusEnum } from './model/employees.schema';
+import { EMPLOYEE_STATUS_VALUES } from './model/enums';
+
+// Re-export from model/enums for server-side usage
+export * from './model/enums';
+
+// Create pgEnum using the shared values
+export const employeeStatusEnum = pgEnum(
+  'employee_status',
+  EMPLOYEE_STATUS_VALUES
+);
 
 export const d003Employees = pgTable('d003_employees', {
   id: uuid('id').primaryKey().defaultRandom(),

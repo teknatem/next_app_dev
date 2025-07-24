@@ -1,8 +1,8 @@
 'use server';
 
-import { 
+import {
   searchEmployeesAction as searchEmployeesActionServer,
-  getDepartmentsAction as getDepartmentsActionServer, 
+  getDepartmentsAction as getDepartmentsActionServer,
   getPositionsAction as getPositionsActionServer
 } from './crud.actions.server';
 import type { Employee } from '../types.shared';

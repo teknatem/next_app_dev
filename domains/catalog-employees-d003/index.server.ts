@@ -35,4 +35,9 @@ export {
 export { saveEmployee, deleteEmployee } from './features/crud.server';
 
 // Re-exporting enums
-export { employeeStatusEnum } from './model/employees.schema';
+export {
+  EMPLOYEE_STATUS_VALUES,
+  EMPLOYEE_STATUS,
+  employeeStatusEnum
+} from './orm.server';
+export type { EmployeeStatusValue, EmployeeStatus } from './model/enums';

@@ -1,2 +1,2 @@
-// Re-export from domain ORM schema
-export { d002Files } from '@/domains/catalog-files-d002/orm.server';
+// Re-export from domain public server API
+export { d002Files } from '@/domains/catalog-files-d002/index.server';

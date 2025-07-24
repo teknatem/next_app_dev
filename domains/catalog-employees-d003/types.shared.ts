@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { employeeStatusEnum } from './model/employees.schema';
+import { EMPLOYEE_STATUS_VALUES } from './model/enums';
 
 // Manual schema definition (shared, no server dependencies)
 export const employeeSchema = z.object({
@@ -19,7 +19,7 @@ export const employeeSchema = z.object({
   department: z.string().min(1),
   isActive: z.boolean(),
   metadata: z.record(z.any()).nullable(),
-  status: z.enum(employeeStatusEnum.enumValues).nullable()
+  status: z.enum(EMPLOYEE_STATUS_VALUES).nullable()
 });
 
 export const insertEmployeeSchema = employeeSchema
@@ -66,7 +66,7 @@ export const updateEmployeeSchema = z.object({
   position: z.string().min(1).optional(),
   department: z.string().min(1).optional(),
   isActive: z.boolean().optional(),
-  status: z.enum(employeeStatusEnum.enumValues).optional(),
+  status: z.enum(EMPLOYEE_STATUS_VALUES).optional(),
   metadata: z.record(z.any()).optional()
 });
 export type EmployeeUpdate = z.infer<typeof updateEmployeeSchema>;

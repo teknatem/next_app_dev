@@ -6,6 +6,10 @@
 // Shared types & schemas
 export type { Employee, EmployeeSearch, EmployeeUpdate } from './types.shared';
 
+// Shared enums (client-safe)
+export { EMPLOYEE_STATUS_VALUES, EMPLOYEE_STATUS } from './model/enums';
+export type { EmployeeStatusValue, EmployeeStatus } from './model/enums';
+
 // Date utilities (shared)
 export {
   toISOString,
@@ -20,7 +24,7 @@ export {
   searchEmployeesAction,
   getDepartmentsAction,
   getPositionsAction
-} from './actions/client.actions';
+} from './actions/client-server.actions';
 
 // UI Components
 export { EmployeeList } from './ui/employees.list.client';
