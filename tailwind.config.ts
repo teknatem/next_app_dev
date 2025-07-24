@@ -24,7 +24,7 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', ...fontFamily.sans],
+        sans: ['Roboto', 'Inter', ...fontFamily.sans],
         inter: ['Inter', ...fontFamily.sans]
       },
       colors: {

@@ -29,18 +29,18 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { getBots, deleteBot } from '../actions/bots.actions';
-import type { Bot } from '../model/bots.schema';
-import { LLM_PROVIDERS, GENDER_OPTIONS } from '../model/bots.schema';
+import { getBots, deleteBot } from '../'; // Импорт из корневого index.ts домена
+import type { Bot } from '../'; // Импорт из корневого index.ts домена
+import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
 
 interface BotListProps {
   onEdit?: (bot: Bot) => void;
   onView?: (bot: Bot) => void;
-  onDelete?: (bot: Bot) => void;
   onCreate?: () => void;
+  onDelete?: (bot: Bot) => void;
 }
 
-export function BotList({ onEdit, onView, onDelete, onCreate }: BotListProps) {
+export function BotList({ onEdit, onView, onCreate, onDelete }: BotListProps) {
   const [bots, setBots] = useState<Bot[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -87,21 +87,24 @@ export function BotList({ onEdit, onView, onDelete, onCreate }: BotListProps) {
   }, [currentPage, search, sortBy, sortOrder]);
 
   const handleDelete = async (bot: Bot) => {
-    if (!confirm(`Вы уверены, что хотите удалить бота "${bot.name}"?`)) {
-      return;
-    }
-
-    try {
-      const result = await deleteBot(bot.id);
-      if (result.success) {
-        loadBots(); // Перезагружаем список
-        onDelete?.(bot);
-      } else {
-        alert(result.error || 'Failed to delete bot');
+    if (onDelete) {
+      onDelete(bot);
+    } else {
+      if (!confirm(`Вы уверены, что хотите удалить бота "${bot.name}"?`)) {
+        return;
       }
-    } catch (err) {
-      alert('Failed to delete bot');
-      console.error('Error deleting bot:', err);
+
+      try {
+        const result = await deleteBot(bot.id);
+        if (result.success) {
+          loadBots(); // Перезагружаем список
+        } else {
+          alert(result.error || 'Failed to delete bot');
+        }
+      } catch (err) {
+        alert('Failed to delete bot');
+        console.error('Error deleting bot:', err);
+      }
     }
   };
 
@@ -271,15 +274,16 @@ export function BotList({ onEdit, onView, onDelete, onCreate }: BotListProps) {
                           Редактировать
                         </DropdownMenuItem>
                       )}
-                      {onDelete && (
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(bot)}
-                          className="text-red-600"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Удалить
-                        </DropdownMenuItem>
-                      )}
+                      <DropdownMenuItem
+                        onClick={() =>
+                          onDelete ? onDelete(bot) : handleDelete(bot)
+                        }
+                        className="text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Удалить
+                      </DropdownMenuItem>
+                      {/* onDelete is deprecated, handleDelete is used directly */}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

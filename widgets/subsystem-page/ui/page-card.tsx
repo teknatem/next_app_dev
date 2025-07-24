@@ -33,7 +33,7 @@ export function PageCard({ page }: PageCardProps) {
   return (
     <Link
       href={page.path}
-      className="group block p-6 rounded-lg border bg-card hover:bg-accent transition-colors"
+      className="group block p-6 rounded-lg border bg-card hover:bg-accent transition-all duration-300 opacity-70 hover:opacity-100 hover:shadow-lg hover:shadow-blue-500/20 hover:border-blue-300"
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="p-2 rounded-md bg-blue-100 group-hover:bg-blue-200">

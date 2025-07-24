@@ -1,45 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
+import { Textarea } from '@/shared/ui/textarea';
 import { Badge } from '@/shared/ui/badge';
-// Using native textarea instead of custom component
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/shared/ui/dialog';
-import {
+  Eye,
   Edit,
   Save,
   X,
+  Loader2,
+  AlertCircle,
+  Palette,
   User,
   Briefcase,
-  Brain,
-  Palette,
+  Bot,
+  Goal,
+  Gavel,
+  Database,
+  Tag,
   Calendar,
   Hash
 } from 'lucide-react';
-import { getBot, createBot, updateBot } from '../actions/bots.actions';
-import type { Bot } from '../model/bots.schema';
-import {
-  LLM_PROVIDERS,
-  GENDER_OPTIONS,
-  LLM_MODELS
-} from '../model/bots.schema';
+import { getBot, createBot, updateBot } from '../';
+import type { Bot as BotType, NewBot } from '../';
+import { LLM_PROVIDERS, GENDER_OPTIONS, LLM_MODELS, formBotSchema } from '../';
 import { ImagePicker } from '@/domains/catalog-files-d002';
 import { FileUploader } from '@/domains/catalog-files-d002';
 import type { File as D002File } from '@/domains/catalog-files-d002';
 
 interface BotDetailsProps {
   botId?: string;
-  bot?: Bot;
-  onSave?: (bot: Bot) => void;
+  bot?: BotType;
+  onSave?: (bot: BotType) => void;
   onCancel?: () => void;
   mode?: 'view' | 'edit' | 'create';
 }
@@ -51,7 +54,7 @@ export function BotDetails({
   onCancel,
   mode = 'view'
 }: BotDetailsProps) {
-  const [bot, setBot] = useState<Bot | null>(initialBot || null);
+  const [bot, setBot] = useState<BotType | null>(initialBot || null);
   const [loading, setLoading] = useState(!initialBot && !!botId);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(
@@ -62,8 +65,7 @@ export function BotDetails({
   // Форма
   const [formData, setFormData] = useState({
     name: '',
-    gender:
-      GENDER_OPTIONS.MALE as (typeof GENDER_OPTIONS)[keyof typeof GENDER_OPTIONS],
+    gender: GENDER_OPTIONS.MALE as string,
     position: '',
     hierarchyLevel: 1,
     avatarUrl: '',
@@ -71,9 +73,8 @@ export function BotDetails({
     role: '',
     goals: '',
     rules: '',
-    llmProvider:
-      LLM_PROVIDERS.OPENAI as (typeof LLM_PROVIDERS)[keyof typeof LLM_PROVIDERS],
-    llmModel: LLM_MODELS.GPT_4 as (typeof LLM_MODELS)[keyof typeof LLM_MODELS]
+    llmProvider: LLM_PROVIDERS.OPENAI as string,
+    llmModel: LLM_MODELS.GPT_4 as string
   });
 
   useEffect(() => {
@@ -86,8 +87,7 @@ export function BotDetails({
     if (bot) {
       setFormData({
         name: bot.name,
-        gender:
-          bot.gender as (typeof GENDER_OPTIONS)[keyof typeof GENDER_OPTIONS],
+        gender: bot.gender,
         position: bot.position,
         hierarchyLevel: bot.hierarchyLevel,
         avatarUrl: bot.avatarUrl || '',
@@ -95,9 +95,8 @@ export function BotDetails({
         role: bot.role,
         goals: bot.goals,
         rules: bot.rules,
-        llmProvider:
-          bot.llmProvider as (typeof LLM_PROVIDERS)[keyof typeof LLM_PROVIDERS],
-        llmModel: bot.llmModel as (typeof LLM_MODELS)[keyof typeof LLM_MODELS]
+        llmProvider: bot.llmProvider,
+        llmModel: bot.llmModel
       });
     }
   }, [bot]);
@@ -127,17 +126,25 @@ export function BotDetails({
     setSaving(true);
     setError(null);
 
-    try {
-      const form = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        form.append(key, value.toString());
-      });
+    const validation = formBotSchema.safeParse(formData);
 
+    if (!validation.success) {
+      const errorMsg = validation.error.errors
+        .map((e) => `${e.path.join('.')}: ${e.message}`)
+        .join(', ');
+      setError(`Ошибка валидации: ${errorMsg}`);
+      setSaving(false);
+      return;
+    }
+
+    try {
       let result;
       if (mode === 'create') {
-        result = await createBot(form);
+        result = await createBot(validation.data);
+      } else if (bot?.id) {
+        result = await updateBot(bot.id, validation.data);
       } else {
-        result = await updateBot(bot!.id, form);
+        throw new Error('Невозможно сохранить: ID бота отсутствует');
       }
 
       if (result.success && result.data) {
@@ -145,10 +152,10 @@ export function BotDetails({
         setIsEditing(false);
         onSave?.(result.data);
       } else {
-        setError(result.error || 'Failed to save bot');
+        setError(result.error || 'Не удалось сохранить бота');
       }
     } catch (err) {
-      setError('Failed to save bot');
+      setError(err instanceof Error ? err.message : 'Произошла ошибка');
       console.error('Error saving bot:', err);
     } finally {
       setSaving(false);
@@ -290,22 +297,17 @@ export function BotDetails({
               <div>
                 <Label htmlFor="gender">Пол</Label>
                 {isEditing ? (
-                  <select
+                  <Input
                     id="gender"
                     value={formData.gender}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        gender: e.target
-                          .value as (typeof GENDER_OPTIONS)[keyof typeof GENDER_OPTIONS]
+                        gender: e.target.value
                       })
                     }
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value={GENDER_OPTIONS.MALE}>Мужской</option>
-                    <option value={GENDER_OPTIONS.FEMALE}>Женский</option>
-                    <option value={GENDER_OPTIONS.OTHER}>Другой</option>
-                  </select>
+                    placeholder="male, female, other"
+                  />
                 ) : (
                   <div className="p-2 bg-gray-50 rounded">
                     <Badge variant="outline">
@@ -454,7 +456,7 @@ export function BotDetails({
           {/* AI конфигурация */}
           <div className="space-y-4 md:col-span-2">
             <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Brain className="h-5 w-5" />
+              <Bot className="h-5 w-5" />
               AI конфигурация
             </h3>
 
@@ -462,24 +464,17 @@ export function BotDetails({
               <div>
                 <Label htmlFor="llmProvider">Провайдер LLM</Label>
                 {isEditing ? (
-                  <select
+                  <Input
                     id="llmProvider"
                     value={formData.llmProvider}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        llmProvider: e.target
-                          .value as (typeof LLM_PROVIDERS)[keyof typeof LLM_PROVIDERS]
+                        llmProvider: e.target.value
                       })
                     }
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value={LLM_PROVIDERS.OPENAI}>OpenAI</option>
-                    <option value={LLM_PROVIDERS.ANTHROPIC}>Anthropic</option>
-                    <option value={LLM_PROVIDERS.YANDEX}>Yandex</option>
-                    <option value={LLM_PROVIDERS.GOOGLE}>Google</option>
-                    <option value={LLM_PROVIDERS.MISTRAL}>Mistral</option>
-                  </select>
+                    placeholder="openai, anthropic, etc."
+                  />
                 ) : (
                   <div className="p-2 bg-gray-50 rounded">
                     <Badge variant="outline">

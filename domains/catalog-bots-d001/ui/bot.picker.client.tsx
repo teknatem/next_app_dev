@@ -13,9 +13,8 @@ import {
   DialogTrigger
 } from '@/shared/ui/dialog';
 import { Search, Check, X, ChevronDown, User } from 'lucide-react';
-import { getBots } from '../actions/bots.actions';
-import type { Bot } from '../model/bots.schema';
-import { LLM_PROVIDERS, GENDER_OPTIONS } from '../model/bots.schema';
+import { getBots, LLM_PROVIDERS, GENDER_OPTIONS } from '../';
+import type { Bot } from '../';
 
 interface BotPickerProps {
   selectedBots?: Bot[];

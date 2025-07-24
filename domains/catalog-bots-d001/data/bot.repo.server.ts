@@ -2,8 +2,8 @@ import 'server-only';
 
 import { eq, and, or, desc, asc, like, sql } from 'drizzle-orm';
 import { db } from '@/shared/database/connection';
-import { d001Bots } from '@/shared/database/schemas/catalog-bots';
-import type { Bot, NewBot } from '../model/bots.schema';
+import { d001Bots } from '../orm.server';
+import type { Bot, NewBot } from '../types.shared';
 
 export const botRepository = {
   /**

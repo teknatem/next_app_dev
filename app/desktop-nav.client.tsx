@@ -75,9 +75,13 @@ export function DesktopNav() {
 
   return (
     <aside
-      className={`fixed top-12 left-0 bottom-0 z-50 flex flex-col border-r bg-background/80 transition-all duration-300 ${
+      className={`fixed top-12 left-0 bottom-0 z-50 flex flex-col border-r bg-background/10 transition-all duration-300 ${
         isSidebarExpanded ? 'w-64' : 'w-14'
       }`}
+      style={{
+        background:
+          'linear-gradient(to right, hsl(var(--background) / 1) 0%, hsl(var(--background) / 0.2) 100%)'
+      }}
     >
       <nav
         className={`flex flex-col gap-4 px-2 ${

@@ -9,6 +9,7 @@
 ---
 
 ### 🗒️ Table of Contents
+
 1. [Overview](#overview)
 2. [Key Features](#key-features)
 3. [Architecture](#architecture)
@@ -21,6 +22,7 @@
 ---
 
 ## Overview
+
 Создаём единую корпоративную платформу для накопления, систематизации и анализа данных компании. Проект сочетает BI-отчётность, расширенную аналитику и управление знаниями, интегрируя LLM-модели на каждом этапе работы с данными.
 
 **Core Mission:** предоставить сотрудникам мгновенный доступ к данным и инсайтам, ускорив принятие решений и снизив издержки на аналитику.
@@ -28,18 +30,22 @@
 ---
 
 ## Key Features
+
 ### Phase 1 — BI Foundation (✅ MVP готов)
+
 - Excel/CSV импорт с умным сопоставлением колонок
 - API-интеграции для потоковых данных
 - Дашборды и отчёты в реальном времени
 - LLM-подсказки и объяснения метрик
 
 ### Phase 2 — Advanced Analytics (🏗 planned)
+
 - Предиктивные модели и аномалия-детекция
 - Natural-language query interface
 - Автоматическая генерация инсайтов
 
 ### Phase 3 — Knowledge Management (🗺 backlog)
+
 - Обработка документов (PDF, DOCX, email)
 - Семантический поиск по всей базе знаний
 - AI-рекомендации и граф знаний
@@ -47,6 +53,7 @@
 ---
 
 ## Architecture
+
 **Feature-Sliced Design (FSD)** гарантирует модульность и масштабируемость: каждый widget изолирован и может развиваться независимо.
 
 ```text
@@ -70,6 +77,7 @@ E --> F[Dashboards & Reports]
 ---
 
 ## Tech Stack
+
 - **Frontend:** Next.js 15 (App Router), React 18, TypeScript, Tailwind CSS, Shadcn UI
 - **Backend API:** Next.js API routes (future FastAPI micro-services)
 - **Database:** PostgreSQL 14+, Drizzle ORM, SQL migrations
@@ -82,12 +90,15 @@ E --> F[Dashboards & Reports]
 ---
 
 ## Getting Started
+
 ### Prerequisites
+
 - Node.js 18+
 - PostgreSQL 14+
 - pnpm 8+
 
 ### Local Setup
+
 ```bash
 # 1. Клонировать репозиторий
 pnpm dlx degit your-org/next_app_dev my-bi-app && cd my-bi-app
@@ -111,6 +122,7 @@ pnpm dev
 ---
 
 ## Project Structure
+
 ```text
 next_app_dev/
 ├── app/                 # Next.js routes (App Router)
@@ -124,6 +136,7 @@ next_app_dev/
 ---
 
 ## Roadmap
+
 - [x] LLM Chat MVP
 - [x] PostgreSQL + Drizzle интеграция
 - [x] Production Item UI with real data
@@ -134,8 +147,13 @@ next_app_dev/
 ---
 
 ## Contributing
+
 Pull requests welcome! Пожалуйста, следуйте FSD-архитектуре и убедитесь, что `pnpm lint && pnpm test` проходят без ошибок.
 
 ---
+
+Информация:
+https://flowbite.com/application-ui/preview/
+https://github.com/microsoft/autogen
 
 © 2025 Your Company — All rights reserved

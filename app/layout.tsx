@@ -136,11 +136,7 @@ function AppLogo() {
       className="fixed top-0 left-0 z-50 flex h-12 w-14 items-center justify-center border-r border-b bg-background/80 backdrop-blur-sm hover:bg-background/90 transition-colors"
     >
       <div className="flex items-center gap-2">
-        <img
-          src="/images/robot_icon.svg"
-          alt="Brain"
-          className="h-6 w-6 text-primary"
-        />
+        <img src="/favicon.ico" alt="Brain" className="h-6 w-6 text-primary" />
       </div>
     </Link>
   );
@@ -164,9 +160,21 @@ export default async function RootLayout({
   return (
     <html
       lang={params.lang || 'ru'}
-      className="font-inter"
+      className="" // REMOVED: font-inter - to restore: add back "font-inter"
       suppressHydrationWarning
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Inter:wght@100..900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <AuthSessionProvider session={session}>
           <ThemeProvider

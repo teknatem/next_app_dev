@@ -30,13 +30,14 @@
 
 ```
 domains/catalog-bots-d001/
-├── model/                    # ✅ SHARED - Схемы и типы
-│   └── bots.schema.ts       # Zod схемы + TypeScript типы
+├── orm.server.ts             # ⚠️ SERVER-ONLY - ORM/Drizzle схемы
+├── types.shared.ts           # ✅ SHARED - Типы и Zod схемы
 ├── data/                     # ⚠️ SERVER-ONLY - Операции с БД
 │   └── bot.repo.server.ts   # Репозиторий с 'server-only'
 ├── api/                      # ✅ CLIENT-ONLY - HTTP API
 │   └── bot.api.client.ts    # Клиентский API с 'use client'
 ├── actions/                  # ⚠️ SERVER-ONLY - Действия
+│   ├── bots.actions.ts      # Server Actions для клиента
 │   └── crud.actions.server.ts # CRUD действия
 ├── features/                 # ⚠️ SERVER-ONLY - Функции
 │   └── crud.server.ts       # CRUD функции

@@ -1,3 +1,5 @@
+import 'server-only';
+
 import {
   boolean,
   integer,
@@ -7,7 +9,7 @@ import {
   uuid,
   varchar
 } from 'drizzle-orm/pg-core';
-import { users } from './users';
+import { users } from '@/shared/database/schemas/users';
 
 export const d001Bots = pgTable('d001_bots', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -45,6 +47,3 @@ export const d001Bots = pgTable('d001_bots', {
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
   deletedBy: uuid('deleted_by').references(() => users.id)
 });
-
-export type Bot = typeof d001Bots.$inferSelect;
-export type NewBot = typeof d001Bots.$inferInsert;
