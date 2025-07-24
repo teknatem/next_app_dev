@@ -5,12 +5,12 @@ import {
   getPresignedUploadUrl,
   getPresignedReadUrl
 } from '../lib/s3.service.server';
+import { NewD002FileRecord } from '../orm.server';
 import {
-  NewFile,
   insertFileSchema,
   updateFileSchema,
   formFileSchema
-} from '../model/files.schema';
+} from '../types.shared';
 
 export const fileActions = {
   /**

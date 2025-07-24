@@ -1,5 +1,5 @@
 // Client-safe barrel for catalog-files-d002 domain
-export * from './model/files.schema';
+export * from './types.shared';
 export {
   toISOString,
   toDate,

@@ -1,4 +1,5 @@
 export * from './catalog-bots-d001';
+export * from './d002_files';
 export * from './d003_employees';
 export * from './llm-chats';
 export * from './llm-chat-messages';

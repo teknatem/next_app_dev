@@ -18,7 +18,7 @@ import {
 import { ChevronUpIcon, ChevronDownIcon, SearchIcon } from '@/shared/ui/icons';
 
 import { formatDateDDMMYYYY } from '../lib/date-utils';
-import { File } from '../model/files.schema';
+import { File } from '../types.shared';
 import { getFiles, softDeleteFile } from '../features/crud.server';
 
 type SortField =

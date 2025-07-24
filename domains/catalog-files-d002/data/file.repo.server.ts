@@ -3,7 +3,7 @@ import { eq, desc, and, sql, asc, ilike, or, like } from 'drizzle-orm';
 
 import { db } from '@/shared/database/connection';
 
-import { d002Files, NewFile } from '../model/files.schema';
+import { d002Files, NewD002FileRecord } from '../orm.server';
 
 export const fileRepository = {
   /**
@@ -11,7 +11,7 @@ export const fileRepository = {
    * @param newFile - The file data to insert.
    * @returns The newly created file record.
    */
-  async createFile(newFile: NewFile) {
+  async createFile(newFile: NewD002FileRecord) {
     const [result] = await db.insert(d002Files).values(newFile).returning();
     return result;
   },
@@ -157,7 +157,7 @@ export const fileRepository = {
    */
   async updateFile(
     id: string,
-    data: Partial<Pick<NewFile, 'title' | 'description'>>,
+    data: Partial<Pick<NewD002FileRecord, 'title' | 'description'>>,
     updatedBy?: string
   ) {
     const updateData: any = {

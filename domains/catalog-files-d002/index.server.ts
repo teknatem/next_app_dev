@@ -1,7 +1,9 @@
 import 'server-only';
 
+// Server-only ORM exports (includes validation schemas)
+export * from './orm.server';
 // Shared exports
-export * from './model/files.schema';
+export * from './types.shared';
 export {
   toISOString,
   toDate,

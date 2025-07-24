@@ -25,7 +25,7 @@ import {
 } from '@/shared/ui/dialog';
 
 import { toISOString } from '../lib/date-utils';
-import { File } from '../model/files.schema';
+import { File } from '../types.shared';
 import { updateFile } from '../features/crud.server';
 
 interface FileDetailsProps {

@@ -16,7 +16,7 @@ import {
   type MeetingSearch,
   type MeetingAssetWithFileInfo
 } from '../types.shared';
-import { d002Files } from '../../catalog-files-d002/model/files.schema';
+import { d002Files } from '../../catalog-files-d002/orm.server';
 
 export const meetingRepositoryServer = {
   // Meeting operations

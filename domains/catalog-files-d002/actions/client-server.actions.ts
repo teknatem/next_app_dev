@@ -1,7 +1,7 @@
 'use server';
 
 import { fileRepository } from '../data/file.repo.server';
-import { File as FileRecord } from '../model/files.schema';
+import { File as FileRecord } from '../types.shared';
 
 /**
  * Server action для получения изображений (может быть вызван из клиента)

@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { d003Employees } from '@/shared/database/schemas/d003_employees';
-import { d002Files } from '@/domains/catalog-files-d002/model/files.schema';
+import { d002Files } from '@/domains/catalog-files-d002/orm.server';
 import {
   MEETING_ASSET_KINDS,
   MEETING_ARTEFACT_TYPES,

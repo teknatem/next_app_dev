@@ -8,7 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Progress } from '@/shared/ui/progress';
 
-import { type File as D002File } from '../model/files.schema';
+import { type File as D002File } from '../types.shared';
 import { createFile, getPresignedUploadUrl } from '../features/crud.server';
 
 const presignedUrlResponseSchema = z.object({

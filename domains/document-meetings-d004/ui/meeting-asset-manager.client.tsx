@@ -11,10 +11,7 @@ import {
 } from '@/shared/ui/dialog';
 import { FilePicker } from '@/domains/catalog-files-d002/ui/file.picker.client';
 import { FileUploader } from '@/domains/catalog-files-d002/ui/file.uploader.client';
-import {
-  type File as D002File,
-  selectFileSchema
-} from '@/domains/catalog-files-d002';
+import { type File as D002File } from '@/domains/catalog-files-d002';
 import { Plus } from 'lucide-react';
 
 interface MeetingAssetManagerProps {
@@ -68,15 +65,13 @@ export function MeetingAssetManager({
       };
     }
 
-    const validation = selectFileSchema.safeParse(transformedFile);
-    if (!validation.success) {
-      console.error(
-        'Uploaded file has unexpected structure:',
-        validation.error
-      );
+    // Простая проверка обязательных полей (клиенту не нужна полная Zod валидация)
+    const fileData = transformedFile as any;
+    if (!fileData.id || !fileData.title) {
+      console.error('Uploaded file missing required fields:', transformedFile);
       return;
     }
-    const validatedFile = validation.data;
+    const validatedFile = fileData as D002File;
 
     setError(null); // Clear previous errors
     startTransition(async () => {

@@ -12,7 +12,7 @@ import {
 } from '@/shared/ui/dialog';
 
 import { FileList } from './file.list.client';
-import { File } from '../model/files.schema';
+import { File } from '../types.shared';
 
 interface FilePickerProps {
   onFileSelect: (_file: File) => void;

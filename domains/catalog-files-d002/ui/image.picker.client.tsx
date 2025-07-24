@@ -12,7 +12,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
 import { Image as ImageIcon, Search, FileImage, Download } from 'lucide-react';
-import { File as FileRecord } from '../model/files.schema';
+import { File as FileRecord } from '../types.shared';
 import { getImagesAction } from '../actions/client-server.actions';
 import { formatDate } from '../lib/date-utils';
 
