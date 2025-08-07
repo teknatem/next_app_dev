@@ -13,7 +13,8 @@ import {
   DialogTrigger
 } from '@/shared/ui/dialog';
 import { Search, Check, X, ChevronDown, User } from 'lucide-react';
-import { getBots, LLM_PROVIDERS, GENDER_OPTIONS } from '../';
+import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
+// server loaders будут прокинуты пропами
 import type { Bot } from '../';
 
 interface BotPickerProps {
@@ -23,6 +24,10 @@ interface BotPickerProps {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  onLoadAction?: (params: {
+    limit?: number;
+    search?: string;
+  }) => Promise<{ bots: Bot[]; total: number }>;
 }
 
 export function BotPicker({
@@ -31,7 +36,8 @@ export function BotPicker({
   multiple = false,
   placeholder = 'Выберите бота...',
   disabled = false,
-  className = ''
+  className = '',
+  onLoadAction
 }: BotPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [bots, setBots] = useState<Bot[]>([]);
@@ -44,18 +50,12 @@ export function BotPicker({
     setError(null);
 
     try {
-      const result = await getBots({
+      if (!onLoadAction) return;
+      const data = await onLoadAction({
         limit: 100,
-        search: search || undefined,
-        sortBy: 'name',
-        sortOrder: 'asc'
+        search: search || undefined
       });
-
-      if (result.success && result.data) {
-        setBots(result.data.bots);
-      } else {
-        setError(result.error || 'Failed to load bots');
-      }
+      setBots(data.bots);
     } catch (err) {
       setError('Failed to load bots');
       console.error('Error loading bots:', err);

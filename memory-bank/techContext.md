@@ -2,84 +2,39 @@
 
 ## 🛠️ Technology Stack
 
-### Frontend Framework
+### Core Frameworks & Libraries
 
-- **Next.js 15** (App Router) - Server-side rendering and modern React patterns
-- **TypeScript** - Type safety and better development experience
-- **Tailwind CSS + Shadcn UI** - Modern, consistent styling and components
-- **next-themes** - For theme management (light/dark mode).
-- **Vercel Analytics** - Performance monitoring and user analytics
+- **Next.js 15:** App Router, Server Components, and Server Actions.
+- **React 19:** For building the user interface.
+- **TypeScript:** For static typing and code quality.
+- **Tailwind CSS:** For utility-first styling.
+- **Shadcn UI:** For the base component library.
+- **next-themes:** For theme management (light/dark mode).
+- **Zustand:** For client-side state management (UI state only).
 
-### Database & ORM
+### Database & Data Access
 
-- **PostgreSQL** - Primary database for structured data storage
-- **Drizzle ORM** - Type-safe database operations and schema management
-- **Database Extensions** - Support for vector data (future LLM embeddings)
+- **PostgreSQL:** Primary relational database.
+- **Drizzle ORM:** Type-safe, SQL-like ORM for database access.
+- **Vector Database (Planned):** For semantic search and AI features.
 
 ### Object Storage
 
-- **Yandex Cloud S3** - AWS S3-compatible object storage
-- **Presigned URLs** - Secure file upload/download
-- **File Management** - Metadata tracking and lifecycle management
+- **Yandex Cloud S3:** S3-compatible storage for files and media.
+- **Presigned URLs:** Used for secure file uploads/downloads directly from the client.
 
-### LLM & AI Integration
+### AI & LLM Integration
 
-- **OpenAI API** - GPT models for data processing and analysis
-- **LangChain** (planned) - LLM workflow orchestration
-- **Vector Databases** (future) - Semantic search capabilities
-- **Custom AI Pipelines** - Data transformation and insight generation
+- **OpenAI API:** For generative AI, data processing, and analysis.
+- **AssemblyAI:** For audio transcription and diarization.
+- **LangChain (Planned):** For building complex LLM-powered workflows.
 
-### Development Environment
+### Development & Tooling
 
-- **Local Development** - Direct Node.js setup (no Docker)
-- **pnpm** - Fast, efficient package management
-- **TypeScript Config** - Strict type checking with path mapping
-- **Environment Variables** - Secure configuration management
-
----
-
-## 🏗️ Architecture Patterns
-
-### Feature-Sliced Design (FSD) with Server/Client Separation
-
-```
-domains/
-├── catalog-files-d002/      # File management domain
-│   ├── model/               # ✅ SHARED - Zod schemas, TypeScript types
-│   ├── data/                # ⚠️ SERVER-ONLY - Database repositories
-│   ├── api/                 # ✅ CLIENT-ONLY - HTTP API calls
-│   ├── lib/                 # 🔄 MIXED - Utilities and services
-│   ├── ui/                  # ✅ CLIENT-ONLY - React components
-│   ├── index.ts             # ✅ CLIENT-SAFE - Public API
-│   ├── index.server.ts      # ⚠️ SERVER-ONLY - Server API
-│   └── README.md            # Documentation
-└── catalog-llm-bot-d001/    # LLM chat domain (planned)
-
-widgets/
-├── file-to-base-import/     # File import widget
-└── llm-chat/               # AI assistant
-```
-
-### Data Flow Architecture
-
-- **API Routes** (`/app/api/`) - Server-side data processing
-- **Server Components** - Optimized data fetching
-- **Client Components** - Interactive widgets and forms
-- **Shared Libraries** (`/shared/`) - Common utilities and configurations
-
-### Server/Client Separation
-
-- **Explicit Boundaries** - `.server.ts` and `.client.ts` suffixes
-- **Runtime Directives** - `'server-only'` and `'use client'`
-- **Double Export System** - `index.ts` (client) + `index.server.ts` (server)
-- **Type Safety** - Prevents server code in client bundles
-
-### LLM Integration Points
-
-- **Data Import** - Intelligent column mapping and validation
-- **Processing Pipeline** - Automated data cleaning and transformation
-- **Analytics Engine** - Pattern recognition and insight generation
-- **User Interface** - Dynamic content and recommendations
+- **pnpm:** The required package manager for this project.
+- **ESLint:** For code linting and enforcing architectural rules.
+- **Drizzle Kit:** For generating and managing database migrations.
+- **Vercel Analytics:** For performance monitoring.
 
 ---
 
@@ -87,61 +42,40 @@ widgets/
 
 ### Prerequisites
 
-- **Node.js 18+** - Runtime environment
-- **PostgreSQL 14+** - Database server
-- **pnpm 8+** - Package manager
+- **Node.js 20+**
+- **PostgreSQL 14+**
+- **pnpm 8+**
 
-### Recent Fixes
+### Local Environment Setup
 
-- **`next-themes` import issue (2024-07-26)**: Fixed a build error by updating the import path for `ThemeProviderProps` in `app/theme-provider.tsx` from `next-themes/dist/types` to `next-themes`. This was necessary after an update to the `next-themes` package.
+1.  **Install dependencies:**
+    ```bash
+    pnpm install
+    ```
+2.  **Configure environment variables:**
+    - Create a `.env.local` file by copying `.env.example`.
+    - Fill in the required variables, such as `POSTGRES_URL`.
+3.  **Run the development server:**
+    ```bash
+    pnpm dev
+    ```
 
-### Local Environment
+### Database Management
 
-```bash
-# Install dependencies
-pnpm install
+- **Generate Migrations:** After changing a Drizzle schema in `domains/**/orm.server.ts` or `shared/database/schemas/`, run:
+  ```bash
+  pnpm db:generate
+  ```
+- **Apply Migrations:** To apply migrations to your local database, run:
+  ```bash
+  pnpm db:push
+  ```
 
-# Setup database connection
-# Configure .env.local with POSTGRES_URL
+### Path Aliases (`tsconfig.json`)
 
-# Run development server
-pnpm dev
-```
+The project uses path aliases for clean imports. Refer to `tsconfig.json` for the complete list.
 
-### Path Mapping (tsconfig.json)
-
-```json
-{
-  "paths": {
-    "@/shared/*": ["shared/*"],
-    "@/domains/*": ["domains/*"],
-    "@/widgets/*": ["widgets/*"],
-    "@/features/*": ["features/*"]
-  }
-}
-```
-
----
-
-## 🔧 Technical Constraints & Decisions
-
-### Performance Requirements
-
-- **Sub-second Response** - Critical for BI dashboard usability
-- **Concurrent Users** - Support 50+ simultaneous users
-- **Large Data Sets** - Handle millions of records efficiently
-
-### Scalability Considerations
-
-- **Widget Architecture** - FSD enables independent development of dozens of widgets
-- **Database Schema** - Extensible design for dozens of new tables
-- **LLM Rate Limits** - Intelligent caching and batching strategies
-
-### Code Quality Standards
-
-- **TypeScript Strict Mode** - Maximum type safety
-- **FSD Architecture** - Consistent, scalable code organization
-- **Server/Client Separation** - Explicit boundaries and runtime safety
-- **Double Export System** - Clear public APIs for each environment
-- **File Naming Convention** - Explicit `.server.ts` and `.client.ts` suffixes
-- **Performance Monitoring** - Built-in analytics and optimization
+- `@/shared/*`
+- `@/domains/*`
+- `@/widgets/*`
+- `@/features/*`

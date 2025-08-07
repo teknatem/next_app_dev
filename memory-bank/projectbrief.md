@@ -16,7 +16,7 @@ This project is a **Corporate Knowledge Base and BI System** built with Next.js 
 **Core Requirements:**
 
 - Scalable architecture supporting dozens of widgets and database tables
-- Feature-Sliced Design (FSD) for maximum modularity and maintainability
+- Context-Driven Design (CDD) for maximum modularity and maintainability
 - LLM integration at every stage (data processing, analysis, reporting, UI generation)
 - Multiple data import methods (Excel, CSV, API integrations)
 - Real-time BI dashboards and reporting system
@@ -27,6 +27,6 @@ This project is a **Corporate Knowledge Base and BI System** built with Next.js 
 **Critical Success Factors:**
 
 - Architecture optimized for LLM workflows and AI-assisted development
-- Modular widget system using FSD for rapid feature development
+- Modular widget system using CDD for rapid feature development
 - Flexible data model supporting diverse corporate data types
 - Performance optimization for large-scale data processing

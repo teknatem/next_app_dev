@@ -1,241 +1,87 @@
-# Progress Tracking
+# Progress Log
 
-## 🔧 Recent Fixes (January 2025)
-
-### ✅ Database Structure Alignment: Domain d002 (2025-01-27)
-
-- **Problem**: The `files` table in domain `catalog-files-d002` didn't follow the memory bank database conventions.
-- **Solution**:
-  - Renamed table from `files` to `d002_files` (domain prefix)
-  - Added mandatory fields: `version`, `created_by`, `updated_by`, `deleted_at`, `deleted_by`, `metadata`
-  - Updated all imports and references throughout the codebase
-  - Created and applied migration to preserve existing data
-- **Status**: ✅ **Database structure aligned with memory bank conventions.**
-
-#### Technical Changes:
-
-```sql
--- Migration: 0002_rename_files_to_d002_files.sql
-ALTER TABLE "files" RENAME TO "d002_files";
-ALTER TABLE "d002_files" ADD COLUMN "version" integer DEFAULT 0 NOT NULL;
-ALTER TABLE "d002_files" ADD COLUMN "created_by" uuid REFERENCES "users"("id");
-ALTER TABLE "d002_files" ADD COLUMN "updated_by" uuid REFERENCES "users"("id");
-ALTER TABLE "d002_files" ADD COLUMN "deleted_at" timestamp with time zone;
-ALTER TABLE "d002_files" ADD COLUMN "deleted_by" uuid REFERENCES "users"("id");
-ALTER TABLE "d002_files" ADD COLUMN "metadata" text;
-```
-
-#### Updated Files:
-
-```bash
-domains/catalog-files-d002/model/files.schema.ts     ✅
-domains/catalog-files-d002/data/file.repo.server.ts  ✅
-shared/database/schemas/meetings.ts                  ✅
-domains/document-meetings-d004/data/meeting.repo.server.ts ✅
-shared/database/migrations/sql/0002_rename_files_to_d002_files.sql ✅
-```
+This document tracks the history of completed tasks, major feature implementations, and significant fixes in chronological order.
 
 ---
 
-## 🔧 Recent Fixes (July 2024)
+### 🎯 Architecture Refactoring: Context-Driven Design (CDD)
 
-### ✅ Build Fix: `next-themes` Import (2024-07-26)
+_January 27, 2025_
 
-- **Problem**: The application failed to build due to an incorrect import path in `app/theme-provider.tsx`.
-- **Solution**: Corrected the import for `ThemeProviderProps` from `next-themes/dist/types` to `next-themes`.
-- **Status**: ✅ **Build successful.**
-
----
-
-## 🎯 Meeting Statistics Enhancement: ЗАВЕРШЕН ✅
-
-### ✅ ЗАВЕРШЕНО: Статистика файлов и артефактов в списке встреч (27.01.2025)
-
-**Достижения:**
-
-- ✅ **Тип MeetingWithStats:** Новый тип для встреч с счетчиками файлов и артефактов
-- ✅ **Обновлен getMeetingsAction:** Использует getMeetingsWithStats для получения статистики
-- ✅ **Обновлен searchMeetingsAction:** Добавлена статистика к результатам поиска
-- ✅ **UI enhancement:** Отображение количества файлов и артефактов с иконками
-- ✅ **Компиляция успешна:** Все изменения работают без ошибок TypeScript
-
-#### Техническая реализация:
-
-```typescript
-// Новый тип для встреч с статистикой
-export type MeetingWithStats = {
-  id: string;
-  title: string;
-  startedAt: Date;
-  endedAt: Date | null;
-  location: string;
-  isOnline: boolean;
-  organiserId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  assetCount: number;
-  artefactCount: number;
-};
-
-// Обновленные файлы:
-domains/document-meetings-d004/model/meetings.schema.ts     ✅
-domains/document-meetings-d004/actions/crud.actions.server.ts ✅
-domains/document-meetings-d004/ui/meeting.list.client.tsx   ✅
-```
-
-#### Функциональность:
-
-1. **Счетчики в списке встреч:** Каждая встреча показывает количество файлов и артефактов
-2. **Иконки File и Brain:** Визуальная индикация типа счетчиков
-3. **Реальные данные:** Статистика берется из таблиц meetingAssets и meetingArtefacts
-4. **Поиск с статистикой:** Поиск встреч также включает статистику
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Refactored the project's architecture from a loosely-defined FSD to a clear Context-Driven Design (CDD). This involved updating all core `memory-bank` documents (`systemPatterns.md`, `cursor-domain-rules.md`, etc.) to establish a single source of truth for architectural principles. The new structure emphasizes context localization and explicit boundaries, making the codebase easier to navigate for both developers and AI.
 
 ---
 
-## 🎯 LLM Chat MVP: ЗАВЕРШЕН ✅
+### 🎯 Refactor: catalog-bots-d001 Server Actions & Domain Rules
 
-### ✅ ЗАВЕРШЕНО: LLM Chat MVP (27.01.2025)
+_January 27, 2025_
 
-**Достижения:**
-
-- ✅ **Полная архитектура FSD:** `widgets/llm-chat/` с ui, lib, api, types
-- ✅ **База данных готова:** Таблицы `llm_chats` и `llm_chat_messages` с метаданными
-- ✅ **API endpoints работают:** CRUD для чатов, отправка сообщений
-- ✅ **UI интеграция:** Кнопка в header, resizable панель справа
-- ✅ **State management:** Zustand store с персистентностью
-- ✅ **Mock OpenAI:** Готово к подключению реального API
-
-#### Техническая реализация:
-
-```bash
-# Созданные файлы:
-shared/database/schemas/llm-chats.ts           ✅
-shared/database/schemas/llm-chat-messages.ts  ✅
-shared/database/schemas/llm-relations.ts      ✅
-shared/database/services/llm-chat.service.ts  ✅
-
-widgets/llm-chat/types/index.ts               ✅
-widgets/llm-chat/lib/chat-store.ts            ✅
-widgets/llm-chat/api/chat-api.ts              ✅
-widgets/llm-chat/ui/chat-window.tsx           ✅
-widgets/llm-chat/ui/chat-sidebar.tsx          ✅
-widgets/llm-chat/ui/chat-provider.tsx         ✅
-widgets/llm-chat/ui/chat-toggle-button.tsx    ✅
-
-app/api/llm/chat/route.ts                     ✅
-app/api/llm/chats/route.ts                    ✅
-app/api/llm/chats/[id]/route.ts               ✅
-app/api/llm/chats/[id]/messages/route.ts      ✅
-app/api/test-llm-chat/route.ts                ✅
-
-# Интеграция в layout:
-app/layout.tsx - ChatProvider + ChatToggleButton ✅
-```
-
-#### Готово к использованию:
-
-1. **Кнопка чата** в header - открывает/закрывает панель
-2. **Resizable панель** - 20-50% ширины экрана
-3. **Сохранение всех данных** - чаты, сообщения, метаданные
-4. **Расширяемая архитектура** - готова к добавлению функций
+- **Status:** ✅ **COMPLETE (phase 1)**
+- **Summary:**
+  - Removed server action exports from client index `domains/catalog-bots-d001/index.ts`.
+  - Renamed orchestrator file to `infra/crud.server.ts`; updated server index to import from it.
+  - Added server wrappers `ui/bot.list.server.tsx`, `ui/bot.details.server.tsx`, `ui/bot.picker.server.tsx` to pass actions/data to client components.
+  - Updated client components to use `initialData` and server action props; removed direct imports of server actions.
+  - Moved enums to `domains/catalog-bots-d001/model/enums.ts`; `types.shared.ts` now imports from there.
+  - Updated domain `README.md` to document the new pattern and discourage REST for this domain.
+  - Next phase: implement audit fields with `userId` and optimistic concurrency control (OCC) in repo/actions.
 
 ---
 
-## 🎯 Sprint 2: Database Integration - ЗАВЕРШЕН ✅
+### 🎯 Feature: Meeting Asset Enhancements
 
-### ✅ ЗАВЕРШЕНО: База данных настроена
+_January 27, 2025_
 
-**Достижения (26.01.2025):**
-
-- ✅ **База данных настроена:** `sts_test` на localhost:5432
-- ✅ **Миграции применены:** Таблицы созданы успешно
-- ✅ **Подключение проверено:** API endpoints работают
-- ✅ **Drizzle config:** Обновлен с dotenv для .env.local
-
-#### Техническая реализация:
-
-```bash
-# Команды выполнены успешно:
-pnpm db:push ✅ - схемы применены
-pnpm add dotenv ✅ - для чтения .env.local
-```
-
-#### API Endpoints протестированы:
-
-- `GET /api/test-db` ✅
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Enhanced the meeting details page to display comprehensive file information. The `getAssetsByMeetingId` function was updated to JOIN the `files` table, and a new `MeetingAssetWithFileInfo` type was introduced. The UI now shows the file's title, description, and size, providing more context to users.
 
 ---
 
-## 🎯 Sprint 1: ЗАВЕРШЕН ✅
+### 🎯 Feature: Meeting List Statistics
 
-### ✅ Completed Features
+_January 27, 2025_
 
-#### 🗄️ Database Architecture (Drizzle ORM)
-
-- ✅ `shared/database/connection/` - PostgreSQL connection
-- ✅ `shared/database/schemas/` - User tables and system schemas
-- ✅ `shared/database/services/` - BaseCrudService for CRUD operations
-- ✅ `shared/database/migrations/` - migration utilities
-- ✅ **Server-Only Separation** - исправлены все импорты
-
-#### 🎨 UI Management System
-
-- ✅ `/tables` - главная страница управления таблицами
-- ✅ Navigation update - "Products" → "Tables"
-- ✅ Responsive design - cards, tabs, statistics
-
-#### 🔧 Technical Infrastructure
-
-- ✅ TypeScript path mapping - `@/entities/*`, `@/shared/*`
-- ✅ Package.json scripts - `db:generate`, `db:migrate`, `db:push`
-- ✅ Development environment - fully working
-- ✅ **All pages load correctly** - no server-only errors
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Implemented statistics for meetings in the main list view. A new `MeetingWithStats` type was created, and the `getMeetingsAction` and `searchMeetingsAction` were updated to include counts of related files and artifacts. The UI was enhanced with icons to visually represent these counts.
 
 ---
 
-## 🏗️ Architecture Status
+### 🎯 Feature: LLM Chat MVP
 
-### ✅ Working Components
+_January 27, 2025_
 
-```
-next_app/
-├── shared/database/           ✅ Drizzle ORM + Live PostgreSQL
-├── widgets/llm-chat/          ✅ LLM Chat MVP widget
-├── app/(bi)/tables/           ✅ UI management system
-├── widgets/file-to-base-import/ ✅ Data import widget
-├── app/api/llm/              ✅ LLM API endpoints
-├── app/api/test-db/          ✅ DB connection test
-├── app/api/test-llm-chat/    ✅ LLM Chat test
-└── memory-bank/              ✅ Complete documentation
-```
-
-### 🔧 Technical Stack
-
-- **Next.js 15** + TypeScript ✅
-- **Drizzle ORM** + **PostgreSQL** ✅ **LIVE**
-- **Tailwind CSS** + shadcn/ui ✅
-- **Zod** validation ✅
-- **Zustand** state management ✅
-- **FSD Architecture** ✅
-
-### 📊 Performance Metrics
-
-- Development server: **Ready** ✅
-- Page load times: **< 200ms** ✅
-- **Database connection:** **< 100ms** ✅
-- **LLM Chat:** **Ready for use** ✅
-- TypeScript compilation: **Error-free** ✅
-- Server-client separation: **Correct** ✅
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Delivered the Minimum Viable Product for the LLM Chat. This included:
+  - **Database:** Created `llm_chats` and `llm_chat_messages` tables.
+  - **API:** Built full CRUD API endpoints for chats and messages.
+  - **Widget:** Developed the chat widget following CDD principles, with a Zustand store for state management.
+  - **UI Integration:** Added a chat toggle to the header and a resizable chat panel.
+  - **Mocking:** Integrated a mock OpenAI API, making the feature ready for live API keys.
 
 ---
 
-## 🎯 Success Criteria - ALL COMPLETE ✅
+### 🎯 Chore: UI Cleanup on Tables Page
 
-1. **Database Setup** - ✅ PostgreSQL connected + LLM tables
-2. **Migrations Applied** - ✅ All tables created successfully
-3. **Widget Architecture** - ✅ FSD pattern implemented
-4. **LLM Chat MVP** - ✅ Full working chat system
-5. **API Integration** - ✅ All endpoints working
-6. **UI Integration** - ✅ Header button + resizable panel
+_January 26, 2025_
 
-**Current Status:** 🚀 **ALL SYSTEMS OPERATIONAL - LLM CHAT READY** 🚀
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Refined the UI of the `/tables` page, replacing large cards with a more compact, responsive list format. This improved information density and usability.
+
+---
+
+### 🎯 Chore: Database Setup & Integration
+
+_January 26, 2025_
+
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Successfully configured the PostgreSQL connection and set up the initial database schema using Drizzle ORM. Created a test API endpoint (`/api/test-db`) to verify the connection. This completed the foundational database work for Sprint 2.
+
+---
+
+### 🎯 Fix: Build Error with `next-themes`
+
+_July 26, 2024_
+
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Resolved a critical build failure by correcting the import path for `ThemeProviderProps` in `app/theme-provider.tsx`. The issue arose from an update in the `next-themes` package.

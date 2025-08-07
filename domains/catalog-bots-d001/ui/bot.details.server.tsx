@@ -1,0 +1,37 @@
+import 'server-only';
+
+import { BotDetails } from './bot.details.client';
+import { getBot, createBot, updateBot } from '../index.server';
+import type { NewBot } from '../types.shared';
+
+export async function BotDetailsServer(props: {
+  botId?: string;
+  mode?: 'view' | 'edit' | 'create';
+}) {
+  const { botId, mode = 'view' } = props;
+
+  async function onLoadAction(id: string) {
+    'use server';
+    return await getBot(id);
+  }
+
+  async function onCreateAction(data: NewBot) {
+    'use server';
+    return await createBot(data);
+  }
+
+  async function onUpdateAction(id: string, data: Partial<NewBot>) {
+    'use server';
+    return await updateBot(id, data);
+  }
+
+  return (
+    <BotDetails
+      botId={botId}
+      mode={mode}
+      onLoadAction={onLoadAction}
+      onCreateAction={onCreateAction}
+      onUpdateAction={onUpdateAction}
+    />
+  );
+}

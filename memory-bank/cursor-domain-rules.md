@@ -1,4 +1,4 @@
-# Cursor Domain Rules - Next.js FSD Project
+# Cursor Domain Rules - Next.js CDD Project
 
 ## 🎯 CRITICAL: Domain Structure Rules
 
@@ -35,7 +35,7 @@
 ```
 domains/
 └── <domain-name>/
-    ├── orm.server.ts        # ⚠️ SERVER-ONLY - ORM/Drizzle-схемы, только для сервера (с директивой 'server-only')
+    ├── orm.server.ts        # ⚠️ SERVER-ONLY - ORM/Drizzle-схемы, только для сервера (с директивой 'server-only'). См. [db rules.md](./db%20rules.md).
     ├── types.shared.ts      # ✅ SHARED - Типы и Zod-схемы, используются и на клиенте, и на сервере
     ├── model/               # ✅ SHARED - Domain data models and enums
     │   └── enums.ts              # Domain-specific enums
@@ -135,7 +135,7 @@ export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server
 
 - **Виджет детальной информации (Details Widget):**
 
-  - **Назначение:** Отображение полной информации об одной сущности. Может включать режимы просмотра и редактирования.
+  - **Назначение:** Отображение полной информации об одной сущности. Может включать режимы просмотра и редактирования. Для реализации форм редактирования используется паттерн "Полная Копия", описанный в [domain-client-data-patterns.md](./domain-client-data-patterns.md).
   - **Именование:** `<entity>.details.client.tsx`
   - **Пример:** `employees.details.client.tsx`
 
@@ -252,7 +252,7 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 - **TypeScript** strict mode
 - **Drizzle ORM** with PostgreSQL
 - **Yandex Cloud S3** for object storage
-- **Feature-Sliced Design** architecture
+- **Context-Driven Design** architecture
 
 ### **Key Principles**
 
@@ -260,7 +260,7 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 2. **Minimal Index Files** - Two index files max per domain
 3. **Type Safety** - Zod schemas + TypeScript
 4. **Performance** - Tree-shaking friendly exports
-5. **Scalability** - Domain-driven design
+5. **Scalability** - Context-driven design
 
 ---
 
@@ -303,19 +303,16 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 
 ## 📚 References
 
-### **Эталонная реализация:**
+### **Эталонные реализации:**
 
-- [domains/catalog-employees-d003/README.md](../domains/catalog-employees-d003/README.md) - **Эталонная реализация домена**
-  - Полная CRUD функциональность
-  - Правильная структура слоев
-  - Server/Client разделение
-  - Обязательные UI виджеты
-  - Реализация Server actions
+- `domains/catalog-bots-d001/` — Server Actions + серверные обёртки (RSC → клиент), double index, `model/` с enums и схемами, клиент-безопасные экспорты.
+- `domains/catalog-files-d002/` — Интеграция с хранилищем (S3) и файловые виджеты.
+- [domains/catalog-employees-d003/README.md](../domains/catalog-employees-d003/README.md) — CRUD и оркестрация действий.
 
-### **Дополнительные примеры:**
+### **Дополнительные материалы:**
 
-- [Feature-Sliced Design](https://feature-sliced.design/) - Official documentation
-- [Next.js App Router](https://nextjs.org/docs/app) - Server/Client patterns
+- [Context-Driven Design](https://feature-sliced.design/) — Official documentation
+- [Next.js App Router](https://nextjs.org/docs/app) — Server/Client patterns
 
 ## 🚀 Server Actions Best Practices (NEW)
 

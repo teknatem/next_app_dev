@@ -9,7 +9,6 @@
 
 ## 🎯 Key Principles
 
-- **FSD-совместимость** – код распределяется по слоям (widgets, shared, server, entities).
 - **Server/Client Separation** – server-only logic (LLM proxy, function handlers) остаётся в server-папке.
 - **Минимализм** – используем лёгкие библиотеки (zustand <2 KB, zod, SSE/WS), без избыточного boilerplate.
 - **Безопасность** – авторизация, rate-limit, аудит вызовов функций.

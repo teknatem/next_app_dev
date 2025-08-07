@@ -83,41 +83,23 @@ domains/catalog-bots-d001/
 
 ## 🔧 Использование
 
-### В клиентском коде:
+### В клиентском коде (через серверные обёртки):
 
 ```typescript
-import {
-  BotList,
-  BotDetails,
-  BotPicker,
-  botApiClient,
-  type Bot
-} from '@/domains/catalog-bots-d001';
+import { BotList } from '@/domains/catalog-bots-d001'; // client component
+import { BotListServer } from '@/domains/catalog-bots-d001/ui/bot.list.server'; // server wrapper
+import { BotDetails } from '@/domains/catalog-bots-d001'; // client component
+import { BotDetailsServer } from '@/domains/catalog-bots-d001/ui/bot.details.server'; // server wrapper
+import { BotPicker } from '@/domains/catalog-bots-d001'; // client component
+import { BotPickerServer } from '@/domains/catalog-bots-d001/ui/bot.picker.server'; // server wrapper
 
-// Список ботов
-<BotList
-  onEdit={(bot) => handleEdit(bot)}
-  onView={(bot) => handleView(bot)}
-  onDelete={(bot) => handleDelete(bot)}
-  onCreate={() => handleCreate()}
-/>
-
-// Детали бота
-<BotDetails
-  botId="bot-id"
-  mode="view"
-  onSave={(bot) => handleSave(bot)}
-/>
-
-// Выбор бота
-<BotPicker
-  selectedBots={selectedBots}
-  onSelect={(bots) => setSelectedBots(bots)}
-  multiple={true}
-/>
+// Пример использования в RSC:
+<BotListServer page={1} search={undefined} />
+<BotDetailsServer botId="bot-id" mode="view" />
+<BotPickerServer multiple />
 ```
 
-### В серверном коде:
+### В серверном коде (прямой вызов Server Actions):
 
 ```typescript
 import {
@@ -138,26 +120,14 @@ const result = await createBot(botData);
 const result = await updateBot(botId, updateData);
 ```
 
-## 📝 API Endpoints
-
-Домен предполагает следующие API endpoints:
-
-- `GET /api/bots` - Получение списка ботов
-- `POST /api/bots` - Создание нового бота
-- `GET /api/bots/:id` - Получение бота по ID
-- `PUT /api/bots/:id` - Обновление бота
-- `DELETE /api/bots/:id` - Мягкое удаление бота
-- `GET /api/bots/hierarchy/:level` - Боты по уровню иерархии
-- `GET /api/bots/provider/:provider` - Боты по провайдеру
+> Проект предпочитает Server Actions вместо отдельных REST API маршрутов. Если REST необходим — добавляйте отдельно и документируйте в соответствующем месте проекта.
 
 ## 🔒 Валидация
 
-Все данные проходят валидацию через Zod схемы:
+Все данные проходят валидацию через Zod схемы (`types.shared.ts`):
 
-- `formBotSchema` - для создания бота
-- `updateBotSchema` - для обновления бота
-- `insertBotSchema` - для вставки в БД
-- `selectBotSchema` - для выборки из БД
+- `botSchema` — базовая схема
+- `formBotSchema` — схема для формы создания/редактирования
 
 ## 🎨 Стилизация
 

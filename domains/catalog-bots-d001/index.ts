@@ -14,11 +14,4 @@ export { BotList } from './ui/bot.list.client';
 export { BotDetails } from './ui/bot.details.client';
 export { BotPicker } from './ui/bot.picker.client';
 
-// Client-safe Server Actions
-export {
-  getBots,
-  getBot,
-  createBot,
-  updateBot,
-  deleteBot
-} from './infra/crud.actions.server';
+// ⚠️ Не экспортируем server actions из client-safe индекса

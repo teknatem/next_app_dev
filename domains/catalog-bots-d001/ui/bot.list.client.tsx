@@ -29,22 +29,45 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { getBots, deleteBot } from '../'; // Импорт из корневого index.ts домена
-import type { Bot } from '../'; // Импорт из корневого index.ts домена
+import type { Bot } from '../';
 import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
+import { useTransition } from 'react';
 
 interface BotListProps {
   onEdit?: (bot: Bot) => void;
   onView?: (bot: Bot) => void;
   onCreate?: () => void;
   onDelete?: (bot: Bot) => void;
+  initialData?: { bots: Bot[]; total: number };
+  onDeleteAction?: (id: string) => Promise<void>; // server action-проп
+  onLoadAction?: (params: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sortBy?:
+      | 'name'
+      | 'position'
+      | 'hierarchyLevel'
+      | 'llmProvider'
+      | 'createdAt';
+    sortOrder?: 'asc' | 'desc';
+  }) => Promise<{ bots: Bot[]; total: number }>; // server loader-проп
 }
 
-export function BotList({ onEdit, onView, onCreate, onDelete }: BotListProps) {
-  const [bots, setBots] = useState<Bot[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+export function BotList({
+  onEdit,
+  onView,
+  onCreate,
+  onDelete,
+  initialData,
+  onDeleteAction,
+  onLoadAction
+}: BotListProps) {
+  const [bots, setBots] = useState<Bot[]>(initialData?.bots ?? []);
+  const [total, setTotal] = useState(initialData?.total ?? 0);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   // Пагинация и фильтры
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,20 +83,16 @@ export function BotList({ onEdit, onView, onCreate, onDelete }: BotListProps) {
     setError(null);
 
     try {
-      const result = await getBots({
+      if (!onLoadAction) return;
+      const data = await onLoadAction({
         limit: pageSize,
         offset: (currentPage - 1) * pageSize,
         search: search || undefined,
         sortBy,
         sortOrder
       });
-
-      if (result.success && result.data) {
-        setBots(result.data.bots);
-        setTotal(result.data.total);
-      } else {
-        setError(result.error || 'Failed to load bots');
-      }
+      setBots(data.bots);
+      setTotal(data.total);
     } catch (err) {
       setError('Failed to load bots');
       console.error('Error loading bots:', err);
@@ -95,12 +114,12 @@ export function BotList({ onEdit, onView, onCreate, onDelete }: BotListProps) {
       }
 
       try {
-        const result = await deleteBot(bot.id);
-        if (result.success) {
-          loadBots(); // Перезагружаем список
-        } else {
-          alert(result.error || 'Failed to delete bot');
-        }
+        if (!onDeleteAction) return;
+        startTransition(async () => {
+          await onDeleteAction(bot.id);
+          setBots((prev) => prev.filter((b) => b.id !== bot.id));
+          setTotal((t) => Math.max(0, t - 1));
+        });
       } catch (err) {
         alert('Failed to delete bot');
         console.error('Error deleting bot:', err);

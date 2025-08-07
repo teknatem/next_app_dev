@@ -32,7 +32,7 @@ import {
   Calendar,
   Hash
 } from 'lucide-react';
-import { getBot, createBot, updateBot } from '../';
+// server actions не импортируются напрямую; будут прокинуты через пропы server-обёртки
 import type { Bot as BotType, NewBot } from '../';
 import { LLM_PROVIDERS, GENDER_OPTIONS, LLM_MODELS, formBotSchema } from '../';
 import { ImagePicker } from '@/domains/catalog-files-d002';
@@ -45,6 +45,16 @@ interface BotDetailsProps {
   onSave?: (bot: BotType) => void;
   onCancel?: () => void;
   mode?: 'view' | 'edit' | 'create';
+  onLoadAction?: (
+    id: string
+  ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
+  onCreateAction?: (
+    data: NewBot
+  ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
+  onUpdateAction?: (
+    id: string,
+    data: Partial<NewBot>
+  ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
 }
 
 export function BotDetails({
@@ -52,7 +62,10 @@ export function BotDetails({
   bot: initialBot,
   onSave,
   onCancel,
-  mode = 'view'
+  mode = 'view',
+  onLoadAction,
+  onCreateAction,
+  onUpdateAction
 }: BotDetailsProps) {
   const [bot, setBot] = useState<BotType | null>(initialBot || null);
   const [loading, setLoading] = useState(!initialBot && !!botId);
@@ -108,7 +121,8 @@ export function BotDetails({
     setError(null);
 
     try {
-      const result = await getBot(botId);
+      if (!onLoadAction) return;
+      const result = await onLoadAction(botId);
       if (result.success && result.data) {
         setBot(result.data);
       } else {
@@ -140,9 +154,11 @@ export function BotDetails({
     try {
       let result;
       if (mode === 'create') {
-        result = await createBot(validation.data);
+        if (!onCreateAction) throw new Error('onCreateAction is not provided');
+        result = await onCreateAction(validation.data);
       } else if (bot?.id) {
-        result = await updateBot(bot.id, validation.data);
+        if (!onUpdateAction) throw new Error('onUpdateAction is not provided');
+        result = await onUpdateAction(bot.id, validation.data);
       } else {
         throw new Error('Невозможно сохранить: ID бота отсутствует');
       }

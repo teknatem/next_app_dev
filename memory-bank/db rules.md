@@ -145,3 +145,9 @@ export default defineConfig({
 - `orm.server.ts`: ТОЛЬКО Drizzle `pgTable` определения + базовые типы для репозиториев
 - `types.shared.ts`: Zod схемы для валидации + бизнес-типы TypeScript + поисковые схемы
 - `model/enums.ts`: Доменные перечисления и константы (импортируются в ORM при необходимости)
+
+---
+
+### 🔗 Связанные документы
+
+- **[Database Design Patterns](./databaseDesignPatterns.md)**: Описание специализированных паттернов для гибких схем и аудита, которые дополняют данные правила.
