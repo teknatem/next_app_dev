@@ -150,4 +150,4 @@ export default defineConfig({
 
 ### 🔗 Связанные документы
 
-- **[Database Design Patterns](./databaseDesignPatterns.md)**: Описание специализированных паттернов для гибких схем и аудита, которые дополняют данные правила.
+- **[Database Design Patterns](./patterns/database-design-patterns.md)**: Описание специализированных паттернов для гибких схем и аудита, которые дополняют данные правила.

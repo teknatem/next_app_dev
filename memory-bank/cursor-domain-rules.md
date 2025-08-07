@@ -135,7 +135,7 @@ export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server
 
 - **Виджет детальной информации (Details Widget):**
 
-  - **Назначение:** Отображение полной информации об одной сущности. Может включать режимы просмотра и редактирования. Для реализации форм редактирования используется паттерн "Полная Копия", описанный в [domain-client-data-patterns.md](./domain-client-data-patterns.md).
+  - **Назначение:** Отображение полной информации об одной сущности. Может включать режимы просмотра и редактирования. Для реализации форм редактирования используется паттерн "Полная Копия", описанный в [domain-client-data-patterns.md](./patterns/domain-client-data-patterns.md).
   - **Именование:** `<entity>.details.client.tsx`
   - **Пример:** `employees.details.client.tsx`
 

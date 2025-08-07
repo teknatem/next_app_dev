@@ -108,11 +108,6 @@ External Sources → API/File Import → LLM Processing → PostgreSQL → Widge
 
 ## ⚙️ Tech Stack
 
-### Backend
-
-- **Python + FastAPI** – Business logic and REST API
-- **AssemblyAI** – Transcription and diarization of meeting recordings
-
 ### Frontend
 
 - **Next.js 15 (App Router)** – UI and SSR

@@ -44,9 +44,9 @@ For all conventions related to database schema design, table naming, migrations,
 
 For detailed guides on implementing specific patterns like API design, LLM integration, and performance optimizations.
 
-- [API Design Patterns](./apiDesignPatterns.md)
-- [LLM Integration Patterns](./llmIntegrationPatterns.md)
-- [Performance Patterns](./performancePatterns.md)
+- [API Design Patterns](./patterns/api-design-patterns.md)
+- [LLM Integration Patterns](./patterns/llm-integration-patterns.md)
+- [Performance Patterns](./patterns/performance-patterns.md)
 
 ---
 
