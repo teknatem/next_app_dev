@@ -8,7 +8,7 @@ import {
   updateEmployeeSchema,
   type Employee
 } from '../types.shared';
-import { type NewEmployee } from '../orm.server';
+import { type NewD003Employee as NewEmployee } from '../orm.server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/shared/lib/auth.server';
 

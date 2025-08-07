@@ -53,13 +53,11 @@ domains/
 │   ├── index.ts             # ✅ CLIENT-SAFE - Public API
 │   ├── index.server.ts      # ⚠️ SERVER-ONLY - Server API
 │   └── README.md            # Documentation
-├── catalog-llm-bot-d001/    # LLM chat domain (planned)
-└── production-items/        # Production items domain (planned)
+└── catalog-llm-bot-d001/    # LLM chat domain (planned)
 
 widgets/
 ├── file-to-base-import/     # File import widget
-├── llm-chat/               # AI assistant
-└── production-items-table/ # Data tables
+└── llm-chat/               # AI assistant
 ```
 
 ### Data Flow Architecture
@@ -118,8 +116,7 @@ pnpm dev
     "@/shared/*": ["shared/*"],
     "@/domains/*": ["domains/*"],
     "@/widgets/*": ["widgets/*"],
-    "@/features/*": ["features/*"],
-    "@/entities/*": ["entities/*"]
+    "@/features/*": ["features/*"]
   }
 }
 ```

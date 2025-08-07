@@ -24,15 +24,9 @@ export interface ParsedRecord {
 
 export const SUPPORTED_FORMATS: ImportFormat[] = [
   {
-    id: 'products',
-    name: 'Товары',
-    description: 'Импорт товаров (название, цена, количество, статус)',
-    columns: ['name', 'price', 'stock', 'status', 'imageUrl', 'availableAt']
-  },
-  {
     id: 'customers',
     name: 'Клиенты',
     description: 'Импорт клиентов (имя, email, телефон)',
     columns: ['name', 'email', 'phone']
   }
-]; 
+];

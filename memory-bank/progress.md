@@ -143,14 +143,13 @@ app/layout.tsx - ChatProvider + ChatToggleButton ✅
 
 ## 🎯 Sprint 2: Database Integration - ЗАВЕРШЕН ✅
 
-### ✅ ЗАВЕРШЕНО: Пункт 3 - Интеграция ProductionItemApi в UI
+### ✅ ЗАВЕРШЕНО: База данных настроена
 
 **Достижения (26.01.2025):**
 
 - ✅ **База данных настроена:** `sts_test` на localhost:5432
 - ✅ **Миграции применены:** Таблицы созданы успешно
 - ✅ **Подключение проверено:** API endpoints работают
-- ✅ **Тестовые данные:** 4 production items добавлены
 - ✅ **Drizzle config:** Обновлен с dotenv для .env.local
 
 #### Техническая реализация:
@@ -163,8 +162,7 @@ pnpm add dotenv ✅ - для чтения .env.local
 
 #### API Endpoints протестированы:
 
-- `GET /api/test-db` → productionItemsCount: 4 ✅
-- `POST /api/seed-db` → insertedCount: 4 ✅
+- `GET /api/test-db` ✅
 
 ---
 
@@ -175,22 +173,14 @@ pnpm add dotenv ✅ - для чтения .env.local
 #### 🗄️ Database Architecture (Drizzle ORM)
 
 - ✅ `shared/database/connection/` - PostgreSQL connection
-- ✅ `shared/database/schemas/` - production_items & production_items_consumption
+- ✅ `shared/database/schemas/` - User tables and system schemas
 - ✅ `shared/database/services/` - BaseCrudService for CRUD operations
 - ✅ `shared/database/migrations/` - migration utilities
 - ✅ **Server-Only Separation** - исправлены все импорты
 
-#### 🏛️ Entities Architecture (FSD)
-
-- ✅ `entities/production-item/model/` - Zod schemas + TypeScript types
-- ✅ `entities/production-item/api/` - Complete CRUD API
-- ✅ `entities/production-item/ui/` - ProductionItemCard component
-- ✅ **Client-Server Split** - правильное разделение экспортов
-
 #### 🎨 UI Management System
 
 - ✅ `/tables` - главная страница управления таблицами
-- ✅ `/tables/production-items` - детальная страница
 - ✅ Navigation update - "Products" → "Tables"
 - ✅ Responsive design - cards, tabs, statistics
 
@@ -210,13 +200,11 @@ pnpm add dotenv ✅ - для чтения .env.local
 ```
 next_app/
 ├── shared/database/           ✅ Drizzle ORM + Live PostgreSQL
-├── entities/production-item/  ✅ Complete FSD entity
 ├── widgets/llm-chat/          ✅ LLM Chat MVP widget
 ├── app/(bi)/tables/           ✅ UI management system
 ├── widgets/file-to-base-import/ ✅ Data import widget
 ├── app/api/llm/              ✅ LLM API endpoints
 ├── app/api/test-db/          ✅ DB connection test
-├── app/api/seed-db/          ✅ Test data creation
 ├── app/api/test-llm-chat/    ✅ LLM Chat test
 └── memory-bank/              ✅ Complete documentation
 ```

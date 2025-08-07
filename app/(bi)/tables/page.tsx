@@ -14,29 +14,17 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
-const tableConfigs = [
-  {
-    id: 'production_items',
-    name: 'Номенклатура производства',
-    description:
-      'Каталог производственных материалов, полуфабрикатов и готовых изделий',
-    recordCount: 0,
-    lastUpdated: 'Не заполнено',
-    status: 'ready',
-    icon: '📦',
-    href: '/tables/production-items'
-  },
-  {
-    id: 'production_items_consumption',
-    name: 'Расход номенклатуры',
-    description:
-      'Учет расхода производственных материалов по документам и датам',
-    recordCount: 0,
-    lastUpdated: 'Не заполнено',
-    status: 'ready',
-    icon: '📊',
-    href: '/tables/production-items-consumption'
-  }
+const tableConfigs: Array<{
+  id: string;
+  name: string;
+  description: string;
+  recordCount: number;
+  lastUpdated: string;
+  status: string;
+  icon: string;
+  href: string;
+}> = [
+  // No tables configured yet
 ];
 
 const TableRow = ({ table }: { table: (typeof tableConfigs)[0] }) => {
@@ -168,27 +156,22 @@ export default function TablesPage() {
         {/* Основной контент */}
         <div className="lg:col-span-3">
           <Tabs defaultValue="all" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="all">Все таблицы</TabsTrigger>
-              <TabsTrigger value="production">Производство</TabsTrigger>
               <TabsTrigger value="analytics">Аналитика</TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="space-y-4">
               <div className="space-y-3">
-                {tableConfigs.map((table) => (
-                  <TableRow key={table.id} table={table} />
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="production" className="space-y-4">
-              <div className="space-y-3">
-                {tableConfigs
-                  .filter((table) => table.id.includes('production'))
-                  .map((table) => (
+                {tableConfigs.length > 0 ? (
+                  tableConfigs.map((table) => (
                     <TableRow key={table.id} table={table} />
-                  ))}
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Таблицы не настроены
+                  </div>
+                )}
               </div>
             </TabsContent>
 

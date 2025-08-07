@@ -1,7 +1,7 @@
 'use server';
 
 import { ZodError } from 'zod';
-import { botRepository } from '../data/bot.repo.server';
+import { botRepository } from './bot.repo.server';
 import { formBotSchema, NewBot } from '../types.shared';
 import { revalidatePath } from 'next/cache';
 

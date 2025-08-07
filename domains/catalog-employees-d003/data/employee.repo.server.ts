@@ -1,7 +1,11 @@
 import 'server-only';
 import { eq, like, and, desc } from 'drizzle-orm';
 import { db } from '@/shared/database/connection';
-import { employees, type Employee, type NewEmployee } from '../orm.server';
+import {
+  d003Employees as employees,
+  type D003Employee as Employee,
+  type NewD003Employee as NewEmployee
+} from '../orm.server';
 
 // Error type for optimistic locking conflicts
 export class OptimisticLockError extends Error {

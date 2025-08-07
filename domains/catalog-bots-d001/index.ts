@@ -21,4 +21,4 @@ export {
   createBot,
   updateBot,
   deleteBot
-} from './actions/crud.actions.server';
+} from './infra/crud.actions.server';

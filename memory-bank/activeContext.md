@@ -167,15 +167,6 @@ widgets/llm-chat/
 
 ## 📋 Previous Context: Sprint 2 - Database Integration
 
-### ✅ ЗАВЕРШЕНО: Пункт 3 - Интеграция ProductionItemApi в UI
-
-**Предыдущие достижения:**
-
-- ✅ **Database:** PostgreSQL настроен и работает
-- ✅ **API:** ProductionItemApi с полным CRUD функционалом
-- ✅ **UI:** Страницы tables работают с реальными данными
-- ✅ **Types:** Zod validation и TypeScript типы настроены
-
 **Current Status:** 🎯 **LLM CHAT MVP COMPLETE - READY FOR EXTENSIONS** 🎯
 
 ### ✅ ЗАВЕРШЕНО: UI Улучшение - Компактный дизайн страницы Tables
@@ -187,25 +178,6 @@ widgets/llm-chat/
 - ✅ **Улучшенная компоновка** - иконка, название/описание, статистика, действия
 - ✅ **Responsive дизайн** - адаптивная структура с hover эффектами
 - ✅ **Страница работает** - StatusCode 200, все функции доступны
-
-### 🎯 ТЕКУЩИЙ ФОКУС: Пункт 3 - Интеграция ProductionItemApi в UI
-
-**Задача:** Заменить mock данные в `/tables/production-items` на реальные данные из PostgreSQL через ProductionItemApi
-
-**Готовая инфраструктура:**
-
-- ✅ **Database:** 4 production items в PostgreSQL `sts_test`
-- ✅ **API:** `ProductionItemApi` с полным CRUD функционалом
-- ✅ **UI:** Страница готова к интеграции реальных данных
-- ✅ **Types:** Zod validation и TypeScript типы настроены
-
-### 🔄 План реализации пункта 3:
-
-1. Создать server action для получения production items
-2. Интегрировать ProductionItemApi в страницу `/tables/production-items`
-3. Заменить mock данные на реальные из базы данных
-4. Протестировать загрузку и отображение данных
-5. Обновить статистику в главной таблице
 
 **Previous Context:**
 
@@ -219,59 +191,7 @@ widgets/llm-chat/
 
 - ✅ **PostgreSQL подключение** настроено и работает
 - ✅ **База данных:** `sts_test` на localhost:5432
-- ✅ **Миграции применены:** production_items, production_items_consumption
-- ✅ **Тестовые данные:** 4 записи добавлены и проверены
-- ✅ **API endpoints:** `/api/test-db`, `/api/seed-db` созданы
-
-### 🛠️ Техническая реализация:
-
-```typescript
-// .env.local
-POSTGRES_URL=postgresql://postgres:1905@localhost:5432/sts_test
-
-// drizzle.config.ts - обновлен с dotenv
-import { config } from 'dotenv';
-config({ path: '.env.local' });
-
-// API endpoints протестированы:
-GET /api/test-db → productionItemsCount: 4 ✅
-POST /api/seed-db → insertedCount: 4 ✅
-```
-
----
-
-## 🚀 Готов к Пункту 3: Интеграция ProductionItemApi в UI
-
-### Следующие шаги Sprint 2:
-
-1. **Пункт 3:** Интегрировать ProductionItemApi в UI компоненты ⏳
-2. **Пункт 4:** Тестирование CRUD операций
-3. **Пункт 5:** Production-ready validation
-
-### Готовая инфраструктура:
-
-- **Database Layer:** ✅ Production ready
-- **API Layer:** ✅ ProductionItemApi с полным CRUD
-- **Test Data:** ✅ 4 production items в базе
-- **Connection:** ✅ Stable and verified
-
-### Архитектурные принципы сохранены:
-
-- **FSD Compliance** - строгое соблюдение
-- **Type Safety** - Drizzle ORM + Zod validation
-- **Server-Client Separation** - правильные импорты
-- **Scalability** - готовность к десяткам виджетов
-
----
-
-## 📋 Immediate Next Actions (Пункт 3)
-
-1. **Обновить production-items page** - использовать реальный API
-2. **Заменить mock data** - на ProductionItemApi calls
-3. **Добавить loading states** - для UX
-4. **Реализовать error handling** - graceful degradation
-
-**Current Status:** ⚡ **READY FOR POINT 3** ⚡
+- ✅ **API endpoints:** `/api/test-db` созданы
 
 ## 🎯 Next Steps (Sprint 2):
 
@@ -284,12 +204,10 @@ POST /api/seed-db → insertedCount: 4 ✅
 ### Приоритет 2: Import Integration
 
 - [ ] Обновить `widgets/file-to-base-import` под новые схемы
-- [ ] Реализовать автоматическое создание production_items при импорте consumption
 - [ ] Тестирование импорта реальных данных
 
 ### Приоритет 3: Extended Features
 
-- [ ] Добавить страницу production-items-consumption
 - [ ] Реализовать редактирование записей
 - [ ] Добавить экспорт данных
 
@@ -347,10 +265,6 @@ export default defineConfig({
 ```
 app/(bi)/tables/
 ├── page.tsx                    # Главная страница таблиц
-├── production-items/
-│   ├── page.tsx               # Просмотр номенклатуры
-│   └── components/            # Компоненты таблицы
-└── production-items-consumption/  # (planned)
 ```
 
 ---

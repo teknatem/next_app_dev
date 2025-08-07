@@ -24,27 +24,29 @@
 - **Google**: Gemini Pro, Gemini Flash
 - **Mistral**: Mistral Large, Mistral Medium, Mistral Small
 
-## 🏗️ Архитектура
+## 🏗️ Архитектура (DDD)
 
-### Слои домена:
+### Domain-Driven Design слои:
+
+Домен `catalog-bots-d001` следует принципам DDD с четким разделением слоев:
+
+- **Domain Layer** - бизнес-логика и правила домена (встроена в Server Actions)
+- **Infrastructure Layer** - техническая реализация (ORM, репозитории, Server Actions)
+- **Presentation Layer** - UI компоненты
+
+### Слои домена (DDD Architecture):
 
 ```
 domains/catalog-bots-d001/
-├── orm.server.ts             # ⚠️ SERVER-ONLY - ORM/Drizzle схемы
 ├── types.shared.ts           # ✅ SHARED - Типы и Zod схемы
-├── data/                     # ⚠️ SERVER-ONLY - Операции с БД
-│   └── bot.repo.server.ts   # Репозиторий с 'server-only'
-├── api/                      # ✅ CLIENT-ONLY - HTTP API
-│   └── bot.api.client.ts    # Клиентский API с 'use client'
-├── actions/                  # ⚠️ SERVER-ONLY - Действия
-│   ├── bots.actions.ts      # Server Actions для клиента
-│   └── crud.actions.server.ts # CRUD действия
-├── features/                 # ⚠️ SERVER-ONLY - Функции
-│   └── crud.server.ts       # CRUD функции
-├── ui/                       # 🔄 MIXED - React компоненты
-│   ├── bot.list.client.tsx  # ✅ CLIENT-ONLY - Список ботов
-│   ├── bot.details.client.tsx # ✅ CLIENT-ONLY - Детали бота
-│   └── bot.picker.client.tsx # ✅ CLIENT-ONLY - Выбор бота
+├── infra/                   # ⚠️ SERVER-ONLY - Infrastructure Layer
+│   ├── orm.server.ts        # ORM/Drizzle схемы
+│   ├── bot.repo.server.ts   # Repository Implementation
+│   └── crud.actions.server.ts # Server Actions
+├── ui/                       # ✅ CLIENT-ONLY - Presentation Layer
+│   ├── bot.list.client.tsx  # Список ботов
+│   ├── bot.details.client.tsx # Детали бота
+│   └── bot.picker.client.tsx # Выбор бота
 ├── index.ts                  # ✅ CLIENT-SAFE - Публичный API для клиента
 ├── index.server.ts           # ⚠️ SERVER-ONLY - Публичный API для сервера
 └── README.md                 # Документация
@@ -119,19 +121,21 @@ import {
 
 ```typescript
 import {
-  botRepository,
-  botActions,
-  botCrudServer
+  getBots,
+  getBot,
+  createBot,
+  updateBot,
+  deleteBot
 } from '@/domains/catalog-bots-d001/index.server';
 
-// Использование репозитория
-const bots = await botRepository.getBots({ limit: 10 });
+// Получение списка ботов
+const result = await getBots({ limit: 10 });
 
-// Использование действий
-const result = await botActions.createBotAction(formData);
+// Создание бота
+const result = await createBot(botData);
 
-// Использование CRUD функций
-const result = await botCrudServer.createBot(formData);
+// Обновление бота
+const result = await updateBot(botId, updateData);
 ```
 
 ## 📝 API Endpoints

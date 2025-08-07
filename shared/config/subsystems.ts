@@ -93,15 +93,6 @@ export const subsystems: Subsystem[] = [
     description: 'Управление данными',
     pages: [
       {
-        id: 'production-items',
-        name: 'Товары',
-        path: '/tables/production-items',
-        icon: 'Package',
-        description: 'Управление товарами',
-        subsystem: 'data',
-        tags: ['товары', 'продукция', 'items']
-      },
-      {
         id: 'customers',
         name: 'Клиенты',
         path: '/customers',

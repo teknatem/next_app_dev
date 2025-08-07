@@ -125,7 +125,7 @@ input[type='search']::-ms-clear {
     rgba(0, 0, 0, 0.7),
     rgba(0, 0, 0, 0.5)
   ),
-  url('/images/placeholder-product.svg');
+  url('/images/placeholder.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

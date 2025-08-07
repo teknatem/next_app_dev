@@ -2,7 +2,7 @@ import 'server-only';
 
 import { eq, and, or, desc, asc, like, sql } from 'drizzle-orm';
 import { db } from '@/shared/database/connection';
-import { d001Bots } from '../orm.server';
+import { d001Bots } from './orm.server';
 import type { Bot, NewBot } from '../types.shared';
 
 export const botRepository = {
