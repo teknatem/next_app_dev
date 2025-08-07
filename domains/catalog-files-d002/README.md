@@ -1,4 +1,4 @@
-# catalog-files-d002 — Эталонный домен (FSDDD)
+# catalog-files-d002 — Эталонный домен
 
 ## Структура
 
@@ -55,7 +55,7 @@ import {
 } from '@/domains/catalog-files-d002/index.server';
 ```
 
-### Использование Server Actions в клиентских компонентах
+### Использование Server Actions в клиентских компонентах (пример)
 
 ```tsx
 'use client';
@@ -103,7 +103,7 @@ export function MyComponent() {
 
 ## Обязательные UI виджеты
 
-Домен предоставляет следующие обязательные UI виджеты согласно FSDDD:
+Домен предоставляет следующие обязательные UI виджеты:
 
 1. **FileList** (`file.list.client.tsx`) - Список файлов с пагинацией и фильтрацией
 2. **FileDetails** (`file.details.client.tsx`) - Детальная информация о файле с возможностью редактирования

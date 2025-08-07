@@ -213,11 +213,11 @@ mkdir -p widgets/file-to-base-import
 
 ## 🚀 Продвинутые возможности
 
-### Интеграция с FSD архитектурой
+### Интеграция с архитектурой (пример слоёв)
 
 ```typescript
-// Автоматическое создание ссылок для всех слоев
-const FSD_LAYERS = ['entities', 'features', 'widgets', 'shared', 'pages'];
+// Автоматическое создание ссылок для слоёв (пример)
+const LAYERS = ['entities', 'features', 'widgets', 'shared', 'pages'];
 ```
 
 ### Поддержка относительных путей
@@ -240,7 +240,7 @@ git commit -m "feat: add new slice with trace links"
 
 - [VS Code Extension API](https://code.visualstudio.com/api)
 - [Cursor Documentation](https://cursor.sh/docs)
-- [Feature-Sliced Design](https://feature-sliced.design/)
+  // Ранее: Feature-Sliced Design — заменено на CDD в проектной документации
 
 ## 🤝 Вклад в проект
 

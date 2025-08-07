@@ -1,5 +1,5 @@
 // Domain-specific enums for catalog-employees-d003
-// Following FSDDD rules for client-server compatibility
+// Following project CDD rules for client-server compatibility
 
 export const EMPLOYEE_STATUS_VALUES = [
   'active',

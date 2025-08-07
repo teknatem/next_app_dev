@@ -32,6 +32,7 @@ import {
 import type { Bot } from '../';
 import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
 import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface BotListProps {
   onEdit?: (bot: Bot) => void;
@@ -63,6 +64,7 @@ export function BotList({
   onDeleteAction,
   onLoadAction
 }: BotListProps) {
+  const router = useRouter();
   const [bots, setBots] = useState<Bot[]>(initialData?.bots ?? []);
   const [total, setTotal] = useState(initialData?.total ?? 0);
   const [loading, setLoading] = useState(!initialData);
@@ -174,12 +176,21 @@ export function BotList({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Боты-сотрудники</CardTitle>
-          {onCreate && (
-            <Button onClick={onCreate} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Добавить бота
-            </Button>
-          )}
+          <Button
+            onClick={() => {
+              if (onCreate) return onCreate();
+              try {
+                router.push('/bots/new');
+              } catch {
+                // fallback
+                window.location.href = '/bots/new';
+              }
+            }}
+            size="sm"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Добавить бота
+          </Button>
         </div>
 
         {/* Поиск и фильтры */}
@@ -237,13 +248,14 @@ export function BotList({
               <TableRow key={bot.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
-                    {bot.avatarUrl && (
-                      <img
-                        src={bot.avatarUrl}
-                        alt={bot.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    )}
+                    {bot.avatarUrl &&
+                      /^(https?:|data:)/i.test(bot.avatarUrl) && (
+                        <img
+                          src={bot.avatarUrl}
+                          alt={bot.name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      )}
                     <div>
                       <div className="font-medium">{bot.name}</div>
                       <div className="text-sm text-gray-500">
@@ -281,18 +293,32 @@ export function BotList({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {onView && (
-                        <DropdownMenuItem onClick={() => onView(bot)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Просмотр
-                        </DropdownMenuItem>
-                      )}
-                      {onEdit && (
-                        <DropdownMenuItem onClick={() => onEdit(bot)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Редактировать
-                        </DropdownMenuItem>
-                      )}
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (onView) return onView(bot);
+                          try {
+                            router.push(`/bots/${bot.id}`);
+                          } catch {
+                            window.location.href = `/bots/${bot.id}`;
+                          }
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Просмотр
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          if (onEdit) return onEdit(bot);
+                          try {
+                            router.push(`/bots/${bot.id}?mode=edit`);
+                          } catch {
+                            window.location.href = `/bots/${bot.id}?mode=edit`;
+                          }
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Редактировать
+                      </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() =>
                           onDelete ? onDelete(bot) : handleDelete(bot)

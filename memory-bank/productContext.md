@@ -54,7 +54,7 @@
 
 ### Frontend (Next.js 15)
 
-- **Widget-Based Architecture** using Feature-Sliced Design
+- **Widget-Based Architecture** using Context-Driven Design (CDD)
 - **Responsive Dashboards** with real-time data updates
 - **LLM Chat Interface** for natural language queries
 - **Advanced Data Visualization** components
@@ -99,7 +99,7 @@ External Sources → API/File Import → LLM Processing → PostgreSQL → Widge
 ## 📈 Success Metrics
 
 - **Data Volume**: Support for millions of records across dozens of tables
-- **Widget Scalability**: Dozens of specialized widgets with FSD architecture
+- **Widget Scalability**: Dozens of specialized widgets within CDD contexts
 - **Performance**: Sub-second query response times with LLM processing
 - **User Adoption**: Intuitive interface requiring minimal training
 - **AI Effectiveness**: 90%+ accuracy in automated data processing and insights

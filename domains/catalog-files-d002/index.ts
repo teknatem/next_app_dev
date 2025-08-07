@@ -11,7 +11,7 @@ export {
 export { getImagesAction } from './actions/client-server.actions';
 export { testS3Configuration } from './actions/test-s3.action';
 
-// UI Components (renamed to follow FSDDD conventions)
+// UI Components
 export { FileList } from './ui/file.list.client';
 export { FileUploader } from './ui/file.uploader.client';
 export { FileDetails } from './ui/file.details.client';

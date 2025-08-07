@@ -1,7 +1,7 @@
 ## 📚 Corporate Knowledge Base & BI System
 
 <div align="center"><strong>Enterprise-grade data platform built with Next.js 15, Drizzle ORM & PostgreSQL</strong></div>
-<div align="center">LLM-powered analytics, modular FSD widgets, blazing-fast performance</div>
+<div align="center">LLM-powered analytics, modular CDD widgets, blazing-fast performance</div>
 <br />
 
 [Demo](https://next-admin-dash.vercel.app/) · [Clone & Deploy](https://vercel.com/templates/next.js/admin-dashboard-tailwind-postgres-react-nextjs)
@@ -54,7 +54,7 @@
 
 ## Architecture
 
-**Feature-Sliced Design (FSD)** гарантирует модульность и масштабируемость: каждый widget изолирован и может развиваться независимо.
+**Context-Driven Design (CDD)** гарантирует модульность и масштабируемость: каждый widget изолирован и развивается внутри своего контекста.
 
 ```text
 widgets/
@@ -126,7 +126,7 @@ pnpm dev
 ```text
 next_app_dev/
 ├── app/                 # Next.js routes (App Router)
-├── widgets/             # FSD widgets
+├── widgets/             # Widgets (CDD contexts compose UI)
 ├── entities/            # Domain entities
 ├── shared/              # Общие библиотеки, utils, база данных
 ├── memory-bank/         # Архитектурная документация
@@ -148,7 +148,7 @@ next_app_dev/
 
 ## Contributing
 
-Pull requests welcome! Пожалуйста, следуйте FSD-архитектуре и убедитесь, что `pnpm lint && pnpm test` проходят без ошибок.
+Pull requests welcome! Пожалуйста, следуйте CDD-архитектуре и убедитесь, что `pnpm lint && pnpm test` проходят без ошибок.
 
 ---
 

@@ -1,4 +1,4 @@
-# catalog-employees-d003 — Домен сотрудников (FSDDD)
+# catalog-employees-d003 — Домен сотрудников
 
 ## Описание
 
