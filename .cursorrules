@@ -1,0 +1,9 @@
+Project Intelligence: Server Actions
+
+- All Server Actions must be placed in `domains/<domain>/infra/`.
+- Use the `*.actions.ts` suffix for all Server Actions files.
+- Each Server Actions file must begin with the directive `'use server'` as the first line.
+- Export Server Actions only via the domain's `index.server.ts` (never via `index.ts`).
+- Client code must not import Server Actions directly; pass actions via props or form `action` attributes.
+
+Related docs: `memory-bank/cursor-domain-rules.md`, `memory-bank/systemPatterns.md`, `memory-bank/techContext.md`.

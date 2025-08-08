@@ -36,6 +36,16 @@
 - **Drizzle Kit:** For generating and managing database migrations.
 - **Vercel Analytics:** For performance monitoring.
 
+### Server Actions Conventions
+
+- Server Actions live under `domains/<domain>/infra/`.
+- Filenames must end with `*.actions.ts`.
+- Each file must start with `'use server'`.
+- Export only via `index.server.ts`.
+- Never import them in client modules.
+
+See: [`memory-bank/cursor-domain-rules.md`](./cursor-domain-rules.md)
+
 ---
 
 ## 📋 Development Setup

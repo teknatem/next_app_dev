@@ -42,7 +42,7 @@ domains/catalog-bots-d001/
 ├── infra/                   # ⚠️ SERVER-ONLY - Infrastructure Layer
 │   ├── orm.server.ts        # ORM/Drizzle схемы
 │   ├── bot.repo.server.ts   # Repository Implementation
-│   └── crud.actions.server.ts # Server Actions
+│   └── crud.actions.ts      # Server Actions ('use server')
 ├── ui/                       # ✅ CLIENT-ONLY - Presentation Layer
 │   ├── bot.list.client.tsx  # Список ботов
 │   ├── bot.details.client.tsx # Детали бота

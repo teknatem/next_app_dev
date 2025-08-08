@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
+import { getGenderLabel, getProviderLabel } from './labels.shared';
 import {
   Table,
   TableBody,
@@ -40,7 +41,7 @@ interface BotListProps {
   onCreate?: () => void;
   onDelete?: (bot: Bot) => void;
   initialData?: { bots: Bot[]; total: number };
-  onDeleteAction?: (id: string) => Promise<void>; // server action-проп
+  onDeleteAction?: (id: string, version: number) => Promise<void>; // server action-проп
   onLoadAction?: (params: {
     limit?: number;
     offset?: number;
@@ -118,7 +119,7 @@ export function BotList({
       try {
         if (!onDeleteAction) return;
         startTransition(async () => {
-          await onDeleteAction(bot.id);
+          await onDeleteAction(bot.id, bot.version);
           setBots((prev) => prev.filter((b) => b.id !== bot.id));
           setTotal((t) => Math.max(0, t - 1));
         });
@@ -129,35 +130,7 @@ export function BotList({
     }
   };
 
-  const getGenderLabel = (gender: string) => {
-    switch (gender) {
-      case GENDER_OPTIONS.MALE:
-        return 'Мужской';
-      case GENDER_OPTIONS.FEMALE:
-        return 'Женский';
-      case GENDER_OPTIONS.OTHER:
-        return 'Другой';
-      default:
-        return gender;
-    }
-  };
-
-  const getProviderLabel = (provider: string) => {
-    switch (provider) {
-      case LLM_PROVIDERS.OPENAI:
-        return 'OpenAI';
-      case LLM_PROVIDERS.ANTHROPIC:
-        return 'Anthropic';
-      case LLM_PROVIDERS.YANDEX:
-        return 'Yandex';
-      case LLM_PROVIDERS.GOOGLE:
-        return 'Google';
-      case LLM_PROVIDERS.MISTRAL:
-        return 'Mistral';
-      default:
-        return provider;
-    }
-  };
+  // label helpers imported from shared
 
   const totalPages = Math.ceil(total / pageSize);
 

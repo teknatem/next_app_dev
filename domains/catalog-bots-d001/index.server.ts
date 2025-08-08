@@ -8,7 +8,7 @@ export {
   createBot,
   updateBot,
   deleteBot
-} from './infra/crud.server';
+} from './infra/crud.actions';
 
 // Server UI wrappers (RSC)
 export { BotListServer } from './ui/bot.list.server';

@@ -26,7 +26,11 @@ export const botRepository = {
   /**
    * Обновить бота
    */
-  async updateBot(id: string, data: Partial<NewBot>): Promise<Bot | null> {
+  async updateBot(
+    id: string,
+    data: Partial<NewBot>,
+    expectedVersion?: number
+  ): Promise<Bot | null> {
     const [updatedBot] = await db
       .update(d001Bots)
       .set({
@@ -34,7 +38,11 @@ export const botRepository = {
         version: sql`${d001Bots.version} + 1`,
         updatedAt: new Date()
       })
-      .where(eq(d001Bots.id, id))
+      .where(
+        expectedVersion !== undefined
+          ? and(eq(d001Bots.id, id), eq(d001Bots.version, expectedVersion))
+          : eq(d001Bots.id, id)
+      )
       .returning();
 
     return updatedBot || null;
@@ -43,7 +51,10 @@ export const botRepository = {
   /**
    * Мягкое удаление бота
    */
-  async softDeleteBot(id: string): Promise<Bot | null> {
+  async softDeleteBot(
+    id: string,
+    expectedVersion?: number
+  ): Promise<Bot | null> {
     const [deletedBot] = await db
       .update(d001Bots)
       .set({
@@ -51,7 +62,11 @@ export const botRepository = {
         deletedAt: new Date(),
         version: sql`${d001Bots.version} + 1`
       })
-      .where(eq(d001Bots.id, id))
+      .where(
+        expectedVersion !== undefined
+          ? and(eq(d001Bots.id, id), eq(d001Bots.version, expectedVersion))
+          : eq(d001Bots.id, id)
+      )
       .returning();
 
     return deletedBot || null;

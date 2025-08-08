@@ -14,6 +14,7 @@ import {
 } from '@/shared/ui/dialog';
 import { Search, Check, X, ChevronDown, User } from 'lucide-react';
 import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
+import { getGenderLabel, getProviderLabel } from './labels.shared';
 // server loaders будут прокинуты пропами
 import type { Bot } from '../';
 
@@ -93,35 +94,7 @@ export function BotPicker({
     onSelect?.(newSelection);
   };
 
-  const getGenderLabel = (gender: string) => {
-    switch (gender) {
-      case GENDER_OPTIONS.MALE:
-        return 'Мужской';
-      case GENDER_OPTIONS.FEMALE:
-        return 'Женский';
-      case GENDER_OPTIONS.OTHER:
-        return 'Другой';
-      default:
-        return gender;
-    }
-  };
-
-  const getProviderLabel = (provider: string) => {
-    switch (provider) {
-      case LLM_PROVIDERS.OPENAI:
-        return 'OpenAI';
-      case LLM_PROVIDERS.ANTHROPIC:
-        return 'Anthropic';
-      case LLM_PROVIDERS.YANDEX:
-        return 'Yandex';
-      case LLM_PROVIDERS.GOOGLE:
-        return 'Google';
-      case LLM_PROVIDERS.MISTRAL:
-        return 'Mistral';
-      default:
-        return provider;
-    }
-  };
+  // label helpers imported from shared
 
   const isSelected = (bot: Bot) => {
     return selectedBots.some((b) => b.id === bot.id);

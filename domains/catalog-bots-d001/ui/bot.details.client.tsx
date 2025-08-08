@@ -14,6 +14,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Badge } from '@/shared/ui/badge';
+import { getGenderLabel, getProviderLabel } from './labels.shared';
 import {
   Eye,
   Edit,
@@ -53,7 +54,8 @@ interface BotDetailsProps {
   ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
   onUpdateAction?: (
     id: string,
-    data: Partial<NewBot>
+    data: Partial<NewBot>,
+    version: number
   ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
 }
 
@@ -95,6 +97,13 @@ export function BotDetails({
       loadBot();
     }
   }, [botId, initialBot]);
+
+  // Ensure create mode stays in editing even after route refresh or validation attempts
+  useEffect(() => {
+    if (mode === 'create') {
+      setIsEditing(true);
+    }
+  }, [mode, error]);
 
   useEffect(() => {
     if (bot) {
@@ -158,7 +167,7 @@ export function BotDetails({
         result = await onCreateAction(validation.data);
       } else if (bot?.id) {
         if (!onUpdateAction) throw new Error('onUpdateAction is not provided');
-        result = await onUpdateAction(bot.id, validation.data);
+        result = await onUpdateAction(bot.id, validation.data, bot.version);
       } else {
         throw new Error('Невозможно сохранить: ID бота отсутствует');
       }
@@ -200,35 +209,7 @@ export function BotDetails({
     onCancel?.();
   };
 
-  const getGenderLabel = (gender: string) => {
-    switch (gender) {
-      case GENDER_OPTIONS.MALE:
-        return 'Мужской';
-      case GENDER_OPTIONS.FEMALE:
-        return 'Женский';
-      case GENDER_OPTIONS.OTHER:
-        return 'Другой';
-      default:
-        return gender;
-    }
-  };
-
-  const getProviderLabel = (provider: string) => {
-    switch (provider) {
-      case LLM_PROVIDERS.OPENAI:
-        return 'OpenAI';
-      case LLM_PROVIDERS.ANTHROPIC:
-        return 'Anthropic';
-      case LLM_PROVIDERS.YANDEX:
-        return 'Yandex';
-      case LLM_PROVIDERS.GOOGLE:
-        return 'Google';
-      case LLM_PROVIDERS.MISTRAL:
-        return 'Mistral';
-      default:
-        return provider;
-    }
-  };
+  // label helpers imported from shared
 
   if (loading) {
     return (
@@ -240,15 +221,7 @@ export function BotDetails({
     );
   }
 
-  if (error && !bot) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-red-500 text-center">{error}</div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // In create mode, keep the form visible even if there is an error
 
   return (
     <Card>
@@ -266,11 +239,21 @@ export function BotDetails({
             )}
             {isEditing && (
               <>
-                <Button onClick={handleSave} size="sm" disabled={saving}>
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  size="sm"
+                  disabled={saving}
+                >
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? 'Сохранение...' : 'Сохранить'}
                 </Button>
-                <Button onClick={handleCancel} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={handleCancel}
+                  variant="outline"
+                  size="sm"
+                >
                   <X className="h-4 w-4 mr-2" />
                   Отмена
                 </Button>

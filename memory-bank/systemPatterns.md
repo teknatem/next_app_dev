@@ -50,6 +50,19 @@ For detailed guides on implementing specific patterns like API design, LLM integ
 
 ---
 
+## 🔒 Server Actions Policy (Project-wide)
+
+For the exact conventions and migration notes, see the authoritative rulebook:
+
+- Location: `domains/<domain>/infra/`
+- Naming: `*.actions.ts`
+- Directive: first line must be `'use server'`
+- Exports: only via `index.server.ts`; never via `index.ts`
+
+> Details: [`./cursor-domain-rules.md`](./cursor-domain-rules.md)
+
+---
+
 ## 🌟 Reference Implementations
 
 - `domains/catalog-bots-d001/` — Reference for Server Actions with server wrappers (RSC passing actions/data), enums in `model/`, client-safe schemas, double index exports.

@@ -2,12 +2,13 @@ import 'server-only';
 
 import { BotList } from './bot.list.client';
 import { getBots, deleteBot } from '../index.server';
+import type { GetBotsParams, Bot } from '../types.shared';
 
 export async function BotListServer(props: {
   page?: number;
   search?: string;
-  sortBy?: 'name' | 'position' | 'hierarchyLevel' | 'llmProvider' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: GetBotsParams['sortBy'];
+  sortOrder?: GetBotsParams['sortOrder'];
 }) {
   const page = props.page ?? 1;
   const pageSize = 10;
@@ -24,23 +25,12 @@ export async function BotListServer(props: {
 
   const initialData = result.success ? result.data : { bots: [], total: 0 };
 
-  async function onDeleteAction(id: string) {
+  async function onDeleteAction(id: string, version: number) {
     'use server';
-    await deleteBot(id);
+    await deleteBot({ id, version });
   }
 
-  async function onLoadAction(params: {
-    limit?: number;
-    offset?: number;
-    search?: string;
-    sortBy?:
-      | 'name'
-      | 'position'
-      | 'hierarchyLevel'
-      | 'llmProvider'
-      | 'createdAt';
-    sortOrder?: 'asc' | 'desc';
-  }) {
+  async function onLoadAction(params: GetBotsParams) {
     'use server';
     const r = await getBots(params);
     return r.success ? r.data : { bots: [], total: 0 };

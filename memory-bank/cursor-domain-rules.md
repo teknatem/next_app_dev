@@ -10,19 +10,19 @@
 
 Для обеспечения максимальной консистентности и строгого разделения ответственности, вводится папка `model/` на уровне каждого домена.
 
-### **1. Расположение Enum'ов (`enums.ts`)**
+### **1. Расположение Enum'ов (`enums.shared.ts`)**
 
-- **Правило:** Все перечисления (enums), используемые в домене, **ДОЛЖНЫ** определяться в файле `domains/<domain>/model/enums.ts`.
+- **Правило:** Все перечисления (enums) и константы, используемые в домене, **ДОЛЖНЫ** определяться в файле `domains/<domain>/model/enums.shared.ts`.
 - **Формат:** Рекомендуется использовать `as const` для создания строковых enum'ов и экспортировать как константу, так и тип.
 
   ```typescript
-  // domains/<domain>/model/enums.ts
+  // domains/<domain>/model/enums.shared.ts
 
   export const MEETING_ASSET_KINDS = ['document', 'audio', 'video'] as const;
   export type MeetingAssetKind = (typeof MEETING_ASSET_KINDS)[number];
   ```
 
-- **Причина:** Централизация всех возможных состояний и типов в одном месте упрощает поддержку и снижает риск ошибок. Файл `enums.ts` становится единственным источником правды для всех перечислений в домене.
+- **Причина:** Централизация всех возможных состояний и типов в одном месте упрощает поддержку и снижает риск ошибок. Файл `enums.shared.ts` становится единственным источником правды для всех перечислений в домене и явно помечает их как пригодные для общего использования (client-safe).
 
 ### **2. Другие файлы в `model/`**
 
@@ -38,7 +38,7 @@ domains/
     ├── orm.server.ts        # ⚠️ SERVER-ONLY - ORM/Drizzle-схемы, только для сервера (с директивой 'server-only'). См. [db rules.md](./db%20rules.md).
     ├── types.shared.ts      # ✅ SHARED - Типы и Zod-схемы, используются и на клиенте, и на сервере
     ├── model/               # ✅ SHARED - Domain data models and enums
-    │   └── enums.ts              # Domain-specific enums
+    │   └── enums.shared.ts       # Domain-specific enums (shared)
     ├── data/               # ⚠️ SERVER-ONLY - Database operations
     │   └── *.repo.server.ts      # Repository with 'server-only' directive
     ├── api/                # ✅ CLIENT-ONLY - HTTP API calls
@@ -154,6 +154,8 @@ export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server
 - **ALWAYS** use `.server.ts` suffix
 - **ALWAYS** add `import 'server-only';` at the top
 - **Examples:** `file.repo.server.ts`, `s3.service.server.ts`
+
+> Exception: Server Actions use `*.actions.ts` and must begin with `'use server'` (see Server Actions Conventions below).
 
 ### **Client Files (Browser only)**
 
@@ -283,6 +285,7 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 
 - [ ] All server files have `.server.ts` suffix + `'server-only'`
 - [ ] All client files have `.client.ts` suffix + `'use client'`
+- [ ] All Server Actions are under `infra/` with `*.actions.ts` suffix + first line `'use server'`
 - [ ] Two index files: `index.ts` (client) + `index.server.ts` (server)
 - [ ] No direct imports from internal modules
 - [ ] Server code not exported from client index
@@ -365,6 +368,72 @@ Form -> EmployeeDetails.client.tsx
 - [ ] No duplicate revalidations.
 
 ---
+
+## 🚀 Server Actions Conventions — PROJECT RULE (UPDATED)
+
+> This is the authoritative convention for Server Actions in this project. It supersedes earlier notes in this document about placing orchestrators under `features/`.
+
+### Location & Naming
+
+- All Server Actions must live in `domains/<domain>/infra/`.
+- All Server Actions files must use the `*.actions.ts` suffix.
+  - Examples: `infra/crud.actions.ts`, `infra/upload-file.actions.ts`.
+
+### Mandatory File Header
+
+- Each Server Actions module must start with the directive as the very first line (before any imports):
+
+```ts
+'use server';
+```
+
+### Export & Usage Rules
+
+- Export Server Actions only through `index.server.ts` of the domain.
+- Do not re-export Server Actions from `index.ts` (client-safe index).
+- Do not import Server Actions directly from client components; pass them via props or use form `action` where applicable.
+
+### Coexistence With Other File Types
+
+- Keep other server-only infrastructure/services as `*.server.ts` (e.g., S3, DB wrappers). Use `'server-only'` in those files.
+- Shared logic (pure functions/types) remains in `*.shared.ts` or shared modules without directives.
+
+### Legacy Domains (Migration Note)
+
+- Older domains that currently use `features/*.server.ts` or `infra/*.server.ts` for orchestrators should be migrated to `infra/*.actions.ts` with `'use server'` at the top. This migration can be done incrementally.
+
+### Quick Checklist (Server Actions)
+
+- [ ] File is under `domains/<domain>/infra/`.
+- [ ] Filename ends with `.actions.ts`.
+- [ ] First line is exactly `'use server';`.
+- [ ] Exported only via `index.server.ts`.
+- [ ] Not imported from any client module or exported via `index.ts`.
+
+### Examples
+
+Good:
+
+```ts
+// domains/catalog-files-d002/infra/upload-file.actions.ts
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { filesRepositoryServer } from './file.repo.server';
+
+export async function uploadFile(formData: FormData) {
+  // ... validate, call repo, then:
+  revalidatePath('/files');
+}
+```
+
+Bad:
+
+```ts
+// features/upload-file.server.ts        // ❌ Wrong folder & suffix
+// actions/uploadFile.server.ts          // ❌ Wrong folder & suffix
+// infra/upload-file.server.ts           // ❌ Missing .actions.ts and directive
+```
 
 ### 🗂️ Имя файла оркестратора
 

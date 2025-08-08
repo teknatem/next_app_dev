@@ -2,7 +2,7 @@ import 'server-only';
 
 import { BotDetails } from './bot.details.client';
 import { getBot, createBot, updateBot } from '../index.server';
-import type { NewBot } from '../types.shared';
+import type { NewBot, UpdateBotParams } from '../types.shared';
 
 export async function BotDetailsServer(props: {
   botId?: string;
@@ -20,9 +20,14 @@ export async function BotDetailsServer(props: {
     return await createBot(data);
   }
 
-  async function onUpdateAction(id: string, data: Partial<NewBot>) {
+  async function onUpdateAction(
+    id: string,
+    data: Partial<NewBot>,
+    version: number
+  ) {
     'use server';
-    return await updateBot(id, data);
+    const params: UpdateBotParams = { id, data, version };
+    return await updateBot(params);
   }
 
   return (

@@ -2,8 +2,16 @@
 
 import { ZodError } from 'zod';
 import { botRepository } from './bot.repo.server';
-import { formBotSchema, NewBot } from '../types.shared';
+import {
+  formBotSchema,
+  NewBot,
+  UpdateBotParams,
+  DeleteBotParams,
+  GetBotsParams
+} from '../types.shared';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/shared/lib/auth.server';
 
 /**
  * Создать нового бота
@@ -12,6 +20,8 @@ export async function createBot(
   data: NewBot
 ): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id ?? null;
     const validatedData = formBotSchema.parse(data);
 
     const exists = await botRepository.botExistsByName(validatedData.name);
@@ -22,7 +32,11 @@ export async function createBot(
       };
     }
 
-    const newBot = await botRepository.createBot(validatedData);
+    const newBot = await botRepository.createBot({
+      ...validatedData,
+      createdBy: userId ?? undefined,
+      updatedBy: userId ?? undefined
+    });
     revalidatePath('/bots');
     return { success: true, data: newBot };
   } catch (error) {
@@ -47,16 +61,17 @@ export async function createBot(
  * Обновить бота
  */
 export async function updateBot(
-  id: string,
-  data: Partial<NewBot>
+  params: UpdateBotParams
 ): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
-    const validatedData = formBotSchema.partial().parse(data);
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id ?? null;
+    const validatedData = formBotSchema.partial().parse(params.data);
 
     if (validatedData.name) {
       const exists = await botRepository.botExistsByName(
         validatedData.name,
-        id
+        params.id
       );
       if (exists) {
         return {
@@ -66,13 +81,17 @@ export async function updateBot(
       }
     }
 
-    const updatedBot = await botRepository.updateBot(id, validatedData);
+    const updatedBot = await botRepository.updateBot(
+      params.id,
+      { ...validatedData, updatedBy: userId ?? undefined },
+      params.version
+    );
     if (!updatedBot) {
       return { success: false, error: 'Бот не найден' };
     }
 
     revalidatePath('/bots');
-    revalidatePath(`/bots/${id}`);
+    revalidatePath(`/bots/${params.id}`);
     return { success: true, data: updatedBot };
   } catch (error) {
     if (error instanceof ZodError) {
@@ -96,10 +115,15 @@ export async function updateBot(
  * Мягкое удаление бота
  */
 export async function deleteBot(
-  id: string
+  params: DeleteBotParams
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const deletedBot = await botRepository.softDeleteBot(id);
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id ?? null;
+    const deletedBot = await botRepository.softDeleteBot(
+      params.id,
+      params.version
+    );
     if (!deletedBot) {
       return { success: false, error: 'Бот не найден' };
     }
@@ -138,14 +162,9 @@ export async function getBot(
 /**
  * Получить список ботов
  */
-export async function getBots(options: {
-  limit?: number;
-  offset?: number;
-  includeDeleted?: boolean;
-  search?: string;
-  sortBy?: 'name' | 'position' | 'hierarchyLevel' | 'llmProvider' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
-}): Promise<{ success: boolean; data?: any; error?: string }> {
+export async function getBots(
+  options: GetBotsParams
+): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
     const result = await botRepository.getBots(options);
     return { success: true, data: result };
