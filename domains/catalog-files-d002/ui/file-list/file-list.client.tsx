@@ -17,7 +17,7 @@ import {
 } from '@/shared/ui/table';
 import { ChevronUpIcon, ChevronDownIcon, SearchIcon } from '@/shared/ui/icons';
 
-import { formatDateDDMMYYYY } from '../../lib/date-utils';
+import { formatDateDDMMYYYY } from '../../lib/date-utils.shared';
 import { File } from '../../types.shared';
 
 type SortField =

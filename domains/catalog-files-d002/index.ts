@@ -5,7 +5,7 @@ export {
   toDate,
   formatDate,
   formatDateTime
-} from './lib/date-utils';
+} from './lib/date-utils.shared';
 
 // Client-accessible server actions should NOT be exported here.
 // Consumers must obtain server actions via server components and props.
@@ -17,3 +17,4 @@ export { FileDetails } from './ui/file-details';
 export { FilePicker } from './ui/file-picker';
 export { ImagePicker } from './ui/image-picker';
 export { FilesPageClient } from './ui/files-page';
+export { FilesActionsProvider, useFilesActions } from './ui';

@@ -41,7 +41,7 @@ export async function testS3Configuration(): Promise<{
     });
     await s3Client.send(headBucketCommand);
 
-    const { getPresignedUploadUrl } = await import('../lib/s3.service.server');
+    const { getPresignedUploadUrl } = await import('./s3.service.server');
     const testUrl = await getPresignedUploadUrl('text/plain', 1024, 'test');
 
     return {

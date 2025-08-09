@@ -1,8 +1,8 @@
 import 'server-only';
 
-import { BotList } from './bot.list.client';
-import { getBots, deleteBot } from '../index.server';
-import type { GetBotsParams, Bot } from '../types.shared';
+import { BotList } from './bot-list.client';
+import { getBots, deleteBot } from '../../index.server';
+import type { GetBotsParams, Bot } from '../../types.shared';
 
 export async function BotListServer(props: {
   page?: number;

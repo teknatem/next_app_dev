@@ -1,4 +1,4 @@
-'use server-only';
+import 'server-only';
 
 import {
   boolean,
@@ -34,6 +34,5 @@ export const d002Files = pgTable('d002_files', {
   metadata: text('metadata').$type<Record<string, any>>()
 });
 
-// Базовые типы для внутреннего использования в репозиториях
 export type D002FileRecord = typeof d002Files.$inferSelect;
 export type NewD002FileRecord = typeof d002Files.$inferInsert;

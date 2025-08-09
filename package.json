@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:domain:structure": "tsx scripts/validate-domain-structure.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

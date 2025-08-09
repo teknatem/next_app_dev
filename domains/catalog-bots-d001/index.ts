@@ -10,8 +10,6 @@ export {
 } from './types.shared';
 
 // UI Components
-export { BotList } from './ui/bot.list.client';
-export { BotDetails } from './ui/bot.details.client';
-export { BotPicker } from './ui/bot.picker.client';
+export * from './ui';
 
 // ⚠️ Не экспортируем server actions из client-safe индекса

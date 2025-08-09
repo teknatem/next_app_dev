@@ -1,7 +1,7 @@
 import 'server-only';
 
 // Server-only ORM exports (includes validation schemas)
-export * from './orm.server';
+export * from './infra/orm.server';
 // Shared exports
 export * from './types.shared';
 export {
@@ -9,7 +9,7 @@ export {
   toDate,
   formatDate,
   formatDateTime
-} from './lib/date-utils';
+} from './lib/date-utils.shared';
 
 // Server-only data layer
 export { fileRepository } from './data/file.repo.server';
@@ -18,7 +18,7 @@ export { fileRepository } from './data/file.repo.server';
 export {
   getPresignedUploadUrl,
   getPresignedReadUrl
-} from './lib/s3.service.server';
+} from './infra/s3.service.server';
 
 // Server Actions (infra)
 export {

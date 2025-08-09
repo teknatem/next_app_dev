@@ -13,10 +13,10 @@ import {
   DialogTrigger
 } from '@/shared/ui/dialog';
 import { Search, Check, X, ChevronDown, User } from 'lucide-react';
-import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
-import { getGenderLabel, getProviderLabel } from './labels.shared';
+import { LLM_PROVIDERS, GENDER_OPTIONS } from '../../';
+import { getGenderLabel, getProviderLabel } from '../labels.shared';
 // server loaders будут прокинуты пропами
-import type { Bot } from '../';
+import type { Bot } from '../../';
 
 interface BotPickerProps {
   selectedBots?: Bot[];
@@ -93,8 +93,6 @@ export function BotPicker({
     const newSelection = selectedBots.filter((b) => b.id !== botId);
     onSelect?.(newSelection);
   };
-
-  // label helpers imported from shared
 
   const isSelected = (bot: Bot) => {
     return selectedBots.some((b) => b.id === bot.id);

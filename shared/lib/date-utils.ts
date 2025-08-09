@@ -1,33 +1,20 @@
 /**
- * Utility functions for handling dates in file management
+ * Project-wide date utilities (client-safe)
  */
 
-/**
- * Converts a date value to ISO string format
- * Handles both Date objects and string values
- */
+/** Converts a date value to ISO string */
 export function toISOString(date: Date | string): string {
-  if (typeof date === 'string') {
-    return date;
-  }
+  if (typeof date === 'string') return date;
   return date.toISOString();
 }
 
-/**
- * Converts a date value to a proper Date object
- * Handles both Date objects and string values
- */
+/** Converts a date value to a Date object */
 export function toDate(date: Date | string): Date {
-  if (typeof date === 'string') {
-    return new Date(date);
-  }
+  if (typeof date === 'string') return new Date(date);
   return date;
 }
 
-/**
- * Formats a date for display
- * Handles both Date objects and string values
- */
+/** Formats a date for display using locale */
 export function formatDate(
   date: Date | string,
   locale: string = 'en-US'
@@ -36,10 +23,7 @@ export function formatDate(
   return dateObj.toLocaleDateString(locale);
 }
 
-/**
- * Formats a date and time for display
- * Handles both Date objects and string values
- */
+/** Formats a date+time for display using locale */
 export function formatDateTime(
   date: Date | string,
   locale: string = 'en-US'
@@ -48,10 +32,7 @@ export function formatDateTime(
   return dateObj.toLocaleString(locale);
 }
 
-/**
- * Formats a date in DD.MM.YYYY format
- * Handles both Date objects and string values
- */
+/** Formats a date as DD.MM.YYYY */
 export function formatDateDDMMYYYY(date: Date | string): string {
   const dateObj = toDate(date);
   const day = dateObj.getDate().toString().padStart(2, '0');

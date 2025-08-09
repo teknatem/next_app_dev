@@ -147,6 +147,66 @@ export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server
 
 ---
 
+### **3. Структура каталога `ui/`: "Один виджет — одна папка" (NEW)**
+
+> Пример эталона: `domains/catalog-files-d002/ui`
+
+Для масштабируемости и удобства навигации каждый виджет размещается в собственной папке внутри `ui/`. Каждый виджет имеет локальный `index.ts`-баррель и экспортируется на уровень домена через `ui/index.ts`, а затем — через корневой `index.ts` домена.
+
+Структура:
+
+```text
+domains/<domain>/
+  ui/
+    <entity>-list/
+      <entity>-list.client.tsx
+      index.ts
+    <entity>-details/
+      <entity>-details.client.tsx
+      index.ts
+    <entity>-picker/
+      <entity>-picker.client.tsx
+      index.ts
+    index.ts            # Баррель для всех виджетов домена
+```
+
+Пример содержимого баррелей:
+
+```ts
+// domains/<domain>/ui/<entity>-list/index.ts
+export { EntityList } from './<entity>-list.client';
+
+// domains/<domain>/ui/index.ts
+export { EntityList } from './<entity>-list';
+export { EntityDetails } from './<entity>-details';
+export { EntityPicker } from './<entity>-picker';
+```
+
+Экспорты на уровне домена (client-safe):
+
+```ts
+// domains/<domain>/index.ts
+export * from './ui';
+// ...плюс любые shared-типы/схемы
+```
+
+Экспорты на уровне домена (server-only) — только серверные обёртки/действия:
+
+```ts
+// domains/<domain>/index.server.ts
+import 'server-only';
+export * from './infra/crud.actions';
+// export { EntityListServer } from './ui/<entity>-list.server'; // при наличии серверных обёрток
+```
+
+Обоснование:
+
+- Чёткая группировка файлов виджета (код + локальный баррель + тесты в будущем).
+- Упрощённые относительные пути и читабельные ре-экспорты.
+- Плавное масштабирование при росте функциональности виджета.
+
+---
+
 ## 🔥 MANDATORY File Naming Rules
 
 ### **Server Files (Node.js only)**

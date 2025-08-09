@@ -14,7 +14,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Badge } from '@/shared/ui/badge';
-import { getGenderLabel, getProviderLabel } from './labels.shared';
+import { getGenderLabel, getProviderLabel } from '../labels.shared';
 import {
   Eye,
   Edit,
@@ -34,8 +34,13 @@ import {
   Hash
 } from 'lucide-react';
 // server actions не импортируются напрямую; будут прокинуты через пропы server-обёртки
-import type { Bot as BotType, NewBot } from '../';
-import { LLM_PROVIDERS, GENDER_OPTIONS, LLM_MODELS, formBotSchema } from '../';
+import type { Bot as BotType, NewBot } from '../../';
+import {
+  LLM_PROVIDERS,
+  GENDER_OPTIONS,
+  LLM_MODELS,
+  formBotSchema
+} from '../../';
 import { ImagePicker } from '@/domains/catalog-files-d002';
 import { FileUploader } from '@/domains/catalog-files-d002';
 import type { File as D002File } from '@/domains/catalog-files-d002';
@@ -57,13 +62,6 @@ interface BotDetailsProps {
     data: Partial<NewBot>,
     version: number
   ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
-  getImagesAction?: (options: {
-    limit?: number;
-    offset?: number;
-    search?: string;
-    sortBy?: 'title' | 'description' | 'mimeType' | 'fileSize' | 'createdAt';
-    sortOrder?: 'asc' | 'desc';
-  }) => Promise<{ success: boolean; data?: D002File[]; error?: string }>;
 }
 
 export function BotDetails({
@@ -74,8 +72,7 @@ export function BotDetails({
   mode = 'view',
   onLoadAction,
   onCreateAction,
-  onUpdateAction,
-  getImagesAction
+  onUpdateAction
 }: BotDetailsProps) {
   const [bot, setBot] = useState<BotType | null>(initialBot || null);
   const [loading, setLoading] = useState(!initialBot && !!botId);
@@ -217,8 +214,6 @@ export function BotDetails({
     onCancel?.();
   };
 
-  // label helpers imported from shared
-
   if (loading) {
     return (
       <Card>
@@ -228,8 +223,6 @@ export function BotDetails({
       </Card>
     );
   }
-
-  // In create mode, keep the form visible even if there is an error
 
   return (
     <Card>
@@ -308,10 +301,7 @@ export function BotDetails({
                     id="gender"
                     value={formData.gender}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        gender: e.target.value
-                      })
+                      setFormData({ ...formData, gender: e.target.value })
                     }
                     placeholder="male, female, other"
                   />
@@ -393,18 +383,11 @@ export function BotDetails({
                         onSelectAction={(file: D002File) =>
                           setFormData({ ...formData, avatarUrl: file.url })
                         }
-                        getImagesAction={async (opts) =>
-                          (await (getImagesAction?.(opts) ??
-                            Promise.resolve({
-                              success: true,
-                              data: []
-                            }))) as any
-                        }
                       />
                     </div>
                     <div className="mt-2">
                       <FileUploader
-                        onUploadSuccess={(file) => {
+                        onUploadSuccess={(file: D002File) => {
                           setFormData({ ...formData, avatarUrl: file.url });
                         }}
                         folder="avatars"
@@ -482,10 +465,7 @@ export function BotDetails({
                     id="llmProvider"
                     value={formData.llmProvider}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        llmProvider: e.target.value
-                      })
+                      setFormData({ ...formData, llmProvider: e.target.value })
                     }
                     placeholder="openai, anthropic, etc."
                   />

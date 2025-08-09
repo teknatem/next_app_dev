@@ -24,7 +24,7 @@ import {
   DialogFooter
 } from '@/shared/ui/dialog';
 
-import { toISOString } from '../../lib/date-utils';
+import { toISOString } from '../../lib/date-utils.shared';
 import { File } from '../../types.shared';
 
 interface FileDetailsProps {

@@ -1,5 +1,5 @@
+import 'server-only';
 import { randomUUID } from 'crypto';
-
 import {
   S3Client,
   PutObjectCommand,
@@ -34,38 +34,24 @@ const s3Client = new S3Client({
   }
 });
 
-/**
- * Generates a pre-signed URL for uploading a file to the S3 bucket.
- *
- * @param {string} mimeType - The MIME type of the file to be uploaded.
- * @param {number} fileSize - The size of the file in bytes.
- * @param {string} [folder='other'] - The folder within the bucket to upload the file to.
- * @returns {Promise<{ url: string; key: string }>} - The pre-signed URL and the unique S3 key for the file.
- */
 export async function getPresignedUploadUrl(
   mimeType: string,
   fileSize: number,
   folder: string = 'other'
 ): Promise<{ url: string; key: string }> {
-  // Basic validation
   if (!mimeType || fileSize <= 0) {
     throw new Error('Invalid file type or size.');
   }
 
-  // Optional: Add more specific size validation if needed
-  // e.g., if (fileSize > 10 * 1024 * 1024) throw new Error('File too large');
-
   const key = `${folder}/${randomUUID()}`;
-
   const command = new PutObjectCommand({
     Bucket: S3_BUCKET_NAME,
     Key: key,
     ContentType: mimeType,
     ContentLength: fileSize
   });
-
   try {
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL expires in 1 hour
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
     return { url, key };
   } catch (error) {
     console.error('Error generating pre-signed URL:', error);
@@ -73,24 +59,13 @@ export async function getPresignedUploadUrl(
   }
 }
 
-/**
- * Generates a pre-signed URL for reading a file from the S3 bucket.
- *
- * @param {string} s3Key - The S3 key of the file to read.
- * @returns {Promise<string>} - The pre-signed URL for reading the file.
- */
 export async function getPresignedReadUrl(s3Key: string): Promise<string> {
   if (!s3Key) {
     throw new Error('S3 key is required.');
   }
-
-  const command = new GetObjectCommand({
-    Bucket: S3_BUCKET_NAME,
-    Key: s3Key
-  });
-
+  const command = new GetObjectCommand({ Bucket: S3_BUCKET_NAME, Key: s3Key });
   try {
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL expires in 1 hour
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
     return url;
   } catch (error) {
     console.error('Error generating pre-signed read URL:', error);

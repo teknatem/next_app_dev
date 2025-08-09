@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
-import { getGenderLabel, getProviderLabel } from './labels.shared';
+import { getGenderLabel, getProviderLabel } from '../labels.shared';
 import {
   Table,
   TableBody,
@@ -30,8 +30,8 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import type { Bot } from '../';
-import { LLM_PROVIDERS, GENDER_OPTIONS } from '../';
+import type { Bot } from '../../';
+import { LLM_PROVIDERS, GENDER_OPTIONS } from '../../';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -129,8 +129,6 @@ export function BotList({
       }
     }
   };
-
-  // label helpers imported from shared
 
   const totalPages = Math.ceil(total / pageSize);
 
@@ -301,7 +299,6 @@ export function BotList({
                         <Trash2 className="h-4 w-4 mr-2" />
                         Удалить
                       </DropdownMenuItem>
-                      {/* onDelete is deprecated, handleDelete is used directly */}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

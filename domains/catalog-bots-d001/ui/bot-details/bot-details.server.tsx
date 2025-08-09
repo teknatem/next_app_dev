@@ -1,9 +1,10 @@
 import 'server-only';
 
-import { BotDetails } from './bot.details.client';
-import { getBot, createBot, updateBot } from '../index.server';
-import type { NewBot, UpdateBotParams } from '../types.shared';
+import { BotDetails } from './bot-details.client';
+import { getBot, createBot, updateBot } from '../../index.server';
+import type { NewBot, UpdateBotParams } from '../../types.shared';
 import { getImagesAction } from '@/domains/catalog-files-d002/index.server';
+import { FilesActionsProvider } from '@/domains/catalog-files-d002';
 
 export async function BotDetailsServer(props: {
   botId?: string;
@@ -32,13 +33,14 @@ export async function BotDetailsServer(props: {
   }
 
   return (
-    <BotDetails
-      botId={botId}
-      mode={mode}
-      onLoadAction={onLoadAction}
-      onCreateAction={onCreateAction}
-      onUpdateAction={onUpdateAction}
-      getImagesAction={getImagesAction}
-    />
+    <FilesActionsProvider getImagesAction={getImagesAction}>
+      <BotDetails
+        botId={botId}
+        mode={mode}
+        onLoadAction={onLoadAction}
+        onCreateAction={onCreateAction}
+        onUpdateAction={onUpdateAction}
+      />
+    </FilesActionsProvider>
   );
 }

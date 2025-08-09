@@ -6,7 +6,7 @@ import { fileRepository } from '../data/file.repo.server';
 import {
   getPresignedUploadUrl,
   getPresignedReadUrl
-} from '../lib/s3.service.server';
+} from './s3.service.server';
 import { formFileSchema, updateFileSchema } from '../types.shared';
 
 /**

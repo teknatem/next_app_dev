@@ -66,4 +66,4 @@ For the exact conventions and migration notes, see the authoritative rulebook:
 ## 🌟 Reference Implementations
 
 - `domains/catalog-bots-d001/` — Reference for Server Actions with server wrappers (RSC passing actions/data), enums in `model/`, client-safe schemas, double index exports.
-- `domains/catalog-files-d002/` — Reference for storage/S3 integration and file widgets.
+- `domains/catalog-files-d002/` — Reference for storage/S3 integration and UI folder-per-widget pattern (`ui/<widget>/index.ts`, re-exported via `ui/index.ts`).

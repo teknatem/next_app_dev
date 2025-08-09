@@ -44,9 +44,16 @@ domains/catalog-bots-d001/
 │   ├── bot.repo.server.ts   # Repository Implementation
 │   └── crud.actions.ts      # Server Actions ('use server')
 ├── ui/                       # ✅ CLIENT-ONLY - Presentation Layer
-│   ├── bot.list.client.tsx  # Список ботов
-│   ├── bot.details.client.tsx # Детали бота
-│   └── bot.picker.client.tsx # Выбор бота
+│   ├── bot-list/
+│   │   ├── bot-list.client.tsx
+│   │   └── index.ts
+│   ├── bot-details/
+│   │   ├── bot-details.client.tsx
+│   │   └── index.ts
+│   ├── bot-picker/
+│   │   ├── bot-picker.client.tsx
+│   │   └── index.ts
+│   └── index.ts
 ├── index.ts                  # ✅ CLIENT-SAFE - Публичный API для клиента
 ├── index.server.ts           # ⚠️ SERVER-ONLY - Публичный API для сервера
 └── README.md                 # Документация
@@ -87,11 +94,11 @@ domains/catalog-bots-d001/
 
 ```typescript
 import { BotList } from '@/domains/catalog-bots-d001'; // client component
-import { BotListServer } from '@/domains/catalog-bots-d001/ui/bot.list.server'; // server wrapper
+import { BotListServer } from '@/domains/catalog-bots-d001/index.server'; // server wrapper
 import { BotDetails } from '@/domains/catalog-bots-d001'; // client component
-import { BotDetailsServer } from '@/domains/catalog-bots-d001/ui/bot.details.server'; // server wrapper
+import { BotDetailsServer } from '@/domains/catalog-bots-d001/index.server'; // server wrapper
 import { BotPicker } from '@/domains/catalog-bots-d001'; // client component
-import { BotPickerServer } from '@/domains/catalog-bots-d001/ui/bot.picker.server'; // server wrapper
+import { BotPickerServer } from '@/domains/catalog-bots-d001/index.server'; // server wrapper
 
 // Пример использования в RSC:
 <BotListServer page={1} search={undefined} />

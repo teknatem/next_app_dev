@@ -13,12 +13,13 @@ import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
 import { Image as ImageIcon, Search, FileImage } from 'lucide-react';
 import { File as FileRecord } from '../../types.shared';
-import { formatDate } from '../../lib/date-utils';
+import { formatDate } from '../../lib/date-utils.shared';
+import { useFilesActions } from '@/domains/catalog-files-d002/ui/files-actions.provider';
 
 interface ImagePickerProps {
   onSelectAction: (file: FileRecord) => void;
   trigger?: React.ReactNode;
-  getImagesAction: (options: {
+  getImagesAction?: (options: {
     limit?: number;
     offset?: number;
     search?: string;
@@ -37,6 +38,9 @@ export function ImagePicker({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const filesActionsFromContext = useFilesActions(false);
+  const resolveGetImagesAction =
+    getImagesAction ?? filesActionsFromContext?.getImagesAction;
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -50,7 +54,10 @@ export function ImagePicker({
     setLoading(true);
     setError(null);
     try {
-      const result = await getImagesAction({
+      if (!resolveGetImagesAction) {
+        throw new Error('getImagesAction is not provided');
+      }
+      const result = await resolveGetImagesAction({
         limit: 50,
         search: search || undefined,
         sortBy: 'createdAt',
@@ -94,6 +101,12 @@ export function ImagePicker({
         <DialogHeader>
           <DialogTitle>Select an Image</DialogTitle>
         </DialogHeader>
+        {!resolveGetImagesAction && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-yellow-800 mb-3">
+            ImagePicker: getImagesAction is not provided. Wrap with
+            FilesActionsProvider or pass the prop.
+          </div>
+        )}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input

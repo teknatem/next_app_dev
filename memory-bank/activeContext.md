@@ -4,40 +4,28 @@
 
 ---
 
-## 🎯 Current Task: Refactor catalog-bots-d001 to proper Server Actions usage and domain rules
+## 🎯 Current Task: Обновить правила структуры каталога `ui/` — «один виджет — одна папка»
 
-**Goal:** Enforce server/client separation, move Server Actions to `infra/*.actions.ts` with `'use server'` directive, introduce server wrappers for UI, and move enums to `model/enums.ts`.
+**Goal:** Зафиксировать в Memory Bank новую структуру `ui`: каждый виджет в собственной папке с локальным баррелем `index.ts`. Обновить ссылки на эталон `domains/catalog-files-d002/ui` и правила ре-экспорта через домен.
 
-**Status:** In Progress → Next: propagate as reference in memory-bank
+**Status:** COMPLETE — документы обновлены (`cursor-domain-rules.md`, `systemPatterns.md`).
 
 ---
 
 ### 📝 Plan & Next Steps
 
-1. Remove server action exports from `domains/catalog-bots-d001/index.ts` and keep them only in `index.server.ts`.
-2. Move/rename orchestrators into `infra/*.actions.ts` (first line `'use server'`) and update imports.
-3. Create server wrappers: `ui/bot.list.server.tsx`, `ui/bot.details.server.tsx`, `ui/bot.picker.server.tsx` that call server actions and pass data/actions to client.
-4. Update client components to accept `initialData` and server action props instead of importing server code.
-5. Move enums to `domains/catalog-bots-d001/model/enums.ts` and import them in `types.shared.ts`.
-6. Update `README.md` to document the new pattern (prefer Server Actions over REST, usage examples).
-7. Follow-up: add audit fields population and optimistic concurrency control (OCC) in repo/actions.
+1. Прописать правило в `cursor-domain-rules.md` с примером структуры и экспорта — DONE.
+2. Добавить ссылку в `systemPatterns.md` на референс домена — DONE.
+3. Провести миграцию в доменах, где виджеты пока лежат плоско — TODO (по мере приоритета).
 
 ---
 
 ### 📂 Key Files & Components
 
-- `domains/catalog-bots-d001/index.ts` — client-safe exports, no server actions
-- `domains/catalog-bots-d001/index.server.ts` — server-only exports for actions
-- `domains/catalog-bots-d001/infra/*.actions.ts` — orchestrator Server Actions
-- `domains/catalog-bots-d001/ui/bot.list.server.tsx` — server wrapper for list
-- `domains/catalog-bots-d001/ui/bot.details.server.tsx` — server wrapper for details
-- `domains/catalog-bots-d001/ui/bot.picker.server.tsx` — server wrapper for picker
-- `domains/catalog-bots-d001/ui/*.client.tsx` — updated to receive props for actions/loading
-- `domains/catalog-bots-d001/model/enums.ts` — centralized enums
+- `domains/catalog-files-d002/ui/` — эталонная структура: папка на виджет + локальные `index.ts` + баррель `ui/index.ts` + реэкспорт через `domains/<domain>/index.ts`.
 
 ---
 
 ### 🤔 Open Questions & Blockers
 
-- Do we have a standard helper to get `userId` in server actions? Likely via `getServerSession(authOptions)` from `shared/lib/auth.server.ts`, needs to be applied in audit fields phase.
-- OCC strategy: confirm whether version check in WHERE clause is the chosen pattern across domains before implementing here.
+- Требуется ли ввод серверных обёрток `*.server.tsx` для каждого виджета по умолчанию? Пока — по необходимости, правило не обязывает.

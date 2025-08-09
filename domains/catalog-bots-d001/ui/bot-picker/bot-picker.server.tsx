@@ -1,7 +1,7 @@
 import 'server-only';
 
-import { BotPicker } from './bot.picker.client';
-import { getBots } from '../index.server';
+import { BotPicker } from './bot-picker.client';
+import { getBots } from '../../index.server';
 
 export async function BotPickerServer(props: {
   multiple?: boolean;

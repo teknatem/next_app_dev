@@ -13,6 +13,15 @@ _January 27, 2025_
 
 ---
 
+### 🎯 UI Structure Update: One widget — one folder in `ui/`
+
+_January 27, 2025_
+
+- **Status:** ✅ **COMPLETE**
+- **Summary:** Оформлено новое правило для структуры каталога `ui/`: каждый виджет размещается в отдельной папке с локальным баррелем `index.ts`, а домен ре-экспортирует виджеты через `ui/index.ts` и корневой `index.ts`. Обновлены документы: `memory-bank/cursor-domain-rules.md` и `memory-bank/systemPatterns.md`. Эталон: `domains/catalog-files-d002/ui`.
+
+---
+
 ### 🎯 Refactor: catalog-bots-d001 Server Actions & Domain Rules
 
 _January 27, 2025_
