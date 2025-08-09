@@ -20,14 +20,15 @@ export {
   getPresignedReadUrl
 } from './lib/s3.service.server';
 
-// Server Actions (orchestrators)
+// Server Actions (infra)
 export {
   createFile,
   updateFile,
   softDeleteFile,
   getFileById,
   getFiles,
-  getPresignedUploadUrl as getPresignedUploadUrlAction,
-  getPresignedReadUrl as getPresignedReadUrlAction,
-  testS3Configuration
-} from './features/crud.server';
+  getImagesAction,
+  getPresignedUploadUrlAction,
+  getPresignedReadUrlAction
+} from './infra/crud.actions';
+export { testS3Configuration } from './infra/test-s3.actions';

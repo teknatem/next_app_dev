@@ -11,17 +11,27 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
-import { Image as ImageIcon, Search, FileImage, Download } from 'lucide-react';
-import { File as FileRecord } from '../types.shared';
-import { getImagesAction } from '../actions/client-server.actions';
-import { formatDate } from '../lib/date-utils';
+import { Image as ImageIcon, Search, FileImage } from 'lucide-react';
+import { File as FileRecord } from '../../types.shared';
+import { formatDate } from '../../lib/date-utils';
 
 interface ImagePickerProps {
-  onSelect: (file: FileRecord) => void;
+  onSelectAction: (file: FileRecord) => void;
   trigger?: React.ReactNode;
+  getImagesAction: (options: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sortBy?: 'title' | 'description' | 'mimeType' | 'fileSize' | 'createdAt';
+    sortOrder?: 'asc' | 'desc';
+  }) => Promise<{ success: boolean; data?: FileRecord[]; error?: string }>;
 }
 
-export function ImagePicker({ onSelect, trigger }: ImagePickerProps) {
+export function ImagePicker({
+  onSelectAction,
+  trigger,
+  getImagesAction
+}: ImagePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<FileRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -66,7 +76,7 @@ export function ImagePicker({ onSelect, trigger }: ImagePickerProps) {
   }, [isOpen, search]);
 
   const handleSelect = (file: FileRecord) => {
-    onSelect(file);
+    onSelectAction(file);
     setIsOpen(false);
   };
 
@@ -118,7 +128,6 @@ export function ImagePicker({ onSelect, trigger }: ImagePickerProps) {
                 onClick={() => handleSelect(image)}
               >
                 <div className="flex gap-3">
-                  {/* Fixed size preview */}
                   <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
                     <img
                       src={image.url}
@@ -132,8 +141,6 @@ export function ImagePicker({ onSelect, trigger }: ImagePickerProps) {
                       }}
                     />
                   </div>
-
-                  {/* File information */}
                   <div className="flex-1 min-w-0">
                     <h3
                       className="font-medium text-sm truncate mb-1"
@@ -141,7 +148,6 @@ export function ImagePicker({ onSelect, trigger }: ImagePickerProps) {
                     >
                       {image.title}
                     </h3>
-
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-xs text-gray-500">
                         <Badge
@@ -152,11 +158,9 @@ export function ImagePicker({ onSelect, trigger }: ImagePickerProps) {
                         </Badge>
                         <span>{formatFileSize(image.fileSize)}</span>
                       </div>
-
                       <p className="text-xs text-gray-500">
                         {formatDate(new Date(image.createdAt))}
                       </p>
-
                       {image.description && (
                         <p
                           className="text-xs text-gray-600 line-clamp-2"

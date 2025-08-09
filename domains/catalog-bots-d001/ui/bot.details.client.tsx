@@ -57,6 +57,13 @@ interface BotDetailsProps {
     data: Partial<NewBot>,
     version: number
   ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
+  getImagesAction?: (options: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sortBy?: 'title' | 'description' | 'mimeType' | 'fileSize' | 'createdAt';
+    sortOrder?: 'asc' | 'desc';
+  }) => Promise<{ success: boolean; data?: D002File[]; error?: string }>;
 }
 
 export function BotDetails({
@@ -67,7 +74,8 @@ export function BotDetails({
   mode = 'view',
   onLoadAction,
   onCreateAction,
-  onUpdateAction
+  onUpdateAction,
+  getImagesAction
 }: BotDetailsProps) {
   const [bot, setBot] = useState<BotType | null>(initialBot || null);
   const [loading, setLoading] = useState(!initialBot && !!botId);
@@ -382,8 +390,15 @@ export function BotDetails({
                         placeholder="https://example.com/avatar.jpg"
                       />
                       <ImagePicker
-                        onSelect={(file: D002File) =>
+                        onSelectAction={(file: D002File) =>
                           setFormData({ ...formData, avatarUrl: file.url })
+                        }
+                        getImagesAction={async (opts) =>
+                          (await (getImagesAction?.(opts) ??
+                            Promise.resolve({
+                              success: true,
+                              data: []
+                            }))) as any
                         }
                       />
                     </div>

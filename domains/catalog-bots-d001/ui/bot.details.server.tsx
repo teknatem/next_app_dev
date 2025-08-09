@@ -3,6 +3,7 @@ import 'server-only';
 import { BotDetails } from './bot.details.client';
 import { getBot, createBot, updateBot } from '../index.server';
 import type { NewBot, UpdateBotParams } from '../types.shared';
+import { getImagesAction } from '@/domains/catalog-files-d002/index.server';
 
 export async function BotDetailsServer(props: {
   botId?: string;
@@ -37,6 +38,7 @@ export async function BotDetailsServer(props: {
       onLoadAction={onLoadAction}
       onCreateAction={onCreateAction}
       onUpdateAction={onUpdateAction}
+      getImagesAction={getImagesAction}
     />
   );
 }

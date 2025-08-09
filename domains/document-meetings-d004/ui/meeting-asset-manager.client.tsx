@@ -9,8 +9,8 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/shared/ui/dialog';
-import { FilePicker } from '@/domains/catalog-files-d002/ui/file.picker.client';
-import { FileUploader } from '@/domains/catalog-files-d002/ui/file.uploader.client';
+import { FilePicker } from '@/domains/catalog-files-d002/ui/file-picker';
+import { FileUploader } from '@/domains/catalog-files-d002/ui/file-uploader';
 import { type File as D002File } from '@/domains/catalog-files-d002';
 import { Plus } from 'lucide-react';
 

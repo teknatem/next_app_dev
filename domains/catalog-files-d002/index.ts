@@ -7,13 +7,13 @@ export {
   formatDateTime
 } from './lib/date-utils';
 
-// Client-accessible server actions
-export { getImagesAction } from './actions/client-server.actions';
-export { testS3Configuration } from './actions/test-s3.action';
+// Client-accessible server actions should NOT be exported here.
+// Consumers must obtain server actions via server components and props.
 
 // UI Components
-export { FileList } from './ui/file.list.client';
-export { FileUploader } from './ui/file.uploader.client';
-export { FileDetails } from './ui/file.details.client';
-export { FilePicker } from './ui/file.picker.client';
-export { ImagePicker } from './ui/image.picker.client';
+export { FileList } from './ui/file-list';
+export { FileUploader } from './ui/file-uploader';
+export { FileDetails } from './ui/file-details';
+export { FilePicker } from './ui/file-picker';
+export { ImagePicker } from './ui/image-picker';
+export { FilesPageClient } from './ui/files-page';

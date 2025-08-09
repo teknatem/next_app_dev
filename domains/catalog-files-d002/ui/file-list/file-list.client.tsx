@@ -17,9 +17,8 @@ import {
 } from '@/shared/ui/table';
 import { ChevronUpIcon, ChevronDownIcon, SearchIcon } from '@/shared/ui/icons';
 
-import { formatDateDDMMYYYY } from '../lib/date-utils';
-import { File } from '../types.shared';
-import { getFiles, softDeleteFile } from '../features/crud.server';
+import { formatDateDDMMYYYY } from '../../lib/date-utils';
+import { File } from '../../types.shared';
 
 type SortField =
   | 'title'
@@ -29,9 +28,9 @@ type SortField =
   | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
-// ============================================================================
+// =============================================================================
 // 1. Controls Component (Search and Toggle)
-// ============================================================================
+// =============================================================================
 interface FileControlsProps {
   searchInput: string;
   onSearchChange: (value: string) => void;
@@ -86,15 +85,15 @@ const FileControls = React.memo(function FileControls({
 });
 FileControls.displayName = 'FileControls';
 
-// ============================================================================
+// =============================================================================
 // 2. Table Component
-// ============================================================================
+// =============================================================================
 interface FileTableProps {
   files: File[];
   isPending: boolean;
   getSortIcon: (field: SortField) => React.ReactNode;
   handleSort: (field: SortField) => void;
-  handleSoftDelete: (id: string) => void;
+  handleSoftDelete?: (id: string) => void;
   onFileSelect?: (_file: File) => void;
   onFileEdit?: (_file: File) => void;
 }
@@ -117,12 +116,12 @@ const FileTable = React.memo(function FileTable({
   }, []);
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className="border border-border rounded-lg overflow-hidden bg-card text-foreground shadow-sm">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted/60">
           <TableRow>
             <TableHead
-              className="py-2 cursor-pointer hover:bg-muted/50"
+              className="py-2 cursor-pointer hover:bg-muted/70"
               onClick={() => handleSort('title')}
             >
               <div className="flex items-center gap-1">
@@ -130,7 +129,7 @@ const FileTable = React.memo(function FileTable({
               </div>
             </TableHead>
             <TableHead
-              className="py-2 cursor-pointer hover:bg-muted/50"
+              className="py-2 cursor-pointer hover:bg-muted/70"
               onClick={() => handleSort('description')}
             >
               <div className="flex items-center gap-1">
@@ -138,7 +137,7 @@ const FileTable = React.memo(function FileTable({
               </div>
             </TableHead>
             <TableHead
-              className="py-2 cursor-pointer hover:bg-muted/50"
+              className="py-2 cursor-pointer hover:bg-muted/70"
               onClick={() => handleSort('mimeType')}
             >
               <div className="flex items-center gap-1">
@@ -146,7 +145,7 @@ const FileTable = React.memo(function FileTable({
               </div>
             </TableHead>
             <TableHead
-              className="py-2 cursor-pointer hover:bg-muted/50"
+              className="py-2 cursor-pointer hover:bg-muted/70"
               onClick={() => handleSort('fileSize')}
             >
               <div className="flex items-center gap-1">
@@ -155,7 +154,7 @@ const FileTable = React.memo(function FileTable({
             </TableHead>
             <TableHead className="py-2">Status</TableHead>
             <TableHead
-              className="py-2 cursor-pointer hover:bg-muted/50"
+              className="py-2 cursor-pointer hover:bg-muted/70"
               onClick={() => handleSort('createdAt')}
             >
               <div className="flex items-center gap-1">
@@ -167,9 +166,12 @@ const FileTable = React.memo(function FileTable({
         </TableHeader>
         <TableBody>
           {files.map((file) => (
-            <TableRow key={file.id} className="hover:bg-muted/50">
+            <TableRow
+              key={file.id}
+              className="odd:bg-background/40 even:bg-background/20 hover:bg-muted/50"
+            >
               <TableCell className="font-medium py-2">{file.title}</TableCell>
-              <TableCell className="py-2 text-sm text-muted-foreground max-w-xs truncate">
+              <TableCell className="py-2 text-sm max-w-xs truncate text-foreground/80">
                 {file.description || '-'}
               </TableCell>
               <TableCell className="py-2 text-sm">{file.mimeType}</TableCell>
@@ -211,7 +213,7 @@ const FileTable = React.memo(function FileTable({
                     Edit
                   </Button>
                 )}
-                {file.isDeleted === false && (
+                {handleSoftDelete && file.isDeleted === false && (
                   <Button
                     variant="destructive"
                     size="sm"
@@ -232,15 +234,32 @@ const FileTable = React.memo(function FileTable({
 });
 FileTable.displayName = 'FileTable';
 
-// ============================================================================
+// =============================================================================
 // 3. Main Container Component
-// ============================================================================
+// =============================================================================
 interface FileListProps {
   onFileSelect?: (_file: File) => void;
   onFileEdit?: (_file: File) => void;
+  getFilesAction: (options: {
+    limit?: number;
+    offset?: number;
+    includeDeleted?: boolean;
+    search?: string;
+    sortBy?: SortField;
+    sortOrder?: SortOrder;
+    mimeType?: string;
+  }) => Promise<{ success: boolean; data?: File[]; error?: string }>;
+  softDeleteFileAction?: (
+    id: string
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
 }
 
-export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
+export function FileList({
+  onFileSelect,
+  onFileEdit,
+  getFilesAction,
+  softDeleteFileAction
+}: FileListProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -268,7 +287,7 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
     setError(null);
     try {
       const offset = (page - 1) * limit;
-      const result = await getFiles({
+      const result = await getFilesAction({
         limit,
         offset,
         includeDeleted,
@@ -288,7 +307,7 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [page, includeDeleted, searchQuery, sortBy, sortOrder]);
+  }, [page, includeDeleted, searchQuery, sortBy, sortOrder, getFilesAction]);
 
   useEffect(() => {
     loadFiles();
@@ -296,9 +315,10 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
 
   const handleSoftDelete = useCallback(
     async (id: string) => {
+      if (!softDeleteFileAction) return;
       if (!confirm('Are you sure you want to delete this file?')) return;
       startTransition(async () => {
-        const result = await softDeleteFile(id);
+        const result = await softDeleteFileAction(id);
         if (result.success) {
           await loadFiles();
         } else {
@@ -306,7 +326,7 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
         }
       });
     },
-    [loadFiles]
+    [loadFiles, softDeleteFileAction]
   );
 
   const handleSort = useCallback(
@@ -352,7 +372,9 @@ export function FileList({ onFileSelect, onFileEdit }: FileListProps) {
             isPending={isPending}
             getSortIcon={getSortIcon}
             handleSort={handleSort}
-            handleSoftDelete={handleSoftDelete}
+            handleSoftDelete={
+              softDeleteFileAction ? handleSoftDelete : undefined
+            }
             onFileSelect={onFileSelect}
             onFileEdit={onFileEdit}
           />

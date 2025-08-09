@@ -8,8 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Progress } from '@/shared/ui/progress';
 
-import { type File as D002File } from '../types.shared';
-import { createFile, getPresignedUploadUrl } from '../features/crud.server';
+import { type File as D002File } from '../../types.shared';
 
 const presignedUrlResponseSchema = z.object({
   url: z.string().url(),
@@ -23,13 +22,23 @@ interface FileUploaderProps {
   folder?: string;
   debug?: boolean;
   compact?: boolean;
+  onGetPresignedUploadUrlAction: (
+    mimeType: string,
+    fileSize: number,
+    folder?: string
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
+  onCreateFileAction: (
+    formData: FormData
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
 }
 
 export function FileUploader({
   onUploadSuccess,
   folder = 'general',
   debug = false,
-  compact = false
+  compact = false,
+  onGetPresignedUploadUrlAction,
+  onCreateFileAction
 }: FileUploaderProps) {
   const [file, setFile] = useState<globalThis.File | null>(null);
   const [status, setStatus] = useState<UploadStatus>('idle');
@@ -72,7 +81,7 @@ export function FileUploader({
       try {
         // 1. Get pre-signed URL using Server Action
         log('Step 1: Requesting pre-signed URL...');
-        const presignedUrlResult = await getPresignedUploadUrl(
+        const presignedUrlResult = await onGetPresignedUploadUrlAction(
           file.type,
           file.size,
           folder
@@ -172,7 +181,7 @@ export function FileUploader({
         formData.append('mimeType', file.type);
         formData.append('fileSize', file.size.toString());
 
-        const createFileResult = await createFile(formData);
+        const createFileResult = await onCreateFileAction(formData);
 
         if (createFileResult.success && createFileResult.data) {
           const newFile = createFileResult.data;

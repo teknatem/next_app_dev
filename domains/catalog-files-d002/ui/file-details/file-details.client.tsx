@@ -24,20 +24,24 @@ import {
   DialogFooter
 } from '@/shared/ui/dialog';
 
-import { toISOString } from '../lib/date-utils';
-import { File } from '../types.shared';
-import { updateFile } from '../features/crud.server';
+import { toISOString } from '../../lib/date-utils';
+import { File } from '../../types.shared';
 
 interface FileDetailsProps {
   file: File;
   onClose: () => void;
   onFileUpdated?: (updatedFile: File) => void;
+  onUpdateFileAction: (
+    id: string,
+    formData: FormData
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
 }
 
 export function FileDetails({
   file,
   onClose,
-  onFileUpdated
+  onFileUpdated,
+  onUpdateFileAction
 }: FileDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -58,16 +62,11 @@ export function FileDetails({
         formData.append('title', editData.title);
         formData.append('description', editData.description || '');
 
-        const result = await updateFile(file.id, formData);
+        const result = await onUpdateFileAction(file.id, formData);
 
         if (result.success && result.data) {
           const updatedFile = result.data as File;
-
-          // Update the file data with the response
-          if (onFileUpdated) {
-            onFileUpdated(updatedFile);
-          }
-
+          onFileUpdated?.(updatedFile);
           setIsEditing(false);
         } else {
           setError(result.error || 'Failed to update file');
