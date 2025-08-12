@@ -4,14 +4,14 @@
 
 ```
 domains/catalog-files-d002/
-├── data/                         # ⚠️ server-only: доступ к БД
-│   └── file.repo.server.ts
-├── infra/                        # ⚠️ server actions (обяз. 'use server')
-│   ├── crud.actions.ts
-│   └── test-s3.actions.ts
-├── lib/                          # shared/server utilities
-│   ├── date-utils.ts             # ✅ shared
-│   └── s3.service.server.ts      # ⚠️ server-only
+├── infra/                        # ⚠️ server-only: инфраструктура
+│   ├── orm.server.ts             # ORM-схемы ('server-only')
+│   ├── file.repo.server.ts       # Репозиторий БД
+│   ├── s3.service.server.ts      # S3-интеграции
+│   ├── crud.actions.ts           # Server Actions ('use server')
+│   └── test-s3.actions.ts        # Server Actions ('use server')
+├── lib/                          # ✅ shared/client-safe утилиты
+│   └── date-utils.shared.ts
 ├── model/                        # ✅ shared: enum/схемы домена (если есть)
 │   └── ...
 ├── ui/                           # 🔄 RSC + Client Widgets (1 каталог = 1 виджет)
@@ -34,7 +34,6 @@ domains/catalog-files-d002/
 │   │   ├── files-page.client.tsx
 │   │   └── index.ts
 │   └── index.ts                  # агрегатор client-safe виджетов
-├── orm.server.ts                 # ⚠️ server-only: ORM-схемы (если нужны)
 ├── types.shared.ts               # ✅ shared: типы и экспорт zod/enum
 ├── index.ts                      # ✅ client-safe barrel
 ├── index.server.ts               # ⚠️ server-only barrel
@@ -43,8 +42,8 @@ domains/catalog-files-d002/
 
 ## Экспорт (двойной индекс)
 
-- `index.ts` (client-safe): UI-виджеты, shared-типы/утилиты.
-- `index.server.ts` (server-only): server actions из `infra/*.actions.ts`, репозитории, server-сервисы, а также shared-экспорты при необходимости.
+- `index.ts` (client-safe): UI-виджеты, shared-типы/утилиты. Не содержит серверных экспортов.
+- `index.server.ts` (server-only): серверный баррель — для server actions из `infra/*.actions.ts`, репозиториев и server-сервисов. Обязателен для экспорта Server Actions.
 
 ## Использование
 
@@ -105,10 +104,11 @@ export function FileListBridge() {
 
 ## Правила (важно)
 
-- Server Actions: только в `infra/*.actions.ts`, первый рядок — `'use server'`; экспорт — только через `index.server.ts`.
-- Клиент не импортирует Server Actions напрямую — только через пропсы или серверные врапперы.
+- Server Actions: только в `infra/*.actions.ts`, первый рядок — `'use server'`.
+- Экспорт Server Actions — только через `index.server.ts` домена. Клиент не импортирует их напрямую; передаём через props/`action`.
+- Для междоменного использования передавайте Server Actions через props, `action` форм или серверные врапперы.
 - Разделение окружений: `.server.ts[x]` + `import 'server-only'`; `.client.ts[x]` + `'use client'`.
-- Два индекс-файла на домен: `index.ts` (client-safe) и `index.server.ts` (server-only).
+- Два индекс-файла на домен: `index.ts` (client-safe) и при необходимости `index.server.ts` (server-only).
 - “1 каталог = 1 виджет” в `ui/`, публичный реэкспорт — через `ui/<widget>/index.ts` и доменный `index.ts`.
 
 _Домен служит эталоном для работы с файлами (S3) и передачи Server Actions в клиентские виджеты._

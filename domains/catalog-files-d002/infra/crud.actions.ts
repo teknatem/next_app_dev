@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { fileRepository } from '../data/file.repo.server';
+import { fileRepository } from './file.repo.server';
 import {
   getPresignedUploadUrl,
   getPresignedReadUrl
@@ -18,14 +18,20 @@ export async function createFile(formData: FormData): Promise<{
   error?: string;
 }> {
   try {
+    const descriptionValue = formData.get('description');
+    const metadataValue = formData.get('metadata');
     const rawData = {
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
-      mimeType: formData.get('mimeType') as string,
-      fileSize: Number(formData.get('fileSize')),
-      s3Key: formData.get('s3Key') as string,
-      url: formData.get('url') as string,
-      metadata: (formData.get('metadata') as string) ?? undefined
+      title: (formData.get('title') as string) ?? '',
+      description:
+        typeof descriptionValue === 'string' ? descriptionValue : undefined,
+      mimeType: (formData.get('mimeType') as string) ?? '',
+      fileSize: Number(formData.get('fileSize') ?? 0),
+      s3Key: (formData.get('s3Key') as string) ?? '',
+      url: (formData.get('url') as string) ?? '',
+      metadata:
+        typeof metadataValue === 'string'
+          ? (metadataValue as string)
+          : undefined
     };
 
     const validatedData = formFileSchema.parse(rawData);

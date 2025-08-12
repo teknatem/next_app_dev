@@ -10,7 +10,7 @@ export {
   deleteBot
 } from './infra/crud.actions';
 
-// Server UI wrappers (RSC)
+// Server UI widgets (RSC)
 export { BotListServer } from './ui/bot-list/bot-list.server';
-export { BotDetailsServer } from './ui/bot-details/bot-details.server';
+export { BotDetailsWidget } from './ui/bot-details/widget.server';
 export { BotPickerServer } from './ui/bot-picker/bot-picker.server';

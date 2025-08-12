@@ -229,9 +229,6 @@ export function BotList({
                       )}
                     <div>
                       <div className="font-medium">{bot.name}</div>
-                      <div className="text-sm text-gray-500">
-                        ID: {bot.id.slice(0, 8)}...
-                      </div>
                     </div>
                   </div>
                 </TableCell>

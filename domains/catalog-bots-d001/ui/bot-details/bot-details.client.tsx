@@ -1,49 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/shared/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
-import { Textarea } from '@/shared/ui/textarea';
-import { Badge } from '@/shared/ui/badge';
-import { getGenderLabel, getProviderLabel } from '../labels.shared';
-import {
-  Eye,
-  Edit,
-  Save,
-  X,
-  Loader2,
-  AlertCircle,
-  Palette,
-  User,
-  Briefcase,
-  Bot,
-  Goal,
-  Gavel,
-  Database,
-  Tag,
-  Calendar,
-  Hash
-} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Edit, Save, X } from 'lucide-react';
 // server actions не импортируются напрямую; будут прокинуты через пропы server-обёртки
 import type { Bot as BotType, NewBot } from '../../';
+import type { UpdateBotParams } from '../../types.shared';
 import {
   LLM_PROVIDERS,
   GENDER_OPTIONS,
   LLM_MODELS,
   formBotSchema
 } from '../../';
-import { ImagePicker } from '@/domains/catalog-files-d002';
-import { FileUploader } from '@/domains/catalog-files-d002';
-import type { File as D002File } from '@/domains/catalog-files-d002';
+import type { BotFormData, BotFormErrors } from './types';
+import { BasicInfoSection } from './sections/basic-info.client';
+import { AppearanceSection } from './sections/appearance.client';
+import { AIConfigSection } from './sections/ai-config.client';
+import { SystemInfoSection } from './sections/system-info.client';
 
 interface BotDetailsProps {
   botId?: string;
@@ -58,9 +33,7 @@ interface BotDetailsProps {
     data: NewBot
   ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
   onUpdateAction?: (
-    id: string,
-    data: Partial<NewBot>,
-    version: number
+    params: UpdateBotParams
   ) => Promise<{ success: boolean; data?: BotType; error?: string }>;
 }
 
@@ -81,9 +54,11 @@ export function BotDetails({
     mode === 'edit' || mode === 'create'
   );
   const [saving, setSaving] = useState(false);
+  const [formErrors, setFormErrors] = useState<BotFormErrors>({});
+  const router = useRouter();
 
   // Форма
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BotFormData>({
     name: '',
     gender: GENDER_OPTIONS.MALE as string,
     position: '',
@@ -125,6 +100,7 @@ export function BotDetails({
         llmProvider: bot.llmProvider,
         llmModel: bot.llmModel
       });
+      setFormErrors({});
     }
   }, [bot]);
 
@@ -153,14 +129,19 @@ export function BotDetails({
   const handleSave = async () => {
     setSaving(true);
     setError(null);
+    setFormErrors({});
 
     const validation = formBotSchema.safeParse(formData);
 
     if (!validation.success) {
-      const errorMsg = validation.error.errors
-        .map((e) => `${e.path.join('.')}: ${e.message}`)
-        .join(', ');
-      setError(`Ошибка валидации: ${errorMsg}`);
+      const fieldErrors: BotFormErrors = {};
+      for (const issue of validation.error.errors) {
+        const field = issue.path?.[0] as keyof BotFormData | undefined;
+        if (field) {
+          fieldErrors[field] = issue.message;
+        }
+      }
+      setFormErrors(fieldErrors);
       setSaving(false);
       return;
     }
@@ -172,7 +153,11 @@ export function BotDetails({
         result = await onCreateAction(validation.data);
       } else if (bot?.id) {
         if (!onUpdateAction) throw new Error('onUpdateAction is not provided');
-        result = await onUpdateAction(bot.id, validation.data, bot.version);
+        result = await onUpdateAction({
+          id: bot.id,
+          data: validation.data,
+          version: bot.version
+        });
       } else {
         throw new Error('Невозможно сохранить: ID бота отсутствует');
       }
@@ -212,6 +197,9 @@ export function BotDetails({
     }
     setIsEditing(false);
     onCancel?.();
+    if (!onCancel) {
+      router.back();
+    }
   };
 
   if (loading) {
@@ -231,7 +219,17 @@ export function BotDetails({
           <CardTitle>
             {mode === 'create' ? 'Создание бота' : bot?.name || 'Бот'}
           </CardTitle>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            {/* Close button */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Закрыть"
+              onClick={() => (onCancel ? onCancel() : router.back())}
+            >
+              <X className="h-4 w-4" />
+            </Button>
             {!isEditing && mode !== 'create' && (
               <Button onClick={() => setIsEditing(true)} size="sm">
                 <Edit className="h-4 w-4 mr-2" />
@@ -270,346 +268,31 @@ export function BotDetails({
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Основная информация */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Основная информация
-            </h3>
-
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="name">Имя</Label>
-                {isEditing ? (
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="Введите имя бота"
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">{bot?.name}</div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="gender">Пол</Label>
-                {isEditing ? (
-                  <Input
-                    id="gender"
-                    value={formData.gender}
-                    onChange={(e) =>
-                      setFormData({ ...formData, gender: e.target.value })
-                    }
-                    placeholder="male, female, other"
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">
-                    <Badge variant="outline">
-                      {getGenderLabel(bot?.gender || '')}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="position">Должность</Label>
-                {isEditing ? (
-                  <Input
-                    id="position"
-                    value={formData.position}
-                    onChange={(e) =>
-                      setFormData({ ...formData, position: e.target.value })
-                    }
-                    placeholder="Введите должность"
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">{bot?.position}</div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="hierarchyLevel">Уровень иерархии</Label>
-                {isEditing ? (
-                  <Input
-                    id="hierarchyLevel"
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={formData.hierarchyLevel}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        hierarchyLevel: parseInt(e.target.value)
-                      })
-                    }
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">
-                    <Badge variant="secondary">{bot?.hierarchyLevel}</Badge>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Внешний вид */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Palette className="h-5 w-5" />
-              Внешний вид
-            </h3>
-
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="avatarUrl">URL аватара</Label>
-                {isEditing ? (
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="avatarUrl"
-                        value={formData.avatarUrl}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            avatarUrl: e.target.value
-                          })
-                        }
-                        placeholder="https://example.com/avatar.jpg"
-                      />
-                      <ImagePicker
-                        onSelectAction={(file: D002File) =>
-                          setFormData({ ...formData, avatarUrl: file.url })
-                        }
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <FileUploader
-                        onUploadSuccess={(file: D002File) => {
-                          setFormData({ ...formData, avatarUrl: file.url });
-                        }}
-                        folder="avatars"
-                        compact={true}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">
-                    {bot?.avatarUrl ? (
-                      <img
-                        src={bot.avatarUrl}
-                        alt={bot.name}
-                        className="w-16 h-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      'Не указан'
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="primaryColor">Основной цвет</Label>
-                {isEditing ? (
-                  <div className="flex gap-2">
-                    <Input
-                      id="primaryColor"
-                      type="color"
-                      value={formData.primaryColor}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          primaryColor: e.target.value
-                        })
-                      }
-                      className="w-16 h-10"
-                    />
-                    <Input
-                      value={formData.primaryColor}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          primaryColor: e.target.value
-                        })
-                      }
-                      placeholder="#3B82F6"
-                    />
-                  </div>
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded flex items-center gap-2">
-                    <div
-                      className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: bot?.primaryColor }}
-                    />
-                    {bot?.primaryColor}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* AI конфигурация */}
-          <div className="space-y-4 md:col-span-2">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Bot className="h-5 w-5" />
-              AI конфигурация
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="llmProvider">Провайдер LLM</Label>
-                {isEditing ? (
-                  <Input
-                    id="llmProvider"
-                    value={formData.llmProvider}
-                    onChange={(e) =>
-                      setFormData({ ...formData, llmProvider: e.target.value })
-                    }
-                    placeholder="openai, anthropic, etc."
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">
-                    <Badge variant="outline">
-                      {getProviderLabel(bot?.llmProvider || '')}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="llmModel">Модель LLM</Label>
-                {isEditing ? (
-                  <Input
-                    id="llmModel"
-                    value={formData.llmModel}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        llmModel: e.target
-                          .value as (typeof LLM_MODELS)[keyof typeof LLM_MODELS]
-                      })
-                    }
-                    placeholder="gpt-4"
-                  />
-                ) : (
-                  <div className="p-2 bg-gray-50 rounded">{bot?.llmModel}</div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="role">Роль (для Prompt)</Label>
-              {isEditing ? (
-                <textarea
-                  id="role"
-                  value={formData.role}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setFormData({ ...formData, role: e.target.value })
-                  }
-                  placeholder="Опишите роль бота..."
-                  rows={3}
-                  className="w-full p-3 border rounded-md resize-none"
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded whitespace-pre-wrap">
-                  {bot?.role}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="goals">Цели (для Prompt)</Label>
-              {isEditing ? (
-                <textarea
-                  id="goals"
-                  value={formData.goals}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setFormData({ ...formData, goals: e.target.value })
-                  }
-                  placeholder="Опишите цели бота..."
-                  rows={3}
-                  className="w-full p-3 border rounded-md resize-none"
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded whitespace-pre-wrap">
-                  {bot?.goals}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="rules">Правила (для Prompt)</Label>
-              {isEditing ? (
-                <textarea
-                  id="rules"
-                  value={formData.rules}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setFormData({ ...formData, rules: e.target.value })
-                  }
-                  placeholder="Опишите правила поведения бота..."
-                  rows={3}
-                  className="w-full p-3 border rounded-md resize-none"
-                />
-              ) : (
-                <div className="p-3 bg-gray-50 rounded whitespace-pre-wrap">
-                  {bot?.rules}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Системная информация */}
-          {bot && (
-            <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Hash className="h-5 w-5" />
-                Системная информация
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <Label>ID</Label>
-                  <div className="p-2 bg-gray-50 rounded font-mono">
-                    {bot.id}
-                  </div>
-                </div>
-                <div>
-                  <Label>Версия</Label>
-                  <div className="p-2 bg-gray-50 rounded">{bot.version}</div>
-                </div>
-                <div>
-                  <Label>Статус</Label>
-                  <div className="p-2 bg-gray-50 rounded">
-                    <Badge variant={bot.isDeleted ? 'destructive' : 'default'}>
-                      {bot.isDeleted ? 'Удален' : 'Активен'}
-                    </Badge>
-                  </div>
-                </div>
-                <div>
-                  <Label>Создан</Label>
-                  <div className="p-2 bg-gray-50 rounded">
-                    {new Date(bot.createdAt).toLocaleString('ru-RU')}
-                  </div>
-                </div>
-                <div>
-                  <Label>Обновлен</Label>
-                  <div className="p-2 bg-gray-50 rounded">
-                    {new Date(bot.updatedAt).toLocaleString('ru-RU')}
-                  </div>
-                </div>
-                {bot.deletedAt && (
-                  <div>
-                    <Label>Удален</Label>
-                    <div className="p-2 bg-gray-50 rounded">
-                      {new Date(bot.deletedAt).toLocaleString('ru-RU')}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <BasicInfoSection
+            isEditing={isEditing}
+            bot={bot}
+            formData={formData}
+            setFormData={setFormData}
+            formErrors={formErrors}
+            setFormErrors={setFormErrors}
+          />
+          <AppearanceSection
+            isEditing={isEditing}
+            bot={bot}
+            formData={formData}
+            setFormData={setFormData}
+            formErrors={formErrors}
+            setFormErrors={setFormErrors}
+          />
+          <AIConfigSection
+            isEditing={isEditing}
+            bot={bot}
+            formData={formData}
+            setFormData={setFormData}
+            formErrors={formErrors}
+            setFormErrors={setFormErrors}
+          />
+          <SystemInfoSection bot={bot} />
         </div>
       </CardContent>
     </Card>

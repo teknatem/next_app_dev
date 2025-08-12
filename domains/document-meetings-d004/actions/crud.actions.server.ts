@@ -153,7 +153,42 @@ export async function getAssetsByMeetingIdAction(
   try {
     const assets =
       await meetingRepositoryServer.getAssetsByMeetingId(meetingId);
-    return { success: true, data: assets };
+
+    // Enrich with file info via cross-domain service, not ORM join
+    const assetsWithFileInfo: MeetingAssetWithFileInfo[] = await Promise.all(
+      assets.map(async (asset) => {
+        if (asset.fileId) {
+          const file = await fileRepository.getFileById(asset.fileId);
+          return {
+            id: asset.id,
+            meetingId: asset.meetingId,
+            fileId: asset.fileId,
+            kind: asset.kind,
+            originalName: asset.originalName,
+            mimeType: asset.mimeType,
+            storageUrl: asset.storageUrl,
+            fileTitle: file?.title ?? asset.originalName,
+            fileDescription: file?.description ?? null,
+            fileSize: file?.fileSize ?? 0
+          };
+        }
+
+        return {
+          id: asset.id,
+          meetingId: asset.meetingId,
+          fileId: null,
+          kind: asset.kind,
+          originalName: asset.originalName,
+          mimeType: asset.mimeType,
+          storageUrl: asset.storageUrl,
+          fileTitle: asset.originalName,
+          fileDescription: null,
+          fileSize: 0
+        };
+      })
+    );
+
+    return { success: true, data: assetsWithFileInfo };
   } catch (error) {
     console.error(`Error getting assets for meeting ${meetingId}:`, error);
     return { success: false, error: 'Failed to get assets' };

@@ -16,5 +16,5 @@ export { FileUploader } from './ui/file-uploader';
 export { FileDetails } from './ui/file-details';
 export { FilePicker } from './ui/file-picker';
 export { ImagePicker } from './ui/image-picker';
+// Image picker is client-only; no server wrapper
 export { FilesPageClient } from './ui/files-page';
-export { FilesActionsProvider, useFilesActions } from './ui';

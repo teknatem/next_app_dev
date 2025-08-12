@@ -28,6 +28,7 @@ if (
 const s3Client = new S3Client({
   endpoint: S3_ENDPOINT,
   region: S3_REGION,
+  forcePathStyle: true,
   credentials: {
     accessKeyId: S3_ACCESS_KEY_ID,
     secretAccessKey: S3_SECRET_ACCESS_KEY
@@ -47,8 +48,7 @@ export async function getPresignedUploadUrl(
   const command = new PutObjectCommand({
     Bucket: S3_BUCKET_NAME,
     Key: key,
-    ContentType: mimeType,
-    ContentLength: fileSize
+    ContentType: mimeType
   });
   try {
     const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });

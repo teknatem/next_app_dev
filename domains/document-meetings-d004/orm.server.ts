@@ -1,5 +1,3 @@
-import 'server-only';
-
 import {
   pgTable,
   uuid,
@@ -10,8 +8,6 @@ import {
   integer
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { d003Employees } from '@/domains/catalog-employees-d003/orm.server';
-import { d002Files } from '@/domains/catalog-files-d002/orm.server';
 import {
   MEETING_ASSET_KINDS,
   MEETING_ARTEFACT_TYPES,
@@ -26,7 +22,8 @@ export const meetings = pgTable('d004_meetings', {
   endedAt: timestamp('ended_at', { withTimezone: true }),
   location: text('location').notNull(),
   isOnline: boolean('is_online').notNull(),
-  organiserId: uuid('organiser_id').references(() => d003Employees.id),
+  // Cross-aggregate reference via UUID only (no DB FK)
+  organiserId: uuid('organiser_id'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -48,7 +45,8 @@ export const meetingAssets = pgTable('d004_meeting_assets', {
   mimeType: text('mime_type').notNull(),
   storageUrl: text('storage_url').notNull(),
   metadata: jsonb('metadata'),
-  fileId: uuid('file_id').references(() => d002Files.id)
+  // Cross-aggregate reference via UUID only (no DB FK)
+  fileId: uuid('file_id')
 });
 
 // AI artefacts (transcripts & diarisation)
@@ -79,11 +77,8 @@ export const meetingArtefacts = pgTable('d004_meeting_artefacts', {
 
 // Relations
 export const meetingsRelations = relations(meetings, ({ many, one }) => ({
-  assets: many(meetingAssets),
-  organiser: one(d003Employees, {
-    fields: [meetings.organiserId],
-    references: [d003Employees.id]
-  })
+  assets: many(meetingAssets)
+  // No cross-aggregate relation to employees
 }));
 
 export const meetingAssetsRelations = relations(
@@ -92,10 +87,6 @@ export const meetingAssetsRelations = relations(
     meeting: one(meetings, {
       fields: [meetingAssets.meetingId],
       references: [meetings.id]
-    }),
-    file: one(d002Files, {
-      fields: [meetingAssets.fileId],
-      references: [d002Files.id]
     }),
     artefacts: many(meetingArtefacts)
   })

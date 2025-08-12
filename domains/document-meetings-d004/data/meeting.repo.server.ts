@@ -13,10 +13,9 @@ import {
   type NewMeetingAsset,
   type MeetingArtefact,
   type NewMeetingArtefact,
-  type MeetingSearch,
-  type MeetingAssetWithFileInfo
+  type MeetingSearch
 } from '../types.shared';
-import { d002Files } from '../../catalog-files-d002/orm.server';
+// Removed cross-aggregate ORM dependency on d002 (files)
 
 export const meetingRepositoryServer = {
   // Meeting operations
@@ -94,24 +93,10 @@ export const meetingRepositoryServer = {
   },
 
   // Asset operations
-  async getAssetsByMeetingId(
-    meetingId: string
-  ): Promise<MeetingAssetWithFileInfo[]> {
+  async getAssetsByMeetingId(meetingId: string): Promise<MeetingAsset[]> {
     return await db
-      .select({
-        id: meetingAssets.id,
-        meetingId: meetingAssets.meetingId,
-        fileId: meetingAssets.fileId,
-        kind: meetingAssets.kind,
-        originalName: meetingAssets.originalName,
-        mimeType: meetingAssets.mimeType,
-        storageUrl: meetingAssets.storageUrl,
-        fileTitle: d002Files.title,
-        fileDescription: d002Files.description,
-        fileSize: d002Files.fileSize
-      })
+      .select()
       .from(meetingAssets)
-      .innerJoin(d002Files, eq(meetingAssets.fileId, d002Files.id))
       .where(eq(meetingAssets.meetingId, meetingId))
       .orderBy(asc(meetingAssets.originalName));
   },

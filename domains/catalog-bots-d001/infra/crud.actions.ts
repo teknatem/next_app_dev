@@ -9,6 +9,7 @@ import {
   DeleteBotParams,
   GetBotsParams
 } from '../types.shared';
+import { updateBotSchema } from '../model/schemas.shared';
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/shared/lib/auth.server';
@@ -66,7 +67,7 @@ export async function updateBot(
   try {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id ?? null;
-    const validatedData = formBotSchema.partial().parse(params.data);
+    const validatedData = updateBotSchema.parse(params.data);
 
     if (validatedData.name) {
       const exists = await botRepository.botExistsByName(

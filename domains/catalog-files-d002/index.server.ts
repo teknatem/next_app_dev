@@ -12,7 +12,7 @@ export {
 } from './lib/date-utils.shared';
 
 // Server-only data layer
-export { fileRepository } from './data/file.repo.server';
+export { fileRepository } from './infra/file.repo.server';
 
 // Server-only services
 export {
@@ -32,3 +32,5 @@ export {
   getPresignedReadUrlAction
 } from './infra/crud.actions';
 export { testS3Configuration } from './infra/test-s3.actions';
+
+// Note: ImagePicker is now a client-only widget. No server wrapper exports.

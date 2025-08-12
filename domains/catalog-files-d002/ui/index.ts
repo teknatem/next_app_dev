@@ -4,7 +4,4 @@ export { FileDetails } from './file-details';
 export { FilePicker } from './file-picker';
 export { ImagePicker } from './image-picker';
 export { FilesPageClient } from './files-page';
-export {
-  FilesActionsProvider,
-  useFilesActions
-} from '@/domains/catalog-files-d002/ui/files-actions.provider';
+

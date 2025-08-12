@@ -1,4 +1,4 @@
-import { BotDetailsServer } from '@/domains/catalog-bots-d001/index.server';
+import { BotDetailsWidget } from '@/domains/catalog-bots-d001/index.server';
 import { BackButton } from '@/shared/ui/back-button';
 
 export default async function BotDetailsPage({
@@ -26,7 +26,7 @@ export default async function BotDetailsPage({
           {isNew ? 'Создание бота' : 'Детали бота'}
         </h1>
       </div>
-      <BotDetailsServer botId={isNew ? undefined : id} mode={effectiveMode} />
+      <BotDetailsWidget botId={isNew ? undefined : id} mode={effectiveMode} />
     </div>
   );
 }

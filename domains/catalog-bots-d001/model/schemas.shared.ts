@@ -90,7 +90,8 @@ const formBotFormFields = z.object({
   llmModel: z.string().min(1, 'Модель LLM обязательна')
 });
 
-export const formBotSchema = botSchema
+// Build a reusable ZodObject for form/update schemas (kept as object to allow .partial())
+const baseFormBotSchemaObject = botSchema
   .omit({
     id: true,
     version: true,
@@ -109,23 +110,54 @@ export const formBotSchema = botSchema
       .union([z.string().url(), z.literal('')])
       .optional()
       .transform((v) => (v === '' ? undefined : v))
-  })
-  .refine(
-    (data) => {
-      // if both are from known sets, enforce compatibility
-      const providerKey = (
-        Object.keys(LLM_PROVIDERS) as Array<keyof typeof LLM_PROVIDERS>
-      ).find((k) => LLM_PROVIDERS[k] === data.llmProvider);
-      const modelKey = (
-        Object.keys(LLM_MODELS) as Array<keyof typeof LLM_MODELS>
-      ).find((k) => LLM_MODELS[k] === data.llmModel);
-      if (!providerKey || !modelKey) return true;
-      return MODELS_BY_PROVIDER[providerKey].includes(LLM_MODELS[modelKey]);
-    },
-    {
-      path: ['llmModel'],
-      message: 'Модель не соответствует выбранному провайдеру'
+  });
+
+// Create schema for creating a bot (all required fields present)
+export const formBotSchema = baseFormBotSchemaObject.superRefine(
+  (data, ctx) => {
+    const providerKey = (
+      Object.keys(LLM_PROVIDERS) as Array<keyof typeof LLM_PROVIDERS>
+    ).find((k) => LLM_PROVIDERS[k] === data.llmProvider);
+    const modelKey = (
+      Object.keys(LLM_MODELS) as Array<keyof typeof LLM_MODELS>
+    ).find((k) => LLM_MODELS[k] === data.llmModel);
+    if (!providerKey || !modelKey) return; // unknown or missing — skip strict check
+    const isCompatible = MODELS_BY_PROVIDER[providerKey].includes(
+      LLM_MODELS[modelKey]
+    );
+    if (!isCompatible) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['llmModel'],
+        message: 'Модель не соответствует выбранному провайдеру'
+      });
     }
-  );
+  }
+);
+
+// Create schema for updating a bot (all fields optional)
+export const updateBotSchema = baseFormBotSchemaObject
+  .partial()
+  .superRefine((data, ctx) => {
+    // Only validate compatibility when both fields are provided
+    if (data.llmProvider === undefined || data.llmModel === undefined) return;
+    const providerKey = (
+      Object.keys(LLM_PROVIDERS) as Array<keyof typeof LLM_PROVIDERS>
+    ).find((k) => LLM_PROVIDERS[k] === data.llmProvider);
+    const modelKey = (
+      Object.keys(LLM_MODELS) as Array<keyof typeof LLM_MODELS>
+    ).find((k) => LLM_MODELS[k] === data.llmModel);
+    if (!providerKey || !modelKey) return;
+    const isCompatible = MODELS_BY_PROVIDER[providerKey].includes(
+      LLM_MODELS[modelKey]
+    );
+    if (!isCompatible) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['llmModel'],
+        message: 'Модель не соответствует выбранному провайдеру'
+      });
+    }
+  });
 
 export { LLM_PROVIDERS, LLM_MODELS, GENDER_OPTIONS };

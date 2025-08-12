@@ -1,9 +1,10 @@
 import 'server-only';
+
 import { eq, desc, and, sql, asc, ilike, or, like } from 'drizzle-orm';
 
 import { db } from '@/shared/database/connection';
 
-import { d002Files, NewD002FileRecord } from '../orm.server';
+import { d002Files, NewD002FileRecord } from './orm.server';
 
 export const fileRepository = {
   /**
@@ -56,7 +57,7 @@ export const fileRepository = {
     } = options;
 
     // Build where conditions
-    const whereConditions = [];
+    const whereConditions = [] as any[];
 
     if (!includeDeleted) {
       whereConditions.push(eq(d002Files.isDeleted, false));
@@ -78,7 +79,7 @@ export const fileRepository = {
     }
 
     const whereCondition =
-      whereConditions.length > 0 ? and(...whereConditions) : undefined;
+      whereConditions.length > 0 ? and(...(whereConditions as any)) : undefined;
 
     // Build order by condition
     let orderByCondition;
@@ -118,7 +119,7 @@ export const fileRepository = {
       .select()
       .from(d002Files)
       .where(whereCondition)
-      .orderBy(orderByCondition)
+      .orderBy(orderByCondition as any)
       .limit(limit)
       .offset(offset);
   },

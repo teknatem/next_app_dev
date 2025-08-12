@@ -30,61 +30,60 @@
 
 ---
 
-## 📁 Domain Structure Template
+## 📁 Domain Structure Template (Unified)
 
 ```
 domains/
 └── <domain-name>/
-    ├── orm.server.ts        # ⚠️ SERVER-ONLY - ORM/Drizzle-схемы, только для сервера (с директивой 'server-only'). См. [db rules.md](./db%20rules.md).
-    ├── types.shared.ts      # ✅ SHARED - Типы и Zod-схемы, используются и на клиенте, и на сервере
-    ├── model/               # ✅ SHARED - Domain data models and enums
-    │   └── enums.shared.ts       # Domain-specific enums (shared)
-    ├── data/               # ⚠️ SERVER-ONLY - Database operations
-    │   └── *.repo.server.ts      # Repository with 'server-only' directive
-    ├── api/                # ✅ CLIENT-ONLY - HTTP API calls
-    │   └── *.api.client.ts       # Client API with 'use client' directive
-    ├── lib/                # 🔄 MIXED - Utilities and services (OPTIONAL)
-    │   ├── *.shared.ts           # ✅ SHARED - Pure functions, no side effects
-    │   ├── *.server.ts           # ⚠️ SERVER-ONLY - S3, external APIs, email services
-    │   └── *.client.ts           # ✅ CLIENT-ONLY - Browser-specific logic, validation
-    ├── ui/                 # 🔄 MIXED - React components
-    │   ├── *.server.tsx          # ⚠️ SERVER-ONLY - Server Components
-    │   └── *.client.tsx          # ✅ CLIENT-ONLY - Client Components
-    ├── index.ts            # ✅ CLIENT-SAFE - Public API for client
-    ├── index.server.ts     # ⚠️ SERVER-ONLY - Public API for server
-    └── README.md           # Documentation
+    ├── infra/                 # ⚠️ SERVER-ONLY — инфраструктура домена
+    │   ├── orm.server.ts           # Drizzle ORM (обязательно 'server-only')
+    │   ├── *.repo.server.ts        # Репозитории и DB-адаптеры
+    │   ├── *.service.server.ts     # Интеграции (S3, email, внешние API)
+    │   └── *.actions.ts            # Server Actions ('use server' первой строкой)
+    ├── model/                 # ✅ SHARED — клиент-безопасные модели
+    │   ├── enums.shared.ts         # Перечисления (as const + типы)
+    │   └── schemas.shared.ts       # Zod-схемы для сущностей/форм
+    ├── ui/                    # 🔄 MIXED — UI (паттерн "1 виджет — 1 папка")
+    │   ├── <entity>-list/
+    │   │   ├── <entity>-list.client.tsx
+    │   │   └── index.ts
+    │   ├── <entity>-details/
+    │   │   ├── <entity>-details.client.tsx
+    │   │   └── index.ts
+    │   ├── <entity>-picker/
+    │   │   ├── <entity>-picker.client.tsx
+    │   │   └── index.ts
+    │   └── index.ts                # Баррель для всего UI домена
+    ├── lib/                   # OPTIONAL — утилиты (см. правила ниже)
+    │   ├── *.shared.ts             # Клиент-безопасные чистые функции
+    │   ├── *.client.ts             # Браузерная логика (с 'use client')
+    │   └── (без server-файлов)     # Серверные утилиты держим в infra/
+    ├── types.shared.ts        # ✅ SHARED — типы на основе Zod + реэкспорт схем/enum'ов
+    ├── index.ts               # ✅ CLIENT-SAFE — публичный API для клиента (без серверного кода)
+    ├── index.server.ts        # ⚠️ SERVER-ONLY — публичный API для сервера
+    └── README.md              # Документация домена
 ```
 
 ---
 
-## 📦 Папка `lib/` (Необязательная)
+## 📦 Папка `lib/` (необязательная, только client-safe/shared)
 
-### **Назначение:**
+### Назначение
 
-Папка `lib/` содержит утилиты, сервисы и вспомогательные функции, которые не относятся к основным слоям домена (data, ui, actions, features).
+- Небольшие чистые утилиты, форматирование, хелперы проверки, константы — всё, что безопасно для клиента и не требует Node/API-зависимостей.
 
-### **Когда использовать:**
+### Правила
 
-- **Утилиты**: функции форматирования, валидации, преобразования данных
-- **Сервисы**: интеграции с внешними API, S3, email-сервисы
-- **Константы**: перечисления, конфигурационные значения
-- **Хелперы**: вспомогательные функции для бизнес-логики
+- Серверных файлов в `lib/` не держим. Любой код с внешними интеграциями, доступом к БД/файлам и т.п. — в `infra/`.
+- Допустимы только `*.shared.ts` и `*.client.ts`. Для серверной логики используйте `infra/*.server.ts`.
 
-### **Когда НЕ использовать:**
-
-- Для простых доменов без дополнительной логики
-- Если утилиты можно разместить в других слоях
-- Если функциональность минимальна
-
-### **Примеры файлов:**
+### Примеры
 
 ```
 lib/
-├── date-utils.ts              # Форматирование дат
-├── validation.utils.ts        # Валидация форм
-├── email.service.server.ts    # Email-сервис
-├── s3.service.server.ts       # S3 интеграция
-└── constants.ts               # Константы домена
+├── date-utils.shared.ts       # Форматирование дат (pure)
+├── validation.shared.ts       # Валидация схем/форм (pure)
+└── dom.client.ts              # Узко-браузерные утилиты
 ```
 
 ---
@@ -110,8 +109,8 @@ import 'server-only';
 // ⚠️ SERVER-ONLY exports
 export * from './model/files.schema'; // Shared types & schemas
 export { toISOString } from './lib/date-utils'; // Shared utilities
-export { fileRepositoryServer } from './data/file.repo.server'; // Server data
-export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server services
+export { fileRepositoryServer } from './infra/file.repo.server'; // Server data
+export { getPresignedUploadUrlServer } from './infra/s3.service.server'; // Server services
 ```
 
 ---
@@ -449,9 +448,10 @@ Form -> EmployeeDetails.client.tsx
 
 ### Export & Usage Rules
 
-- Export Server Actions only through `index.server.ts` of the domain.
-- Do not re-export Server Actions from `index.ts` (client-safe index).
-- Do not import Server Actions directly from client components; pass them via props or use form `action` where applicable.
+- Никогда не ре-экспортируйте Server Actions из `index.ts` (client-safe index).
+- Все Server Actions экспортируются только через `index.server.ts` домена (обязательное правило).
+- Клиентский код не импортирует Server Actions напрямую. Передавайте их в клиентские компоненты через props или используйте `action` у форм.
+- Правило действует как для внутри-доменного, так и для междоменного использования.
 
 ### Coexistence With Other File Types
 
@@ -464,11 +464,11 @@ Form -> EmployeeDetails.client.tsx
 
 ### Quick Checklist (Server Actions)
 
-- [ ] File is under `domains/<domain>/infra/`.
-- [ ] Filename ends with `.actions.ts`.
-- [ ] First line is exactly `'use server';`.
-- [ ] Exported only via `index.server.ts`.
-- [ ] Not imported from any client module or exported via `index.ts`.
+- [ ] Файл расположен в `domains/<domain>/infra/`.
+- [ ] Имя файла оканчивается на `.actions.ts`.
+- [ ] Первая строка ровно `'use server';`.
+- [ ] Экспортируется только через `index.server.ts`.
+- [ ] Не импортируется напрямую в клиентские компоненты (ни внутри домена, ни из других доменов). Передача только через props/`action`.
 
 ### Examples
 
@@ -528,13 +528,13 @@ Bad:
 
 ### Организация ORM схем
 
-**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domains/**/orm.server.ts'`
+**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domains/**/infra/orm.server.ts'`.
 
-- В корне домена должны быть два файла:
-  - `orm.server.ts` — только серверный файл, содержит ORM/Drizzle-схемы и связан только с сервером (использует 'server-only' директиву).
-  - `types.shared.ts` — файл с типами и Zod-схемами, которые могут использоваться как на сервере, так и на клиенте (без серверных зависимостей).
-- Эти файлы обеспечивают явное разделение между серверной логикой (ORM) и универсальными типами/валидацией.
-- Импортировать ORM-схемы только из `orm.server.ts`, а типы/Zod-схемы — только из `types.shared.ts`.
+- Обязательные артефакты домена:
+  - `infra/orm.server.ts` — серверный файл с ORM/Drizzle-схемами (обязательно `import 'server-only'`).
+  - `types.shared.ts` — клиент-безопасные типы и Zod-реэкспорты (без серверных зависимостей).
+- Эти артефакты обеспечивают явное разделение между серверной логикой (ORM в `infra/`) и универсальными типами/валидацией (`types.shared.ts`).
+- Импортировать ORM-схемы только из `infra/orm.server.ts`, а типы/Zod-схемы — только из `types.shared.ts`.
 
 ### Системные таблицы
 
@@ -548,7 +548,7 @@ Bad:
 export default defineConfig({
   schema: [
     './shared/database/schemas/*', // Системные таблицы
-    './domains/**/orm.server.ts' // Доменные ORM схемы
+    './domains/**/infra/orm.server.ts' // Доменные ORM схемы
   ]
   // ...
 });
