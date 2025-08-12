@@ -49,8 +49,8 @@ Clear, explicit boundaries between different contexts (server/client, domains, l
 ### **Domain Organization**
 
 ```
-domains/
-└── <business-context>/
+domain/
+└── <dNNN>-<slug>/
     ├── model/           # Shared business models and enums
     ├── data/           # Server-only data operations
     ├── api/            # Client-only API calls

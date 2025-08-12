@@ -12,11 +12,11 @@
 
 ### **1. Расположение Enum'ов (`enums.shared.ts`)**
 
-- **Правило:** Все перечисления (enums) и константы, используемые в домене, **ДОЛЖНЫ** определяться в файле `domains/<domain>/model/enums.shared.ts`.
+- **Правило:** Все перечисления (enums) и константы, используемые в домене, **ДОЛЖНЫ** определяться в файле `domain/<domain>/model/enums.shared.ts`.
 - **Формат:** Рекомендуется использовать `as const` для создания строковых enum'ов и экспортировать как константу, так и тип.
 
   ```typescript
-  // domains/<domain>/model/enums.shared.ts
+  // domain/<domain>/model/enums.shared.ts
 
   export const MEETING_ASSET_KINDS = ['document', 'audio', 'video'] as const;
   export type MeetingAssetKind = (typeof MEETING_ASSET_KINDS)[number];
@@ -33,8 +33,8 @@
 ## 📁 Domain Structure Template (Unified)
 
 ```
-domains/
-└── <domain-name>/
+domain/
+└── <dNNN>-<slug>/
     ├── infra/                 # ⚠️ SERVER-ONLY — инфраструктура домена
     │   ├── orm.server.ts           # Drizzle ORM (обязательно 'server-only')
     │   ├── *.repo.server.ts        # Репозитории и DB-адаптеры
@@ -119,7 +119,7 @@ export { getPresignedUploadUrlServer } from './infra/s3.service.server'; // Serv
 
 ### **1. Разделение на серверные и клиентские компоненты (Server/Client Component Separation):**
 
-- Все UI-компоненты, расположенные в `domains/<domain>/ui/`, по умолчанию являются серверными компонентами и должны иметь суффикс `.server.tsx`.
+- Все UI-компоненты, расположенные в `domain/<domain>/ui/`, по умолчанию являются серверными компонентами и должны иметь суффикс `.server.tsx`.
 - Компоненты, требующие клиентской интерактивности (хуки React, обработчики событий), должны быть в файлах с суффиксом `.client.tsx` и содержать директиву `'use client'`.
 
 ### **2. Обязательные виджеты для доменов типа `catalog` и `document` (Mandatory Widgets for `catalog` and `document` domains):**
@@ -146,16 +146,16 @@ export { getPresignedUploadUrlServer } from './infra/s3.service.server'; // Serv
 
 ---
 
-### **3. Структура каталога `ui/`: "Один виджет — одна папка" (NEW)**
+### **3. Структура каталога `ui/`: "Один виджет — одна папка" (UPDATED)**
 
-> Пример эталона: `domains/catalog-files-d002/ui`
+> Пример эталона: `domain/d002-files/ui`
 
 Для масштабируемости и удобства навигации каждый виджет размещается в собственной папке внутри `ui/`. Каждый виджет имеет локальный `index.ts`-баррель и экспортируется на уровень домена через `ui/index.ts`, а затем — через корневой `index.ts` домена.
 
 Структура:
 
 ```text
-domains/<domain>/
+domain/<dNNN>-<slug>/
   ui/
     <entity>-list/
       <entity>-list.client.tsx
@@ -172,10 +172,10 @@ domains/<domain>/
 Пример содержимого баррелей:
 
 ```ts
-// domains/<domain>/ui/<entity>-list/index.ts
+// domain/<dNNN>-<slug>/ui/<entity>-list/index.ts
 export { EntityList } from './<entity>-list.client';
 
-// domains/<domain>/ui/index.ts
+// domain/<dNNN>-<slug>/ui/index.ts
 export { EntityList } from './<entity>-list';
 export { EntityDetails } from './<entity>-details';
 export { EntityPicker } from './<entity>-picker';
@@ -184,7 +184,7 @@ export { EntityPicker } from './<entity>-picker';
 Экспорты на уровне домена (client-safe):
 
 ```ts
-// domains/<domain>/index.ts
+// domain/<dNNN>-<slug>/index.ts
 export * from './ui';
 // ...плюс любые shared-типы/схемы
 ```
@@ -192,7 +192,7 @@ export * from './ui';
 Экспорты на уровне домена (server-only) — только серверные обёртки/действия:
 
 ```ts
-// domains/<domain>/index.server.ts
+// domain/<dNNN>-<slug>/index.server.ts
 import 'server-only';
 export * from './infra/crud.actions';
 // export { EntityListServer } from './ui/<entity>-list.server'; // при наличии серверных обёрток
@@ -236,7 +236,7 @@ export * from './infra/crud.actions';
 
 ```typescript
 // ❌ Direct imports from internal modules
-import { fileRepository } from '@/domains/files/data/file.repo.server';
+import { fileRepository } from '@/domain/files/data/file.repo.server';
 
 // ❌ Exporting server code from client index
 export { fileRepository } from './data/file.repo.server';
@@ -258,8 +258,8 @@ api / file.api.ts; // Should be .client.ts
 
 ```typescript
 // ✅ Import from index files
-import { fileApiClient } from '@/domains/files';
-import { fileRepositoryServer } from '@/domains/files/index.server';
+import { fileApiClient } from '@/domain/files';
+import { fileRepositoryServer } from '@/domain/files/index.server';
 
 // ✅ Clear separation
 // Client file: api/file.api.client.ts
@@ -286,21 +286,21 @@ export const fileRepositoryServer = {
 import {
   fileRepositoryServer,
   insertFileSchema
-} from '@/domains/files/index.server';
+} from '@/domain/files/index.server';
 ```
 
 ### **In React Components (Client Context)**
 
 ```typescript
 // ✅ Use client index
-import { fileApiClient, File } from '@/domains/files';
+import { fileApiClient, File } from '@/domain/files';
 ```
 
 ### **In Shared Utilities**
 
 ```typescript
 // ✅ Import shared modules directly
-import { toISOString } from '@/domains/files/lib/date-utils';
+import { toISOString } from '@/domain/files/lib/date-utils';
 ```
 
 ---
@@ -367,9 +367,9 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 
 ### **Эталонные реализации:**
 
-- `domains/catalog-bots-d001/` — Server Actions + серверные обёртки (RSC → клиент), double index, `model/` с enums и схемами, клиент-безопасные экспорты.
-- `domains/catalog-files-d002/` — Интеграция с хранилищем (S3) и файловые виджеты.
-- [domains/catalog-employees-d003/README.md](../domains/catalog-employees-d003/README.md) — CRUD и оркестрация действий.
+- `domain/catalog-bots-d001/` — Server Actions + серверные обёртки (RSC → клиент), double index, `model/` с enums и схемами, клиент-безопасные экспорты.
+- `domain/d002-files/` — Интеграция с хранилищем (S3) и файловые виджеты.
+- [domain/d003-employees/README.md](../domain/d003-employees/README.md) — CRUD и оркестрация действий.
 
 ### **Дополнительные материалы:**
 
@@ -434,7 +434,7 @@ Form -> EmployeeDetails.client.tsx
 
 ### Location & Naming
 
-- All Server Actions must live in `domains/<domain>/infra/`.
+- All Server Actions must live in `domain/<domain>/infra/`.
 - All Server Actions files must use the `*.actions.ts` suffix.
   - Examples: `infra/crud.actions.ts`, `infra/upload-file.actions.ts`.
 
@@ -449,9 +449,9 @@ Form -> EmployeeDetails.client.tsx
 ### Export & Usage Rules
 
 - Никогда не ре-экспортируйте Server Actions из `index.ts` (client-safe index).
-- Все Server Actions экспортируются только через `index.server.ts` домена (обязательное правило).
-- Клиентский код не импортирует Server Actions напрямую. Передавайте их в клиентские компоненты через props или используйте `action` у форм.
-- Правило действует как для внутри-доменного, так и для междоменного использования.
+- Все Server Actions экспортируются через `index.server.ts` домена ИЛИ импортируются точечно из `infra/*.actions.ts`.
+- Клиентские компоненты МОГУТ напрямую импортировать и вызывать Server Actions СВОЕГО агрегата (только `infra/*.actions.ts`). Импорт из `index.server.ts` в клиентских файлах ЗАПРЕЩЁН.
+- Для междоменного использования — передавать действия через props или форму (`action`). Прямой импорт Server Actions чужого агрегата в клиенте запрещён.
 
 ### Coexistence With Other File Types
 
@@ -464,7 +464,7 @@ Form -> EmployeeDetails.client.tsx
 
 ### Quick Checklist (Server Actions)
 
-- [ ] Файл расположен в `domains/<domain>/infra/`.
+- [ ] Файл расположен в `domain/<domain>/infra/`.
 - [ ] Имя файла оканчивается на `.actions.ts`.
 - [ ] Первая строка ровно `'use server';`.
 - [ ] Экспортируется только через `index.server.ts`.
@@ -475,7 +475,7 @@ Form -> EmployeeDetails.client.tsx
 Good:
 
 ```ts
-// domains/catalog-files-d002/infra/upload-file.actions.ts
+// domain/d002-files/infra/upload-file.actions.ts
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -528,7 +528,7 @@ Bad:
 
 ### Организация ORM схем
 
-**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domains/**/infra/orm.server.ts'`.
+**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domain/**/infra/orm.server.ts'`.
 
 - Обязательные артефакты домена:
   - `infra/orm.server.ts` — серверный файл с ORM/Drizzle-схемами (обязательно `import 'server-only'`).
@@ -548,7 +548,7 @@ Bad:
 export default defineConfig({
   schema: [
     './shared/database/schemas/*', // Системные таблицы
-    './domains/**/infra/orm.server.ts' // Доменные ORM схемы
+    './domain/**/infra/orm.server.ts' // Доменные ORM схемы
   ]
   // ...
 });

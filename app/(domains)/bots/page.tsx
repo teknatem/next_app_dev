@@ -1,4 +1,4 @@
-import { BotListServer } from '@/domains/catalog-bots-d001/index.server';
+import { BotListServer } from '@/domain/d001-bots/index.server';
 
 export default async function BotsPage() {
   return (

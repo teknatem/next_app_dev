@@ -10,7 +10,7 @@ type: "manual"
 
 ```typescript
 // ❌ Direct import from internal modules
-import { fileRepository } from '@/domains/files/data/file.repo.server';
+import { fileRepository } from '@/domain/files/data/file.repo.server';
 
 // ❌ Server code in client index
 export { fileRepository } from './data/file.repo.server';
@@ -24,8 +24,8 @@ api / file.api.ts; // Should be .client.ts
 
 ```typescript
 // ✅ Import from index files
-import { fileApiClient } from '@/domains/files'; // Client
-import { fileRepositoryServer } from '@/domains/files/index.server'; // Server
+import { fileApiClient } from '@/domain/files'; // Client
+import { fileRepositoryServer } from '@/domain/files/index.server'; // Server
 
 // ✅ Correct file naming
 data / file.repo.server.ts; // + 'server-only' directive
@@ -65,8 +65,8 @@ domains/<domain-name>/
 
 ### Import Rules
 
-- Client components → `from '@/domains/<domain>'`
-- API routes → `from '@/domains/<domain>/index.server'`
+- Client components → `from '@/domain/<domain>'`
+- API routes → `from '@/domain/<domain>/index.server'`
 - Never import directly from internal modules
 
 ---
@@ -98,7 +98,7 @@ Before submitting domain changes:
 
 - [cursor-domain-rules.md](./cursor-domain-rules.md) - Complete guide
 - [systemPatterns.md](./systemPatterns.md) - Architecture patterns
-- [domains/catalog-files-d002/README.md](../domains/catalog-files-d002/README.md) - Reference implementation
+- [domains/catalog-files-d002/README.md](../domain/catalog-files-d002/README.md) - Reference implementation
 
 ---
 

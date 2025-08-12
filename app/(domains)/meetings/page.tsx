@@ -2,8 +2,8 @@ import {
   getMeetingsAction,
   searchMeetingsAction,
   deleteMeetingAction
-} from '@/domains/document-meetings-d004/index.server';
-import { MeetingList } from '@/domains/document-meetings-d004';
+} from '@/domain/d004-meetings/index.server';
+import { MeetingList } from '@/domain/d004-meetings';
 
 export default async function MeetingsPage() {
   const result = await getMeetingsAction();

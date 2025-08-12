@@ -1,8 +1,8 @@
 /*
  Domain Structure Validator
 
- Usage:
-   pnpm tsx scripts/validate-domain-structure.ts domains/catalog-files-d002
+  Usage:
+    pnpm tsx scripts/validate-domain-structure.ts domain/d002-files
 
  Validates a single domain against project rules:
   - Server Actions live under infra/*.actions.ts with "'use server'" as the very first non-empty line

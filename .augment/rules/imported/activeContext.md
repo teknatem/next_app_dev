@@ -110,9 +110,9 @@ export async function getMeetingsAction(): Promise<ActionResult<any[]>> {
 
 ### 📋 Измененные файлы:
 
-- `domains/document-meetings-d004/model/meetings.schema.ts` - Добавлен тип MeetingWithStats
-- `domains/document-meetings-d004/actions/crud.actions.server.ts` - Обновлены actions
-- `domains/document-meetings-d004/ui/meeting.list.client.tsx` - Добавлено отображение статистики
+- `domain/document-meetings-d004/model/meetings.schema.ts` - Добавлен тип MeetingWithStats
+- `domain/document-meetings-d004/actions/crud.actions.server.ts` - Обновлены actions
+- `domain/document-meetings-d004/ui/meeting.list.client.tsx` - Добавлено отображение статистики
 
 ---
 

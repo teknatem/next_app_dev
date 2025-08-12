@@ -18,7 +18,7 @@ _January 27, 2025_
 _January 27, 2025_
 
 - **Status:** ✅ **COMPLETE**
-- **Summary:** Оформлено новое правило для структуры каталога `ui/`: каждый виджет размещается в отдельной папке с локальным баррелем `index.ts`, а домен ре-экспортирует виджеты через `ui/index.ts` и корневой `index.ts`. Обновлены документы: `memory-bank/cursor-domain-rules.md` и `memory-bank/systemPatterns.md`. Эталон: `domains/catalog-files-d002/ui`.
+- **Summary:** Оформлено новое правило для структуры каталога `ui/`: каждый виджет размещается в отдельной папке с локальным баррелем `index.ts`, а домен ре-экспортирует виджеты через `ui/index.ts` и корневой `index.ts`. Обновлены документы: `memory-bank/cursor-domain-rules.md` и `memory-bank/systemPatterns.md`. Эталон: `domain/catalog-files-d002/ui`.
 
 ---
 
@@ -28,11 +28,11 @@ _January 27, 2025_
 
 - **Status:** ✅ **COMPLETE (phase 1)**
 - **Summary:**
-  - Removed server action exports from client index `domains/catalog-bots-d001/index.ts`.
+  - Removed server action exports from client index `domain/catalog-bots-d001/index.ts`.
   - Renamed orchestrator file to `infra/crud.server.ts`; updated server index to import from it.
   - Added server wrappers `ui/bot.list.server.tsx`, `ui/bot.details.server.tsx`, `ui/bot.picker.server.tsx` to pass actions/data to client components.
   - Updated client components to use `initialData` and server action props; removed direct imports of server actions.
-  - Moved enums to `domains/catalog-bots-d001/model/enums.ts`; `types.shared.ts` now imports from there.
+  - Moved enums to `domain/catalog-bots-d001/model/enums.ts`; `types.shared.ts` now imports from there.
   - Updated domain `README.md` to document the new pattern and discourage REST for this domain.
   - Next phase: implement audit fields with `userId` and optimistic concurrency control (OCC) in repo/actions.
 

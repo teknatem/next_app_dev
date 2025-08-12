@@ -10,7 +10,7 @@ type: "always_apply"
 
 Our codebase follows **FSDDD**: a modified Feature-Sliced Design that incorporates key principles of Domain-Driven Design.
 
-- **Domains as bounded contexts.** Each directory in `domains/` encapsulates its own (optionally) model, data layer, services and UI.
+- **Domains as bounded contexts.** Each directory in `domain/` encapsulates its own (optionally) model, data layer, services and UI.
 - **Explicit ownership & rules.** Every domain has clear server/client boundaries, naming conventions and double-export barrels (see `cursor-domain-rules.md`).
 - **Alignment with ubiquitous language.** Directory names and code terms mirror business terminology, reducing translation overhead.
 
@@ -63,12 +63,12 @@ SHARED:  model, lib/shared → both environments
 
 ### **Client Context (React components)**
 
-- Import **only** from `domains/<domain>/index.ts`
+- Import **only** from `domain/<domain>/index.ts`
 - Contains: UI components, client API, shared types
 
 ### **Server Context (API routes)**
 
-- Import **only** from `domains/<domain>/index.server.ts`
+- Import **only** from `domain/<domain>/index.server.ts`
 - Contains: repositories, server services, shared types
 
 ### **Forbidden**
@@ -182,7 +182,7 @@ Lint-check: ESLint rules enforce different depth limits for different aliases.
 ## 11 . Database Migrations Location
 
 - Store **all** database migration files exclusively in `shared/database/migrations/`.
-- Do **not** place migration scripts inside `domains/` or any other layer. Keeping them centralised avoids duplication and maintains clear history.
+- Do **not** place migration scripts inside `domain/` or any other layer. Keeping them centralised avoids duplication and maintains clear history.
 - **Naming convention:** Follow Drizzle/default incremental naming (e.g., `0006_add_is_deleted_to_employees.sql`).
 
 ---
@@ -225,7 +225,7 @@ shared/store/: Для действительно глобального, кли�
 
 ## 📚 Reference Implementation
 
-See `domains/catalog-files-d002/` for a complete example of the new domain structure with explicit server/client separation.
+See `domain/catalog-files-d002/` for a complete example of the new domain structure with explicit server/client separation.
 
 ## ❗️Scope
 

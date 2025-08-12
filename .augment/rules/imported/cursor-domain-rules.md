@@ -16,7 +16,7 @@ type: "always_apply"
 
 ### **1. Расположение Enum'ов (`enums.ts`)**
 
-- **Правило:** Все перечисления (enums), используемые в домене, **ДОЛЖНЫ** определяться в файле `domains/<domain>/model/enums.ts`.
+- **Правило:** Все перечисления (enums), используемые в домене, **ДОЛЖНЫ** определяться в файле `domain/<domain>/model/enums.ts`.
 - **Формат:** Рекомендуется использовать `as const` для создания строковых enum'ов и экспортировать как константу, так и тип.
 
   ```typescript
@@ -124,7 +124,7 @@ export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server
 
 ### **1. Разделение на серверные и клиентские компоненты (Server/Client Component Separation):**
 
-- Все UI-компоненты, расположенные в `domains/<domain>/ui/`, по умолчанию являются серверными компонентами и должны иметь суффикс `.server.tsx`.
+- Все UI-компоненты, расположенные в `domain/<domain>/ui/`, по умолчанию являются серверными компонентами и должны иметь суффикс `.server.tsx`.
 - Компоненты, требующие клиентской интерактивности (хуки React, обработчики событий), должны быть в файлах с суффиксом `.client.tsx` и содержать директиву `'use client'`.
 
 ### **2. Обязательные виджеты для доменов типа `catalog` и `document` (Mandatory Widgets for `catalog` and `document` domains):**
@@ -179,7 +179,7 @@ export { getPresignedUploadUrlServer } from './lib/s3.service.server'; // Server
 
 ```typescript
 // ❌ Direct imports from internal modules
-import { fileRepository } from '@/domains/files/data/file.repo.server';
+import { fileRepository } from '@/domain/files/data/file.repo.server';
 
 // ❌ Exporting server code from client index
 export { fileRepository } from './data/file.repo.server';
@@ -201,8 +201,8 @@ api / file.api.ts; // Should be .client.ts
 
 ```typescript
 // ✅ Import from index files
-import { fileApiClient } from '@/domains/files';
-import { fileRepositoryServer } from '@/domains/files/index.server';
+import { fileApiClient } from '@/domain/files';
+import { fileRepositoryServer } from '@/domain/files/index.server';
 
 // ✅ Clear separation
 // Client file: api/file.api.client.ts
@@ -229,21 +229,21 @@ export const fileRepositoryServer = {
 import {
   fileRepositoryServer,
   insertFileSchema
-} from '@/domains/files/index.server';
+} from '@/domain/files/index.server';
 ```
 
 ### **In React Components (Client Context)**
 
 ```typescript
 // ✅ Use client index
-import { fileApiClient, File } from '@/domains/files';
+import { fileApiClient, File } from '@/domain/files';
 ```
 
 ### **In Shared Utilities**
 
 ```typescript
 // ✅ Import shared modules directly
-import { toISOString } from '@/domains/files/lib/date-utils';
+import { toISOString } from '@/domain/files/lib/date-utils';
 ```
 
 ---
@@ -309,7 +309,7 @@ import { toISOString } from '@/domains/files/lib/date-utils';
 
 ### **Эталонная реализация:**
 
-- [domains/catalog-employees-d003/README.md](../domains/catalog-employees-d003/README.md) - **Эталонная реализация домена**
+- [domains/catalog-employees-d003/README.md](../domain/catalog-employees-d003/README.md) - **Эталонная реализация домена**
   - Полная CRUD функциональность
   - Правильная структура слоев
   - Server/Client разделение

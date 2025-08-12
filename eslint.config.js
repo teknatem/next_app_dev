@@ -138,8 +138,8 @@ export default tseslint.config(
           pattern: 'shared/**',
         },
         {
-          type: 'domains',
-          pattern: 'domains/**',
+          type: 'domain',
+          pattern: 'domain/**',
         },
       ],
     },

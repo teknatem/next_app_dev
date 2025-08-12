@@ -11,7 +11,7 @@ type: "manual"
 **1. Загрузка Данных Сущности (Серверная Сторона)**
 
 - **Server Component (Next.js App Router):** Именно здесь происходит первичная выборка данных. `page.tsx` или `layout.tsx` (если форма глобальная) в слое `app/` или `ui/*.server.tsx` в слое домена/виджета будет выполнять эту роль.
-- **Вызов Server Action / Репозитория:** Server Component вызывает соответствующий Server Action из `domains/<domain>/features/*.server.ts` или напрямую обращается к репозиторию `domains/<domain>/data/*.repo.server.ts` для получения данных.
+- **Вызов Server Action / Репозитория:** Server Component вызывает соответствующий Server Action из `domain/<domain>/features/*.server.ts` или напрямую обращается к репозиторию `domain/<domain>/data/*.repo.server.ts` для получения данных.
 - **Включение Версии для Оптимистичной Блокировки:** Важно, чтобы при выборке данных из БД в объект сущности **обязательно включалось поле `version`**
 
   - Пример в репозитории:
@@ -40,8 +40,8 @@ type: "manual"
 
   ```typescript
   // app/(main)/meetings/[id]/page.tsx (Server Component)
-  import { meetingRepositoryServer } from "@/domains/document-meetings-d004/index.server";
-  import { MeetingDetailsFormClient } from "@/domains/document-meetings-d004/ui/meeting-details-form.client";
+  import { meetingRepositoryServer } from "@/domain/d004-meetings/index.server";
+  import { MeetingDetailsFormClient } from "@/domain/d004-meetings/ui/meeting-details-form.client";
 
   export default async function MeetingEditPage({
     params,
@@ -61,7 +61,7 @@ type: "manual"
 
 **2. Управление Состоянием Объекта на Клиенте**
 
-- **Клиентский Компонент Формы (`domains/<domain>/ui/*.client.tsx`):** Это основной компонент, который будет управлять состоянием объекта в памяти.
+- **Клиентский Компонент Формы (`domain/<domain>/ui/*.client.tsx`):** Это основной компонент, который будет управлять состоянием объекта в памяти.
 - **Выбор Инструмента Управления Состоянием:**
 
   - **React Hook Form (рекомендовано для форм):** Отлично подходит для управления полями формы, их валидацией и сбором всех изменений. Вы можете инициализировать форму `initialMeeting` из `props`.
@@ -71,9 +71,9 @@ type: "manual"
     "use client";
     import { useForm } from "react-hook-form";
     import { zodResolver } from "@hookform/resolvers/zod";
-    import { meetingSchema } from "@/domains/document-meetings-d004/model/meetings.schema"; // Ваша Zod-схема
+    import { meetingSchema } from "@/domain/d004-meetings/model/meetings.schema"; // Ваша Zod-схема
     import { useActionState } from "react";
-    import { saveMeetingAction } from "@/domains/document-meetings-d004/features/crud.server"; // Ваш Server Action
+    import { saveMeetingAction } from "@/domain/d004-meetings/features/crud.server"; // Ваш Server Action
 
     export function MeetingDetailsFormClient({ initialMeeting }) {
       const {
@@ -139,7 +139,7 @@ type: "manual"
     // domains/document-meetings-d004/lib/meeting-draft-store.ts
     "use client";
     import { create } from "zustand";
-    import { Meeting } from "@/domains/document-meetings-d004/model/meetings.schema";
+    import { Meeting } from "@/domain/d004-meetings/model/meetings.schema";
 
     interface MeetingDraftState {
       draft: Partial<Meeting>;
@@ -164,7 +164,7 @@ type: "manual"
 **3. Сохранение Данных на Сервере (Серверная Сторона)**
 
 - **Вызов Server Action:** При нажатии кнопки "Сохранить", данные из клиентской формы (весь "черновик" объекта) передаются в Server Action.
-- **Server Action (`domains/<domain>/features/*.server.ts`):**
+- **Server Action (`domain/<domain>/features/*.server.ts`):**
 
   - Получает полный объект.
   - Выполняет серверную валидацию (повторно, используя те же Zod-схемы, что и на клиенте).
@@ -173,11 +173,11 @@ type: "manual"
   ```typescript
   // domains/document-meetings-d004/features/crud.server.ts
   "use server";
-  import { meetingRepositoryServer } from "@/domains/document-meetings-d004/index.server";
+  import { meetingRepositoryServer } from "@/domain/d004-meetings/index.server";
   import {
     meetingSchema,
     Meeting,
-  } from "@/domains/document-meetings-d004/model/meetings.schema";
+  } from "@/domain/d004-meetings/model/meetings.schema";
   import { OptimisticLockingError } from "@/shared/lib/errors.shared"; // Ваша общая ошибка
   import { revalidatePath } from "next/cache";
 
@@ -230,7 +230,7 @@ type: "manual"
   }
   ```
 
-- **Репозиторий (`domains/<domain>/data/*.repo.server.ts`):**
+- **Репозиторий (`domain/<domain>/data/*.repo.server.ts`):**
 
   - Выполняет запрос `UPDATE`, который включает условие `WHERE version = expectedVersion`.
   - Если `UPDATE` не затронул ни одной строки (потому что `version` не совпала), это означает конфликт. В этом случае выбрасывается `OptimisticLockingError`.
@@ -285,25 +285,25 @@ type: "manual"
 1.  **Поле `version`:**
 
     - В схему БД для каждой сущности (например, `meetings`, `files`, `employees`) **обязательно** добавь поле `version INTEGER NOT NULL DEFAULT 0`.
-    - Обнови соответствующие Drizzle-схемы и Zod-типы (`domains/<domain>/model/*.schema.ts`) для включения этого поля.
+    - Обнови соответствующие Drizzle-схемы и Zod-типы (`domain/<domain>/model/*.schema.ts`) для включения этого поля.
 
 2.  **Загрузка Данных на Клиент (Read):**
 
-    - **Серверный Компонент:** Пусть Server Component (`app/page.tsx` или `domains/<domain>/ui/*.server.tsx`) выбирает данные сущности (включая `version`) из БД через соответствующий **репозиторий** (`domains/<domain>/data/*.repo.server.ts`).
-    - **Пропсы:** Передавай _полный_ объект сущности как `prop` (`initial<Entity>`) в **клиентский компонент формы** (`domains/<domain>/ui/*.client.tsx`).
+    - **Серверный Компонент:** Пусть Server Component (`app/page.tsx` или `domain/<domain>/ui/*.server.tsx`) выбирает данные сущности (включая `version`) из БД через соответствующий **репозиторий** (`domain/<domain>/data/*.repo.server.ts`).
+    - **Пропсы:** Передавай _полный_ объект сущности как `prop` (`initial<Entity>`) в **клиентский компонент формы** (`domain/<domain>/ui/*.client.tsx`).
 
 3.  **Управление "Черновиком" Объекта на Клиенте (Client-Side State):**
 
-    - **Инструмент:** В клиентском компоненте формы (`domains/<domain>/ui/*.client.tsx`) используй **React Hook Form** (рекомендуется) или **Zustand** (`domains/<domain>/lib/<entity>-draft-store.ts`) для создания и управления "черновиком" объекта.
+    - **Инструмент:** В клиентском компоненте формы (`domain/<domain>/ui/*.client.tsx`) используй **React Hook Form** (рекомендуется) или **Zustand** (`domain/<domain>/lib/<entity>-draft-store.ts`) для создания и управления "черновиком" объекта.
     - **Инициализация:** Инициализируй черновик данными, полученными через пропсы (`initial<Entity>`).
     - **Мгновенный Отклик:** Все изменения, вносимые пользователем, должны модифицировать только этот "черновик" в памяти клиента. **Запросов на сервер при каждом изменении быть не должно.**
-    - **Клиентская Валидация:** Используй Zod-схемы (`domains/<domain>/model/*.schema.ts`) для мгновенной валидации ввода на клиенте.
+    - **Клиентская Валидация:** Используй Zod-схемы (`domain/<domain>/model/*.schema.ts`) для мгновенной валидации ввода на клиенте.
 
 4.  **Сохранение Данных на Сервере (Write):**
 
-    - **Атомарная Отправка:** При действии "Сохранить", выполни финальную клиентскую валидацию "черновика" объекта. Затем вызови соответствующий **Server Action** (`domains/<domain>/features/crud.server.ts` или специфический `save<Entity>.server.ts`).
+    - **Атомарная Отправка:** При действии "Сохранить", выполни финальную клиентскую валидацию "черновика" объекта. Затем вызови соответствующий **Server Action** (`domain/<domain>/features/crud.server.ts` или специфический `save<Entity>.server.ts`).
     - **Передача:** Передай _весь_ "черновик" объекта (включая `id` и текущее поле `version`) в Server Action.
-    - **Серверный Action:** Должен выполнить серверную валидацию и вызвать метод `update` соответствующего **репозитория** (`domains/<domain>/data/*.repo.server.ts`), передавая `id`, данные и **ожидаемую `version`**.
+    - **Серверный Action:** Должен выполнить серверную валидацию и вызвать метод `update` соответствующего **репозитория** (`domain/<domain>/data/*.repo.server.ts`), передавая `id`, данные и **ожидаемую `version`**.
     - **Репозиторий:** Метод `update` должен использовать **оптимистичную блокировку**: обновить запись только если `id` и `version` соответствуют текущим в БД, и инкрементировать `version` в БД. В случае конфликта (версия не совпала), выбросить `OptimisticLockingError` (`shared/lib/errors.shared.ts`).
 
 5.  **Разрешение Конфликтов (UX):**

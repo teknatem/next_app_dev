@@ -5,8 +5,8 @@ import {
   getFiles,
   softDeleteFile,
   updateFile
-} from '@/domains/catalog-files-d002/index.server';
-import { FilesPageClient } from '@/domains/catalog-files-d002';
+} from '@/domain/d002-files/index.server';
+import { FilesPageClient } from '@/domain/d002-files';
 
 export default function FileManagerPage() {
   return (

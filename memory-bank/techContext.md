@@ -38,7 +38,7 @@
 
 ### Server Actions Conventions
 
-- Server Actions live under `domains/<domain>/infra/`.
+- Server Actions live under `domain/<domain>/infra/`.
 - Filenames must end with `*.actions.ts`.
 - Each file must start with `'use server'`.
 - Export only via `index.server.ts`.
@@ -72,7 +72,7 @@ See: [`memory-bank/cursor-domain-rules.md`](./cursor-domain-rules.md)
 
 ### Database Management
 
-- **Generate Migrations:** After changing a Drizzle schema in `domains/**/orm.server.ts` or `shared/database/schemas/`, run:
+- **Generate Migrations:** After changing a Drizzle schema in `domain/**/orm.server.ts` or `shared/database/schemas/`, run:
   ```bash
   pnpm db:generate
   ```
@@ -86,6 +86,6 @@ See: [`memory-bank/cursor-domain-rules.md`](./cursor-domain-rules.md)
 The project uses path aliases for clean imports. Refer to `tsconfig.json` for the complete list.
 
 - `@/shared/*`
-- `@/domains/*`
+- `@/domain/*`
 - `@/widgets/*`
 - `@/features/*`

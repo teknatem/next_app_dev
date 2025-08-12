@@ -120,7 +120,7 @@ pnpm dev
 {
   "paths": {
     "@/shared/*": ["shared/*"],
-    "@/domains/*": ["domains/*"],
+    "@/domain/*": ["domains/*"],
     "@/widgets/*": ["widgets/*"],
     "@/features/*": ["features/*"],
     "@/entities/*": ["entities/*"]

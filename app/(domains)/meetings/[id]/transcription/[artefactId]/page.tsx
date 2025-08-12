@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation';
-import { TranscriptionEditor } from '@/domains/document-meetings-d004';
+import { TranscriptionEditor } from '@/domain/d004-meetings';
 import {
   getTranscriptionDataAction,
   saveTranscriptionAction,
   getMeetingByIdAction
-} from '@/domains/document-meetings-d004/index.server';
+} from '@/domain/d004-meetings/index.server';
 import { Button } from '@/shared/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';

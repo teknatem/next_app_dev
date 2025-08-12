@@ -18,7 +18,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/widgets/*": ["widgets/*"],
-      "@/domains/*": ["domains/*"],
+      "@/domain/*": ["domain/*"],
+      "@/domain/*": ["domain/*"],
       "@/shared/*": ["shared/*"],
       "@/entities/*": ["entities/*"]
     },

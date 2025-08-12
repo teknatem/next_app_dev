@@ -6,7 +6,7 @@ Our codebase follows **Context-Driven Design (CDD)**, an architecture that prior
 
 ### Core Principles
 
-- **Domains as Bounded Contexts:** Each directory in `domains/` encapsulates a vertical slice of business functionality, including its own model, data layer, services, and UI.
+- **Domains as Bounded Contexts:** Each directory in `domain/` encapsulates a vertical slice of business functionality, including its own model, data layer, services, and UI.
 - **Explicit Context Boundaries:** Every domain has strict server/client separation, enforced by file naming conventions (`.server.ts`, `.client.ts`) and a double-barrel export system (`index.ts`, `index.server.ts`).
 - **Context Alignment with Business Language:** Directory and file names mirror business terminology to reduce cognitive overhead.
 
@@ -15,7 +15,7 @@ Our codebase follows **Context-Driven Design (CDD)**, an architecture that prior
 ```text
 project/
 ├─ app/                          # Next.js routing, layouts, pages (thin layer)
-├─ domains/                      # Core business logic, one folder per domain
+├─ domain/                       # Aggregates (DDD), one folder per aggregate
 ├─ widgets/                      # Complex UI components, composed of domain elements
 ├─ features/                     # Cross-domain logic and server actions
 ├─ shared/                       # Project-wide utilities, UI primitives, DB connection
@@ -54,7 +54,7 @@ For detailed guides on implementing specific patterns like API design, LLM integ
 
 For the exact conventions and migration notes, see the authoritative rulebook:
 
-- Location: `domains/<domain>/infra/`
+- Location: `domain/<aggregate>/infra/`
 - Naming: `*.actions.ts`
 - Directive: first line must be `'use server'`
 - Exports: only via `index.server.ts`; never via `index.ts`
@@ -65,5 +65,5 @@ For the exact conventions and migration notes, see the authoritative rulebook:
 
 ## 🌟 Reference Implementations
 
-- `domains/catalog-bots-d001/` — Reference for Server Actions with server wrappers (RSC passing actions/data), enums in `model/`, client-safe schemas, double index exports.
-- `domains/catalog-files-d002/` — Reference for storage/S3 integration and UI folder-per-widget pattern (`ui/<widget>/index.ts`, re-exported via `ui/index.ts`).
+- `domain/d001-bots/` — Reference for Server Actions with server wrappers (RSC passing actions/data), enums in `model/`, client-safe schemas, double index exports.
+- `domain/d002-files/` — Reference for storage/S3 integration and UI folder-per-widget pattern (`ui/<widget>/index.ts`, re-exported via `ui/index.ts`).

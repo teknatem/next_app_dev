@@ -9,14 +9,14 @@ import {
   createTranscriptionAction,
   getArtefactsByMeetingIdAction,
   deleteArtefactAction
-} from '@/domains/document-meetings-d004/index.server';
+} from '@/domain/d004-meetings/index.server';
 import {
   MeetingDetails,
   type Meeting,
   type MeetingAsset,
   type MeetingAssetWithFileInfo,
   type MeetingArtefact
-} from '@/domains/document-meetings-d004';
+} from '@/domain/d004-meetings';
 import { BackButton } from '@/shared/ui/back-button';
 
 export default async function MeetingDetailsPage({

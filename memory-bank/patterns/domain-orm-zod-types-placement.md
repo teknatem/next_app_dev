@@ -9,7 +9,7 @@
 ## 📁 Стандартная структура домена
 
 ```
-domains/<domain-name>/
+domain/<dNNN>-<slug>/
 ├── infra/
 │   └── orm.server.ts          # ⚠️ SERVER-ONLY: Drizzle ORM-схемы (как в catalog-bots-d001)
 ├── model/

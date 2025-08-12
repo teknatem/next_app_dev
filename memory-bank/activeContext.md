@@ -6,7 +6,7 @@
 
 ## 🎯 Current Task: Обновить правила структуры каталога `ui/` — «один виджет — одна папка»
 
-**Goal:** Зафиксировать в Memory Bank новую структуру `ui`: каждый виджет в собственной папке с локальным баррелем `index.ts`. Обновить ссылки на эталон `domains/catalog-files-d002/ui` и правила ре-экспорта через домен.
+**Goal:** Зафиксировать в Memory Bank новую структуру `ui`: каждый виджет в собственной папке с локальным баррелем `index.ts`. Обновить ссылки на эталон `domain/catalog-files-d002/ui` и правила ре-экспорта через домен.
 
 **Status:** COMPLETE — документы обновлены (`cursor-domain-rules.md`, `systemPatterns.md`).
 
@@ -22,7 +22,7 @@
 
 ### 📂 Key Files & Components
 
-- `domains/catalog-files-d002/ui/` — эталонная структура: папка на виджет + локальные `index.ts` + баррель `ui/index.ts` + реэкспорт через `domains/<domain>/index.ts`.
+- `domain/catalog-files-d002/ui/` — эталонная структура: папка на виджет + локальные `index.ts` + баррель `ui/index.ts` + реэкспорт через `domain/<domain>/index.ts`.
 
 ---
 

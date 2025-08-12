@@ -6,7 +6,7 @@
   ASSEMBLYAI_API_KEY=ваш_ключ
   ```
 
-- **Ключевой сервис**: `domains/document-meetings-d004/lib/assemblyai.service.server.ts`
+- **Ключевой сервис**: `domain/document-meetings-d004/lib/assemblyai.service.server.ts`
 
   - Методы: `uploadFile`, `startTranscription`, `getTranscription`, `waitForTranscription`, `transcribeFromUrl`, `transcribeFromStorage`, `transcribeFromS3`
   - По умолчанию: `language_code = 'ru'`, `format_text = true`, `punctuate = true`

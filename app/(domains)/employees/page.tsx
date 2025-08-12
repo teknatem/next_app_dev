@@ -4,8 +4,8 @@ import {
   getPositionsAction,
   saveEmployee,
   deleteEmployee
-} from '@/domains/catalog-employees-d003/index.server';
-import { EmployeeList } from '@/domains/catalog-employees-d003';
+} from '@/domain/d003-employees/index.server';
+import { EmployeeList } from '@/domain/d003-employees';
 
 export default async function EmployeesPage() {
   const [employeesResult, departmentsResult, positionsResult] =

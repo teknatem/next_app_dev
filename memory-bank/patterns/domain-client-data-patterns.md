@@ -7,13 +7,13 @@
 **1. Загрузка Данных Сущности (Серверная Сторона)**
 
 - **Server Component (Next.js App Router):** Именно здесь происходит первичная выборка данных. `page.tsx` или `layout.tsx` (если форма глобальная) в слое `app/` или `ui/*.server.tsx` в слое домена/виджета будет выполнять эту роль.
-- **Вызов Server Action / Репозитория:** Server Component вызывает соответствующий Server Action из `domains/<domain>/features/*.server.ts` или напрямую обращается к репозиторию `domains/<domain>/data/*.repo.server.ts` для получения данных.
+- **Вызов Server Action / Репозитория:** Server Component вызывает соответствующий Server Action из `domain/<domain>/features/*.server.ts` или напрямую обращается к репозиторию `domain/<domain>/infra/*.repo.server.ts` для получения данных.
 - **Включение Версии для Оптимистичной Блокировки:** Важно, чтобы при выборке данных из БД в объект сущности **обязательно включалось поле `version`**
 
   - Пример в репозитории:
 
     ```typescript
-    // domains/document-meetings-d004/data/meetings.repo.server.ts
+    // domain/d004-meetings/infra/meeting.repo.server.ts
     import 'server-only';
     import { db } from '@/shared/database/connection';
     import { meetings } from '@/shared/database/schemas/meetings.schema';
@@ -36,8 +36,8 @@
 
   ```typescript
   // app/(main)/meetings/[id]/page.tsx (Server Component)
-  import { meetingRepositoryServer } from "@/domains/document-meetings-d004/index.server";
-  import { MeetingDetailsFormClient } from "@/domains/document-meetings-d004/ui/meeting-details-form.client";
+  import { meetingRepositoryServer } from "@/domain/d004-meetings/index.server";
+  import { MeetingDetailsFormClient } from "@/domain/d004-meetings/ui/meeting-details-form.client";
 
   export default async function MeetingEditPage({
     params,
@@ -57,19 +57,19 @@
 
 **2. Управление Состоянием Объекта на Клиенте**
 
-- **Клиентский Компонент Формы (`domains/<domain>/ui/*.client.tsx`):** Это основной компонент, который будет управлять состоянием объекта в памяти.
+- **Клиентский Компонент Формы (`domain/<domain>/ui/*.client.tsx`):** Это основной компонент, который будет управлять состоянием объекта в памяти.
 - **Выбор Инструмента Управления Состоянием:**
 
   - **React Hook Form (рекомендовано для форм):** Отлично подходит для управления полями формы, их валидацией и сбором всех изменений. Вы можете инициализировать форму `initialMeeting` из `props`.
 
     ```typescript
-    // domains/document-meetings-d004/ui/meeting-details-form.client.tsx
+    // domain/d004-meetings/ui/meeting-details-form.client.tsx
     "use client";
     import { useForm } from "react-hook-form";
     import { zodResolver } from "@hookform/resolvers/zod";
-    import { meetingSchema } from "@/domains/document-meetings-d004/model/meetings.schema"; // Ваша Zod-схема
+    import { meetingSchema } from "@/domain/d004-meetings/model/meetings.schema"; // Ваша Zod-схема
     import { useActionState } from "react";
-    import { saveMeetingAction } from "@/domains/document-meetings-d004/features/crud.server"; // Ваш Server Action
+    import { saveMeetingAction } from "@/domain/d004-meetings/features/crud.server"; // Ваш Server Action
 
     export function MeetingDetailsFormClient({ initialMeeting }) {
       const {
@@ -108,7 +108,7 @@
 **3. Сохранение Данных на Сервере (Серверная Сторона)**
 
 - **Вызов Server Action:** При нажатии кнопки "Сохранить", данные из клиентской формы (весь "черновик" объекта) передаются в Server Action.
-- **Server Action (`domains/<domain>/features/*.server.ts`):** Серверная валидация, вызов репозитория с проверкой `version`, `revalidatePath`.
+- **Server Action (`domain/<domain>/features/*.server.ts`):** Серверная валидация, вызов репозитория с проверкой `version`, `revalidatePath`.
 
 **4. Обработка Конфликтов на Клиенте**
 

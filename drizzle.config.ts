@@ -12,8 +12,8 @@ const databaseUrl = getDatabaseUrl();
 export default defineConfig({
   schema: [
     './shared/database/schemas/*',
-    './domains/**/infra/orm.server.ts',
-    './domains/**/orm.server.ts'
+    './domain/**/infra/orm.server.ts',
+    './domain/**/orm.server.ts'
   ],
   out: './shared/database/migrations/sql',
   dialect: 'postgresql',

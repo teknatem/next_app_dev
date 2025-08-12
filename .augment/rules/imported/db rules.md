@@ -113,7 +113,7 @@ type: "manual"
 - Для агрегирования схем в глобальный контекст внутри `shared/database/schemas` создаётся файл `<dNNN>_<entity>.ts`, который **только реэкспортирует** схему из домена, например:
 
 ```ts
-export * from '@/domains/catalog-employees-d003/index.schema';
+export * from '@/domain/catalog-employees-d003/index.schema';
 ```
 
 - Внутри домена могут оставаться дополнительные Zod-схемы (валидация, поисковые запросы) в подпапке `model/`, но определение `pgTable()` хранится только в `index.schema.ts`.

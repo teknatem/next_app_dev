@@ -106,7 +106,7 @@
 
 #### Организация ORM схем
 
-**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domains/**/orm.server.ts'`
+**Правило:** Все ORM данные доменов размещаются **ТОЛЬКО** в файлах `'./domain/**/orm.server.ts'`
 
 - **Доменные ORM схемы**: Каждый домен содержит свой файл `orm.server.ts` с Drizzle-схемами
 - **Системные таблицы**: Таблицы без доменов (например, `users`) размещаются в `'./shared/database/schemas/*'`
@@ -129,7 +129,7 @@
 export default defineConfig({
   schema: [
     './shared/database/schemas/*', // Системные таблицы
-    './domains/**/orm.server.ts' // Доменные ORM схемы
+    './domain/**/orm.server.ts' // Доменные ORM схемы
   ]
   // ...
 });
