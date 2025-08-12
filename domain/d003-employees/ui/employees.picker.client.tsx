@@ -22,22 +22,24 @@ import {
 import { Search, User } from 'lucide-react';
 
 import { type Employee } from '../types.shared';
-import { formatDate } from '../lib/date-utils';
-import {
-  searchEmployeesAction,
-  getDepartmentsAction
-} from '../index';
+import { formatDate } from '../lib/date-utils.shared';
 
 interface EmployeePickerProps {
   onEmployeeSelect: (employee: Employee) => void;
   triggerButtonText?: string;
   trigger?: React.ReactNode;
+  searchEmployees: (params: { query?: string; isActive?: boolean }) => Promise<{
+    success: boolean;
+    data?: Employee[];
+    error?: string;
+  }>;
 }
 
 export function EmployeePicker({
   onEmployeeSelect,
   triggerButtonText = 'Select Employee',
-  trigger
+  trigger,
+  searchEmployees
 }: EmployeePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -49,7 +51,7 @@ export function EmployeePicker({
     setLoading(true);
     setError(null);
     try {
-      const result = await searchEmployeesAction({
+      const result = await searchEmployees({
         query: searchQuery,
         isActive: true // только активные сотрудники
       });

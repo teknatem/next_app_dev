@@ -7,17 +7,20 @@
 ## Структура
 
 ```
-domains/catalog-employees-d003/
-├── model/                    # Shared types & schemas
-│   └── employees.schema.ts
+domain/d003-employees/
+├── infra/                    # Server-only infrastructure
+│   ├── orm.server.ts         # Drizzle ORM schemas ('server-only')
+│   └── crud.actions.ts       # Server Actions ('use server')
 ├── data/                     # Server-only DB operations
 │   └── employee.repo.server.ts
-├── actions/                  # Server-only Server Actions
-│   └── crud.actions.server.ts
-├── ui/                       # React components (Server + Client)
-│   ├── employees.list.client.tsx
-│   ├── employees.details.client.tsx
-│   └── employees.picker.client.tsx
+├── model/
+│   └── enums.shared.ts       # Shared enums (client-safe)
+├── lib/
+│   └── date-utils.shared.ts  # Shared utilities (client-safe)
+├── ui/                       # UI (one widget — one folder)
+│   ├── employees-list/
+│   ├── employees-details/
+│   └── employees-picker/
 ├── index.ts                  # Client-safe barrel
 ├── index.server.ts           # Server-only barrel
 └── README.md                 # Документация
@@ -25,18 +28,15 @@ domains/catalog-employees-d003/
 
 ## Экспорт
 
-- **index.ts**: UI компоненты, shared types/utilities
-- **index.server.ts**: server-only сервисы, репозитории, actions
+- **index.ts**: UI компоненты, shared types/utilities (без Server Actions)
+- **index.server.ts**: server-only сервисы, репозитории, Server Actions
 
 ## Примеры использования
 
 ### В React-компоненте (client)
 
 ```ts
-import {
-  EmployeeList,
-  EmployeeDetails
-} from '@/domain/catalog-employees-d003';
+import { EmployeeList, EmployeeDetails } from '@/domain/catalog-employees-d003';
 ```
 
 ### В Server Component или API route (server)
@@ -78,6 +78,7 @@ import {
 - Все server-only файлы имеют суффикс `.server.ts` и директиву `import 'server-only';`
 - Server Components для форм и кнопок действий
 - Client Components только для интерактивных элементов (диалоги, фильтры)
-- Используются Server Actions для CRUD операций
+- Server Actions находятся только в `infra/*.actions.ts` и экспортируются через `index.server.ts`
+- Клиентские компоненты не импортируют Server Actions напрямую — передача через props / form `action`
 - Нет прямых импортов из внутренних модулей вне домена
 - Только два index файла: client-safe и server-only

@@ -1,5 +1,4 @@
-// Domain-specific enums for catalog-employees-d003
-// Following project CDD rules for client-server compatibility
+// Domain-specific enums for catalog-employees-d003 (client-safe)
 
 export const EMPLOYEE_STATUS_VALUES = [
   'active',
@@ -8,7 +7,6 @@ export const EMPLOYEE_STATUS_VALUES = [
 ] as const;
 export type EmployeeStatusValue = (typeof EMPLOYEE_STATUS_VALUES)[number];
 
-// Export for both client and server use
 export const EMPLOYEE_STATUS = {
   ACTIVE: 'active' as const,
   INACTIVE: 'inactive' as const,

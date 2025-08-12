@@ -5,7 +5,7 @@ import {
   d003Employees as employees,
   type D003Employee as Employee,
   type NewD003Employee as NewEmployee
-} from '../orm.server';
+} from '../infra/orm.server';
 
 // Error type for optimistic locking conflicts
 export class OptimisticLockError extends Error {

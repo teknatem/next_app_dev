@@ -1,7 +1,7 @@
 import 'server-only';
 
 // Shared types & schemas
-export { d003Employees } from './orm.server';
+export { d003Employees } from './infra/orm.server';
 export type { Employee, NewEmployee } from './types.shared';
 
 // Date utilities (shared)
@@ -11,7 +11,7 @@ export {
   formatDate,
   formatDateTime,
   formatDateDDMMYYYY
-} from './lib/date-utils';
+} from './lib/date-utils.shared';
 
 // Server-only data layer
 export {
@@ -19,7 +19,7 @@ export {
   OptimisticLockError
 } from './data/employee.repo.server';
 
-// Server Actions (raw business logic)
+// Server Actions (raw + orchestrators)
 export {
   createEmployeeAction,
   updateEmployeeAction,
@@ -28,16 +28,12 @@ export {
   getEmployeeByIdAction,
   searchEmployeesAction,
   getDepartmentsAction,
-  getPositionsAction
-} from './actions/crud.actions.server';
+  getPositionsAction,
+  saveEmployee,
+  deleteEmployee
+} from './infra/crud.actions';
 
-// Server Actions (orchestrators)
-export { saveEmployee, deleteEmployee } from './features/crud.server';
-
-// Re-exporting enums
-export {
-  EMPLOYEE_STATUS_VALUES,
-  EMPLOYEE_STATUS,
-  employeeStatusEnum
-} from './orm.server';
-export type { EmployeeStatusValue, EmployeeStatus } from './model/enums';
+// Re-exporting enums and pgEnum
+export { employeeStatusEnum } from './infra/orm.server';
+export { EMPLOYEE_STATUS_VALUES, EMPLOYEE_STATUS } from './model/enums.shared';
+export type { EmployeeStatusValue, EmployeeStatus } from './model/enums.shared';

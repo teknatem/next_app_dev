@@ -1,4 +1,8 @@
-import 'server-only';
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/shared/lib/auth.server';
 import {
   employeeRepositoryServer,
   OptimisticLockError
@@ -8,10 +12,9 @@ import {
   updateEmployeeSchema,
   type Employee
 } from '../types.shared';
-import { type NewD003Employee as NewEmployee } from '../orm.server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/shared/lib/auth.server';
+import { type NewD003Employee as NewEmployee } from './orm.server';
 
+// Low-level actions (validation + repo)
 export async function createEmployeeAction(formData: FormData) {
   try {
     const session = await getServerSession(authOptions);
@@ -84,7 +87,7 @@ export async function updateEmployeeAction(formData: FormData) {
         success: false,
         error: error.message,
         type: 'OPTIMISTIC_LOCK_ERROR'
-      };
+      } as const;
     }
 
     return { success: false, error: 'Failed to update employee' };
@@ -118,7 +121,7 @@ export async function deactivateEmployeeAction(formData: FormData) {
         success: false,
         error: error.message,
         type: 'OPTIMISTIC_LOCK_ERROR'
-      };
+      } as const;
     }
 
     return { success: false, error: 'Failed to deactivate employee' };
@@ -189,5 +192,25 @@ export async function getPositionsAction() {
   } catch (error) {
     console.error('Error fetching positions:', error);
     return { success: false, error: 'Failed to fetch positions' };
+  }
+}
+
+// Orchestrators
+export async function saveEmployee(formData: FormData) {
+  // create or update and revalidate
+  const employeeId = formData.get('employeeId') as string;
+  if (employeeId) {
+    await updateEmployeeAction(formData);
+  } else {
+    await createEmployeeAction(formData);
+  }
+  revalidatePath('/employees');
+}
+
+export async function deleteEmployee(formData: FormData) {
+  const employeeId = formData.get('employeeId') as string;
+  if (employeeId) {
+    await deactivateEmployeeAction(formData);
+    revalidatePath('/employees');
   }
 }

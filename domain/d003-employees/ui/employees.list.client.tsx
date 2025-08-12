@@ -34,7 +34,7 @@ import {
   DialogTrigger
 } from '@/shared/ui/dialog';
 import { type Employee } from '../types.shared';
-import { formatDate } from '../lib/date-utils';
+import { formatDate } from '../lib/date-utils.shared';
 import { EmployeeDetails } from './employees.details.client';
 import { useCurrentDomainContext } from '@/shared/store/current-domain-context';
 import { Pencil } from 'lucide-react';

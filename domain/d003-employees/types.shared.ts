@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EMPLOYEE_STATUS_VALUES } from './model/enums';
+import { EMPLOYEE_STATUS_VALUES } from './model/enums.shared';
 
 // Manual schema definition (shared, no server dependencies)
 export const employeeSchema = z.object({

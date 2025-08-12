@@ -3,7 +3,8 @@ import {
   getEmployeesAction,
   getPositionsAction,
   saveEmployee,
-  deleteEmployee
+  deleteEmployee,
+  searchEmployeesAction
 } from '@/domain/d003-employees/index.server';
 import { EmployeeList } from '@/domain/d003-employees';
 
